@@ -7,4 +7,5 @@ obj/
 *.tmp
 *.cache
 *.vs/
-
+*.json
+*.csproj
