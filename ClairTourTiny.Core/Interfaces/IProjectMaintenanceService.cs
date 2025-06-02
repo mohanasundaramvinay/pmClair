@@ -14,6 +14,10 @@ namespace ClairTourTiny.Core.Interfaces
 
         Task<List<PhaseModel>> GetPhases(string entityNo);
 
+        Task<List<ProjectPurchaseModel>> GetPurchases(string entityNo);
+
+        Task<List<ProjectShipmentModel>> GetShipments(string entityNo);
+
         Task<List<ProjectEquipmentModel>> GetEquipments(string entityNo);
 
         Task<List<ProjectEquipmentSubhireModel>> GetEquipmentSubhires(string entityNo);

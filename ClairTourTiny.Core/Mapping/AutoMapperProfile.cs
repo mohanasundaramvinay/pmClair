@@ -93,7 +93,14 @@ namespace ClairTourTiny.Core.Mapping
             CreateMap<EquipmentSubhireDto, ProjectEquipmentSubhireModel>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
+            CreateMap<PurchaseDto, ProjectPurchaseModel>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            CreateMap<ShipmentDto, ProjectShipmentModel>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
             CreateMap<BidExpenseDto, ProjectBidExpenseModel>()
+                .ForMember(dest => dest.Cost, opt => opt.MapFrom(src => (src.ItemCost > 0 && src.Quantity > 0) ? (int)(src.ItemCost * src.Quantity): 0 ))
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<RfiDto, ProjectRfiModel>()
@@ -139,4 +146,4 @@ namespace ClairTourTiny.Core.Mapping
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
-} 
+}

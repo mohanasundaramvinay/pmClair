@@ -2,6 +2,7 @@
 {
     public string EntityNo { get; set; } = string.Empty;
     public string PartNo { get; set; } = string.Empty;
+    public string PartDescription {  get; set; } = string.Empty;
     public int Quantity { get; set; }
     public string? VendorNo { get; set; }
     public string? SiteNo { get; set; }
@@ -20,4 +21,7 @@
     public int LineNo { get; set; }
     public DateOnly ShopReceiptDate { get; set; }
     public DateOnly ShopReturnDate { get; set; }
+    public string? TransferInboundEntityno { get; set; }
+    public string? TransferOutboundEntityno { get; set; }
+    public bool TransferLinkedPhases { get; set; } = false;
 }

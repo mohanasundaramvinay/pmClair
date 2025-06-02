@@ -26,6 +26,24 @@ namespace ClairTourTiny.API.Controllers
             return Ok(phases);
         }
 
+        [HttpGet("projects/{entityNo}/purchases")]
+        [ProducesResponseType(typeof(List<ProjectPurchaseModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetPurchases(string entityNo)
+        {
+            var phases = await _pjtMaintenanceService.GetPurchases(entityNo);
+            return Ok(phases);
+        }
+
+        [HttpGet("projects/{entityNo}/shipments")]
+        [ProducesResponseType(typeof(List<ProjectShipmentModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetShipments(string entityNo)
+        {
+            var phases = await _pjtMaintenanceService.GetShipments(entityNo);
+            return Ok(phases);
+        }
+
         [HttpGet("projects/{entityNo}/equipment/subhires")]
         [ProducesResponseType(typeof(List<ProjectEquipmentModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

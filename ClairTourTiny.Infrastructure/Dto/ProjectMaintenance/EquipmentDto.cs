@@ -35,6 +35,12 @@ public class EquipmentDto
     [Column("Bottleneck")]
     public int? Bottleneck { get; set; }
 
+    [Column("Bottleneck1d")]
+    public int? DayBottleneck { get; set; }
+
+    [Column("Bottleneck1w")]
+    public int? WeekBottleneck { get; set; }
+
     [Column("CheckedOut")]
     public int CheckedOut { get; set; }
 

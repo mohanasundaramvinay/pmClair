@@ -1,4 +1,6 @@
-﻿namespace ClairTourTiny.Core.Models.ProjectMaintenance
+﻿using System.Text.Json.Serialization;
+
+namespace ClairTourTiny.Core.Models.ProjectMaintenance
 {
     public class ProjectProductionScheduleModel
     {
@@ -9,6 +11,7 @@
         public int? VenueID { get; set; }
         public string? DestinationDetail { get; set; }
         public string? Note { get; set; }
+        [JsonPropertyName("LocationOrVenue")]
         public string? LocationName { get; set; }
         public int DisplayOrder { get; set; }
     }

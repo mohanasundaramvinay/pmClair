@@ -21,5 +21,6 @@
         public double? PerDiemRate { get; set; }
         public string? SubInvoiceNumber { get; set; }
         public DateTime? SubInvoiceDate { get; set; }
+        public List<ProjectAssignedCrewOtModel>? AssignedCrewOt { get; set; }
     }
 }

@@ -68,6 +68,9 @@ namespace ClairTourTiny.Infrastructure.Dto.ProjectMaintenance
         public string? CrewOpsEmpNo { get; set; }
         public string? SecondaryOpsEmpNo { get; set; }
         public string? SecondaryCrewOpsEmpNo { get; set; }
+
+        public double TotalCubicInches { get; set; } = 0;
+        public double TotalWeight { get; set; } = 0;
     }
 
 }

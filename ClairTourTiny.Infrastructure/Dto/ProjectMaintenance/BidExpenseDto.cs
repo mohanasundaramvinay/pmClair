@@ -12,7 +12,7 @@ public class BidExpenseDto
     public string ExpenseCode { get; set; } = string.Empty;
 
     [Column("period_type")]
-    public string PeriodType { get; set; } = string.Empty;
+    public string Type { get; set; } = string.Empty;
 
     [Column("notes")]
     public string Notes { get; set; } = string.Empty;
@@ -21,7 +21,7 @@ public class BidExpenseDto
     public double ItemCost { get; set; }
 
     [Column("item_qty")]
-    public int ItemQuantity { get; set; }
+    public int Quantity { get; set; }
 
     [Column("category")]
     public string Category { get; set; } = string.Empty;

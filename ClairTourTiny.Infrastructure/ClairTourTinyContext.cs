@@ -43,6 +43,18 @@ public partial class ClairTourTinyContext : DbContext
         return await Database.ExecuteSqlRawAsync(sql, parameters);
     }
 
+    public async Task<List<T>> ExecuteSqlQueryAsync<T>(string sqlQuery, params SqlParameter[] parameters) where T : class
+    {
+        if (!sqlQuery.TrimEnd().EndsWith(";"))
+        {
+            sqlQuery += ";";
+        }
+
+        return await Set<T>()
+            .FromSqlRaw(sqlQuery, parameters)
+            .ToListAsync();
+    }
+
     public async Task<int> ExecuteStoredProcedureNonQueryOutputParamAsync(string storedProcName, params SqlParameter[] parameters)
     {
         var paramList = parameters != null && parameters.Any()
@@ -2996,6 +3008,7 @@ public partial class ClairTourTinyContext : DbContext
         modelBuilder.Entity<ProjectSearchDto>().HasNoKey().ToView(null);
         modelBuilder.Entity<PhaseDto>().HasNoKey().ToView(null);
         modelBuilder.Entity<EquipmentDto>().HasNoKey().ToView(null);
+        modelBuilder.Entity<ShipmentDto>().HasNoKey().ToView(null);
         modelBuilder.Entity<EquipmentSubhireDto>().HasNoKey().ToView(null);
         modelBuilder.Entity<BidExpenseDto>().HasNoKey().ToView(null);
         modelBuilder.Entity<RfiDto>().HasNoKey().ToView(null);
@@ -3012,6 +3025,7 @@ public partial class ClairTourTinyContext : DbContext
         modelBuilder.Entity<PartDto>().HasNoKey().ToView(null);
         modelBuilder.Entity<ClientContactDto>().HasNoKey().ToView(null);
         modelBuilder.Entity<ClientAddressDto>().HasNoKey().ToView(null);
+        modelBuilder.Entity<PurchaseDto>().HasNoKey().ToView(null);
         modelBuilder.Entity<AbraHourlyPayCode>(entity =>
         {
             entity.HasKey(e => e.Code);

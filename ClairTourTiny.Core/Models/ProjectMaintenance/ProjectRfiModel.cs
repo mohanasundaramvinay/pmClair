@@ -1,4 +1,6 @@
-﻿public class ProjectRfiModel
+﻿using System.Text.Json.Serialization;
+
+public class ProjectRfiModel
 {
     public string EntityNo { get; set; } = string.Empty;
     public string InvEntityNo { get; set; } = string.Empty;
@@ -11,8 +13,14 @@
     public double Total { get; set; }
     public string Note { get; set; } = string.Empty;
     public int SeqNo { get; set; }
+
+    [JsonPropertyName("Invoiced")]
     public string PostInd { get; set; } = string.Empty;
+
+    [JsonPropertyName("FinalApproved")]
     public string AeApproved { get; set; } = string.Empty;
+
+    [JsonPropertyName("AEApproved")]
     public string AmApproved { get; set; } = string.Empty;
     public string BillSchedule { get; set; } = string.Empty;
     public string CreatedBy { get; set; } = string.Empty;

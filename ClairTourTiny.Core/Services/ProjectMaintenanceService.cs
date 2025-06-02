@@ -2,11 +2,16 @@
 using ClairTourTiny.Core.Helpers;
 using ClairTourTiny.Core.Interfaces;
 using ClairTourTiny.Core.Models.ProjectMaintenance;
+using ClairTourTiny.Core.Models.ProjectMaintenance.Save;
 using ClairTourTiny.Infrastructure;
 using ClairTourTiny.Infrastructure.Dto.ProjectMaintenance;
 using ClairTourTiny.Infrastructure.Models.ProjectMaintenance;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System.Data;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace ClairTourTiny.Core.Services
 {
@@ -36,23 +41,52 @@ namespace ClairTourTiny.Core.Services
         public async Task<List<PhaseModel>> GetPhases(string entityNo)
         {
             var param = new SqlParameter("@entityno", entityNo);
-            var phasesDtos = await _dbContext.ExecuteStoredProcedureAsync<PhaseDto>("pm2_get_phases", param);
+            var phasesDtos = await _dbContext.ExecuteStoredProcedureAsync<PhaseDto>("pm2_get_phases_new", param);
             return _mapper.Map<List<PhaseModel>>(phasesDtos);
+        }
+
+        public async Task<List<ProjectPurchaseModel>> GetPurchases(string entityNo)
+        {
+            var param = new SqlParameter("@entityno", entityNo);
+            var phasesDtos = await _dbContext.ExecuteStoredProcedureAsync<PurchaseDto>("Get_Purchase_Orders_By_Project", param);
+            return _mapper.Map<List<ProjectPurchaseModel>>(phasesDtos);
         }
 
         public async Task<List<ProjectEquipmentModel>> GetEquipments(string entityNo)
         {
             var param = new SqlParameter("@entityno", entityNo);
-            var equipmentDtos = await _dbContext.ExecuteStoredProcedureAsync<EquipmentDto>("pm2_get_equipment", param);
+            var equipmentDtos = await _dbContext.ExecuteStoredProcedureAsync<EquipmentDto>("pm2_get_equipment_new", param);
             return _mapper.Map<List<ProjectEquipmentModel>>(equipmentDtos);
         }
 
         public async Task<List<ProjectEquipmentSubhireModel>> GetEquipmentSubhires(string entityNo)
         {
             var param = new SqlParameter("@entityno", entityNo);
-            var equipmentDtos = await _dbContext.ExecuteStoredProcedureAsync<EquipmentSubhireDto>("pm2_get_equipment_subhires", param);
-            return _mapper.Map<List<ProjectEquipmentSubhireModel>>(equipmentDtos);
+            var subhireDtos = await _dbContext.ExecuteStoredProcedureAsync<EquipmentSubhireDto>("pm2_get_equipment_subhires", param);
+            var subhires = _mapper.Map<List<ProjectEquipmentSubhireModel>>(subhireDtos);
+
+            var projects = await this.GetPhases(entityNo);
+            var equipments = await this.GetEquipments(entityNo);
+            subhires.ForEach(subhire =>
+            {
+                var part = equipments.Find(e=> e.Entityno == entityNo && e.Partno == subhire.PartNo);
+                subhire.PartDescription = part?.PartDescription ?? "THIS PART NO LONGER ORDERED ON THIS PROJECT.";
+                var equipmentPhase = projects.Find(p => p.EntityNo == subhire.EntityNo);
+                if (equipmentPhase != null)
+                {
+                    var baseEntityNo = $"{entityNo}-$U3-{equipmentPhase.Agency}-{subhire.VendorNo}.{subhire.SiteNo}";
+                    var inbound = equipments.Find(e => e.Entityno == $"{baseEntityNo}-IN" && e.Partno == subhire.PartNo);
+                    if (inbound != null)
+                        subhire.TransferInboundEntityno = inbound.Entityno;
+                    var outbound = equipments.Find(e => e.Entityno == $"{baseEntityNo}-OUT" && e.Partno == subhire.PartNo);
+                    if (outbound != null)
+                        subhire.TransferOutboundEntityno = outbound.Entityno;
+                    subhire.TransferLinkedPhases = !string.IsNullOrEmpty(subhire.TransferInboundEntityno);
+                }
+            });
+            return subhires;
         }
+
 
         public async Task<List<ProjectBidExpenseModel>> GetBidExpenses(string entityNo)
         {
@@ -114,7 +148,24 @@ namespace ClairTourTiny.Core.Services
         {
             var param = new SqlParameter("@entityno", entityNo);
             var crewDtos = await _dbContext.ExecuteStoredProcedureAsync<CrewDto>("pm2_get_crew", param);
-            return _mapper.Map<List<ProjectCrewModel>>(crewDtos);
+            var crews = _mapper.Map<List<ProjectCrewModel>>(crewDtos);
+            var crewJobTypes = crews.Select(crew => crew.JobType).ToList();
+            var assignedCrews = await this.GetAssignedCrews(entityNo);
+            var assignedCrewOtData = await this.GetAssignedCrewOtData(entityNo);
+            var jobTypes = _dbContext.JobTypesInMyDivisions.Where(e=> crewJobTypes.Contains(e.Jobtype)).Select(e => new { e.Jobtype, e.Hours }).ToList();
+            foreach (var crew in crews)
+            {
+                var assignedCrewData = assignedCrews.Where(ac => ac.EntityNo == crew.EntityNo && ac.JobType == crew.JobType && ac.EmpLineNo == crew.EmpLineNo)?.ToList();
+                assignedCrewData?.ForEach(e =>
+                {
+                    e.AssignedCrewOt = assignedCrewOtData.Where(ot => ot.EmpNo == e.EmpNo && ot.EntityNo == e.EntityNo && ot.JobType == e.JobType && ot.FromDate == e.FromDate)?.ToList();
+                });
+                crew.AssignedCrew = assignedCrewData ?? [];
+                var jobType = jobTypes.FirstOrDefault(j => j.Jobtype == crew.JobType);
+                crew.DailyBill = (jobType != null) ? crew.EstRate * jobType.Hours : 0;
+                crew.WeeklyBill = (jobType != null) ? crew.EstRate * jobType.Hours * 7 : 0;
+            }
+            return crews;
         }
 
         public async Task<List<ProjectBillingPeriodModel>> GetBillingPeriods(string entityNo)
@@ -158,6 +209,31 @@ namespace ClairTourTiny.Core.Services
             var clientAddressDtos = await _dbContext.ExecuteStoredProcedureAsync<ClientAddressDto>("pm2_get_project_client_addresses", param);
             return _mapper.Map<List<ProjectClientAddressModel>>(clientAddressDtos);
         }
+
+        public async Task<List<ProjectShipmentModel>> GetShipments(string entityNo)
+        {
+            var shipmentDtos = await _dbContext.ExecuteSqlQueryAsync<ShipmentDto>($@"
+            DECLARE @p varchar(50) = '%-[0-9]%-%'
+            SELECT 
+                SUBSTRING(s.entityno, 0, PATINDEX(@p, s.entityno) + PATINDEX('%-%', SUBSTRING(s.entityno, PATINDEX(@p, s.entityno) + 1, 100))) as ProjectLegNo,
+                s.entityno as EntityNo, 
+                g.entitydesc as EntityDesc,
+                s.ShipDate,
+                s.DestinationName as Destination,
+                s.City,
+                s.State,
+                p.MasterTrackingNumber as TrackingNo,
+                s.Amount as EstimatedCost,
+                s.Amount * 1.25 as Cost,
+                s.idShippingRequest as ShippingRequestID,
+                s.ServiceTypeDisplayName as ServiceType
+            FROM dbo.ShippingRequestForShipmentVault s
+            LEFT JOIN dbo.glentities g ON g.entityno = s.entityno
+            LEFT JOIN dbo.ShippingPackages p ON p.idShippingRequest = s.idShippingRequest
+            WHERE s.entityno LIKE '{entityNo}' + '-%'");
+            return _mapper.Map<List<ProjectShipmentModel>>(shipmentDtos);
+        }
+
         public async Task<bool> SubmitPhases(string entityNo, ProjectSaveModel model)
         {
             bool result = false;
