@@ -476,19 +476,47 @@ namespace ClairTourTiny.Core.Services
             }
         }
 
-        public async Task<IEnumerable<EmployeeJobType>> GetEmployeeJobTypes()
+        // public async Task<IEnumerable<EmployeeJobType>> GetEmployeeJobTypes()
+        // {
+        //     using (var connection = new SqlConnection(_connectionString))
+        //     {
+        //         var sql = @"
+        //             SELECT jt.empno, jt.jobtype 
+        //             FROM dbo.peEmployeeJobTypes jt
+        //             JOIN dbo.peemployee e ON e.empno = jt.empno
+        //             WHERE jt.jobtype in ('ACCTEXEC','OPERATIONS','ENGR','CRFPLENGR', 'CREWOPS') 
+        //             AND (e.empstatus = 'A' OR e.empstatus = 'R')";
+        //         return await connection.QueryAsync<EmployeeJobType>(sql);
+        //     }
+        // }
+           public async Task<IEnumerable<EmployeeJobType>> GetEmployeeJobTypes()
         {
+
+        
             using (var connection = new SqlConnection(_connectionString))
             {
-                var sql = @"
-                    SELECT jt.empno, jt.jobtype 
-                    FROM dbo.peEmployeeJobTypes jt
-                    JOIN dbo.peemployee e ON e.empno = jt.empno
-                    WHERE jt.jobtype in ('ACCTEXEC','OPERATIONS','ENGR','CRFPLENGR', 'CREWOPS') 
-                    AND (e.empstatus = 'A' OR e.empstatus = 'R')";
+               
+          var sql = @"
+        SELECT 
+            d.empno,
+            d.firstname,
+            d.lastname,
+            d.empname,
+            d.GroupStatus,
+            d.DisplayOrder,
+            d.InMyDivision,
+            jt.jobtype
+        FROM Employees_In_My_Division d
+        JOIN peEmployee e ON d.empno = e.empno
+        JOIN peEmployeeJobTypes jt ON e.empno = jt.empno
+        WHERE jt.jobtype IN ('ACCTEXEC','OPERATIONS','ENGR','CRFPLENGR','CREWOPS')
+          AND (e.empstatus = 'A' OR e.empstatus = 'R')
+        ORDER BY d.DisplayOrder, d.InMyDivision DESC";
                 return await connection.QueryAsync<EmployeeJobType>(sql);
             }
         }
+
+     
 
         public async Task<IEnumerable<BudgetCategoryDto>> GetBudgetCategories()
         {
