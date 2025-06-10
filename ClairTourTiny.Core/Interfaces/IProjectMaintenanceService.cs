@@ -53,5 +53,6 @@ namespace ClairTourTiny.Core.Interfaces
         Task<List<ProjectClientAddressModel>> GetClientAddresses(string entityNo);
 
         Task<bool> SubmitPhases(string entityNo, ProjectSaveModel model);
+        Task<BidSummaryResponse> GetBidSummaryData(string entityNo);
     }
 }
