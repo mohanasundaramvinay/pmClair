@@ -15,12 +15,14 @@ namespace ClairTourTiny.Core.Services
         private readonly ClairTourTinyContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IProjectMaintenanceHelper _pjtHelper;
+        private readonly IProjectDataPointsService _projectDataPointsService;
 
-        public ProjectMaintenanceService(ClairTourTinyContext clairTourTinyContext, IMapper mapper, IProjectMaintenanceHelper pjtHelper)
+        public ProjectMaintenanceService(ClairTourTinyContext clairTourTinyContext, IMapper mapper, IProjectMaintenanceHelper pjtHelper, IProjectDataPointsService projectDataPointsService)
         {
             _dbContext = clairTourTinyContext;
             _mapper = mapper;
             _pjtHelper = pjtHelper;
+            _projectDataPointsService = projectDataPointsService;
         }
 
         public async Task<int> GetNextAvailableProjectNumber()
@@ -80,6 +82,21 @@ namespace ClairTourTiny.Core.Services
                 }
             });
             return subhires;
+        }
+
+        public async Task<BidSummaryResponse> GetBidSummaryData(string entityNo)
+        {
+            var phases = await this.GetPhases(entityNo);
+            var billingItems = await this.GetBillingItems(entityNo);
+            var billingPeriods = await this.GetBillingPeriods(entityNo);
+            var billingPeriodItems = await this.GetBillingPeriodItems(entityNo);    
+            var bidExpenses = await this.GetBidExpenses(entityNo);
+            var crews = await this.GetCrews(entityNo);
+            var expenseCodes = await _projectDataPointsService.GetExpenseCodes();
+            var jobTypes = await _projectDataPointsService.GetJobTypes();
+            var propertyTypes = await _projectDataPointsService.GetPropertyTypes();
+            var bidSummaryHelper = new BidSummaryHelper(phases, billingItems, billingPeriods, billingPeriodItems, bidExpenses, crews, expenseCodes.ToList(), jobTypes.ToList(), propertyTypes.ToList(),_dbContext);
+            return bidSummaryHelper.GetBidSummaryData(entityNo);
         }
 
 
@@ -173,7 +190,7 @@ namespace ClairTourTiny.Core.Services
         public async Task<List<ProjectBillingPeriodItemModel>> GetBillingPeriodItems(string entityNo)
         {
             var param = new SqlParameter("@entityno", entityNo);
-            var billingPeriodItemDtos = await _dbContext.ExecuteStoredProcedureAsync<BillingPeriodItemDto>("pm2_get_project_billing_period_items", param);
+            var billingPeriodItemDtos = await _dbContext.ExecuteStoredProcedureAsync<BillingPeriodItemDto>("pm2_get_project_billing_period_items_new", param);
             return _mapper.Map<List<ProjectBillingPeriodItemModel>>(billingPeriodItemDtos);
         }
 
