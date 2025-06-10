@@ -38,8 +38,8 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance
         [JsonPropertyName("ToWarehouse")]
         public string? Industry { get; set; }
 
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
 
         [JsonPropertyName("ActiveStatus")]
         public string? EngActiveCd { get; set; }
@@ -92,7 +92,7 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance
         public DateTime? LastShow { get; set; }
         public string? InternalOrg { get; set; }
         public DateTime? PropDueDate { get; set; }
-        public decimal? BidMarkup { get; set; }
+        public double? BidMarkup { get; set; }
         public Guid? GUID { get; set; }
         public int? TaxTypeKey { get; set; }
         public string? OeOrderNo { get; set; }
@@ -103,5 +103,7 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance
 
         [JsonPropertyName("TotalVolume")]
         public double TotalCubicInches { get; set; } = 0;
+        [JsonPropertyName("TotalEquipmentCost")]
+        public double TotalEquipmentCost { get; set; } = 0;
     }
 }

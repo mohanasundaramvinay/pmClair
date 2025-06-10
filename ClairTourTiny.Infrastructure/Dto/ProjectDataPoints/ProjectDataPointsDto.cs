@@ -141,7 +141,7 @@ namespace ClairTourTiny.Infrastructure.Dto.DTOs
     {
         public string JobTypeCode { get; set; }
         public string JobDesc { get; set; }
-        public decimal Hours { get; set; }
+        public double Hours { get; set; }
         public bool IsActive { get; set; }
         public string InMyDivision { get; set; }
     }
@@ -217,7 +217,7 @@ namespace ClairTourTiny.Infrastructure.Dto.DTOs
     {
         public string PropType { get; set; }
         public string TypeDesc { get; set; }
-        public decimal BidFactor { get; set; }
+        public double BidFactor { get; set; }
         public string BidValueType { get; set; }
         public string DefaultBillSchedule { get; set; }
         public bool IsSalesOrderPropType { get; set; }

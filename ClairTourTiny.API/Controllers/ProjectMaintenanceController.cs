@@ -71,6 +71,15 @@ namespace ClairTourTiny.API.Controllers
             return Ok(expenses);
         }
 
+        [HttpGet("projects/{entityNo}/bid-summary")]
+        [ProducesResponseType(typeof(List<BidSummaryResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetBidSummary(string entityNo)
+        {
+            var expenses = await _pjtMaintenanceService.GetBidSummaryData(entityNo);
+            return Ok(expenses);
+        }
+
         [HttpGet("projects/{entityNo}/rfis")]
         [ProducesResponseType(typeof(List<ProjectRfiModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
