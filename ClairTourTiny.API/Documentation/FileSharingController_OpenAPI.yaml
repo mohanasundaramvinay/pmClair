@@ -1,0 +1,613 @@
+openapi: 3.0.3
+info:
+  title: FileSharingController API
+  description: |
+    Comprehensive file and folder management API for the ClairTourTiny application.
+    Handles file sharing, folder creation, file indexing, and project management operations.
+  version: 1.0.0
+  contact:
+    name: ClairTourTiny Development Team
+    email: dev-team@clairglobal.com
+  license:
+    name: Proprietary
+    url: https://clairglobal.com/license
+
+servers:
+  - url: https://api.clairglobal.com/api
+    description: Production server
+  - url: https://staging-api.clairglobal.com/api
+    description: Staging server
+  - url: http://localhost:5000/api
+    description: Local development server
+
+paths:
+  /FileSharing/share-selected:
+    post:
+      summary: Share a folder with a specific member
+      description: Creates a share request for a specific folder with a designated user.
+      tags:
+        - File Sharing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShareRequestModel'
+            example:
+              email: "john.doe@company.com"
+              entityNo: "12345"
+              cloudFolderTemplate: "PRODUCTION"
+              attachmentCategory: "Projects"
+              userFolderPath: "C:/Projects/Project123"
+              note: "Please review the project documents for approval"
+      responses:
+        '200':
+          description: Folder shared successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Folder shared successfully"
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /FileSharing/share-all:
+    post:
+      summary: Share folders with multiple members
+      description: Creates share requests for multiple folders with multiple users.
+      tags:
+        - File Sharing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ShareRequestModel'
+            example:
+              - email: "user1@company.com"
+                entityNo: "12345"
+                cloudFolderTemplate: "PRODUCTION"
+                attachmentCategory: "Projects"
+                userFolderPath: "C:/Projects/Project123"
+                note: "Project documents for review"
+              - email: "user2@company.com"
+                entityNo: "12345"
+                cloudFolderTemplate: "PRODUCTION"
+                attachmentCategory: "Projects"
+                userFolderPath: "C:/Projects/Project123"
+                note: "Project documents for review"
+      responses:
+        '200':
+          description: Folders shared successfully with all members
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Folders shared successfully with all members"
+        '400':
+          description: Invalid request parameters
+        '500':
+          description: Internal server error
+
+  /FileSharing/remove-selected:
+    post:
+      summary: Remove access for a specific member
+      description: Removes folder access for a specific user.
+      tags:
+        - File Sharing
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Email of the member to remove access for
+          example: "user@company.com"
+        - name: entityNo
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Entity number
+          example: "12345"
+        - name: template
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Cloud folder template
+          example: "PRODUCTION"
+      responses:
+        '200':
+          description: Access removed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Access removed successfully"
+        '400':
+          description: Invalid request parameters
+        '500':
+          description: Internal server error
+
+  /FileSharing/remove-all:
+    post:
+      summary: Remove access for all members
+      description: Removes folder access for all members associated with an entity.
+      tags:
+        - File Sharing
+      parameters:
+        - name: entityNo
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Entity number
+          example: "12345"
+        - name: template
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Cloud folder template
+          example: "PRODUCTION"
+      responses:
+        '200':
+          description: Access removed successfully for all members
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Access removed successfully for all members"
+        '400':
+          description: Invalid request parameters
+        '500':
+          description: Internal server error
+
+  /FileSharing/create-folder:
+    post:
+      summary: Create a new folder with user-provided name
+      description: Creates a new folder and validates root folder existence.
+      tags:
+        - Folder Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFolderRequestModel'
+            example:
+              newFolderName: "ProjectDocuments"
+              attachmentCategorySubFolderPath: "C:/Projects/Attachments"
+              attachmentCategory: "Projects"
+              entityNo: "12345"
+              dropboxEnabled: true
+      responses:
+        '200':
+          description: Folder created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFolderResponseModel'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFolderResponseModel'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFolderResponseModel'
+
+  /FileSharing/create-folder-in-selected:
+    post:
+      summary: Create a new folder in a selected folder location
+      description: Creates a new folder within a specific parent folder location.
+      tags:
+        - Folder Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFolderInSelectedFolderRequestModel'
+            example:
+              newFolderName: "SubProject"
+              currentGlobalOpsFolder: "C:/Projects/Attachments/Project123"
+              attachmentCategory: "Projects"
+              entityNo: "12345"
+              selectedNodePath: "Project123"
+              dropboxEnabled: true
+              isLoadingTree: false
+      responses:
+        '200':
+          description: Folder created successfully in selected location
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFolderResponseModel'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFolderResponseModel'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFolderResponseModel'
+
+  /FileSharing/index-file:
+    post:
+      summary: Add or update file in the search index
+      description: Indexes a file for search functionality with metadata.
+      tags:
+        - File Indexing
+      parameters:
+        - name: filePath
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Path of the file to index
+          example: "C:/Projects/document.pdf"
+        - name: guid
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Current GUID
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        - name: subFolderPath
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Subfolder path
+          example: "Project123"
+      responses:
+        '200':
+          description: File indexed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "File indexed successfully"
+        '400':
+          description: Invalid request parameters
+        '500':
+          description: Internal server error
+
+  /FileSharing/index-folder:
+    delete:
+      summary: Delete folder from search index
+      description: Removes a folder and its contents from the search index.
+      tags:
+        - File Indexing
+      parameters:
+        - name: guid
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Current GUID
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        - name: subFolderPath
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Subfolder path to delete
+          example: "Project123"
+      responses:
+        '200':
+          description: Folder deleted from index successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Folder deleted from index successfully"
+        '400':
+          description: Invalid request parameters
+        '500':
+          description: Internal server error
+
+  /FileSharing/project-folder-guid:
+    get:
+      summary: Get or create project folder GUID
+      description: Gets or creates a project folder GUID for a given entity number.
+      tags:
+        - Project Management
+      parameters:
+        - name: entityNo
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Entity number to get or create GUID for
+          example: "12345"
+      responses:
+        '200':
+          description: GUID retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectFolderGuidResponse'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectFolderGuidResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectFolderGuidResponse'
+
+  /FileSharing/upload-all-project-files:
+    post:
+      summary: Upload all project files in a folder and its subfolders
+      description: Processes and uploads all files within a specified folder structure.
+      tags:
+        - Project Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadAllProjectFilesRequestModel'
+            example:
+              selectedFolderPath: "C:/Projects/Project123"
+              template: "PRODUCTION"
+              attachmentCategory: "Projects"
+              currentGlobalOpsFolder: "C:/Projects/Project123"
+              currentEntityNo: "12345"
+              currentPartNo: "67890"
+              selectedFolderAttachmentType: "DOCUMENT"
+      responses:
+        '200':
+          description: All project files uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadAllProjectFilesResponseModel'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadAllProjectFilesResponseModel'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadAllProjectFilesResponseModel'
+
+components:
+  schemas:
+    ShareRequestModel:
+      type: object
+      required:
+        - email
+        - entityNo
+        - cloudFolderTemplate
+        - attachmentCategory
+        - userFolderPath
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address of the user to share with
+        entityNo:
+          type: string
+          description: Entity number associated with the folder
+        cloudFolderTemplate:
+          type: string
+          description: Cloud folder template (e.g., "PRODUCTION")
+        attachmentCategory:
+          type: string
+          enum: [Projects, Parts]
+          description: Category of attachment
+        userFolderPath:
+          type: string
+          description: Full path to the user folder
+        note:
+          type: string
+          description: Additional notes for the share request
+
+    CreateFolderRequestModel:
+      type: object
+      required:
+        - newFolderName
+        - attachmentCategorySubFolderPath
+        - attachmentCategory
+        - entityNo
+      properties:
+        newFolderName:
+          type: string
+          description: Name for the new folder
+        attachmentCategorySubFolderPath:
+          type: string
+          description: Base path where folder should be created
+        attachmentCategory:
+          type: string
+          enum: [Projects, Parts]
+          description: Attachment category
+        entityNo:
+          type: string
+          description: Entity number associated with the folder
+        dropboxEnabled:
+          type: boolean
+          default: false
+          description: Whether Dropbox integration is enabled
+
+    CreateFolderInSelectedFolderRequestModel:
+      type: object
+      required:
+        - newFolderName
+        - currentGlobalOpsFolder
+        - attachmentCategory
+        - entityNo
+      properties:
+        newFolderName:
+          type: string
+          description: Name for the new folder
+        currentGlobalOpsFolder:
+          type: string
+          description: Current global operations folder path
+        attachmentCategory:
+          type: string
+          enum: [Projects, Parts]
+          description: Attachment category
+        entityNo:
+          type: string
+          description: Entity number associated with the folder
+        selectedNodePath:
+          type: string
+          description: Path of the selected node (parent folder)
+        dropboxEnabled:
+          type: boolean
+          default: false
+          description: Whether Dropbox integration is enabled
+        isLoadingTree:
+          type: boolean
+          default: false
+          description: Whether the tree is currently loading
+
+    UploadAllProjectFilesRequestModel:
+      type: object
+      required:
+        - selectedFolderPath
+        - template
+        - attachmentCategory
+        - currentGlobalOpsFolder
+        - currentEntityNo
+        - currentPartNo
+      properties:
+        selectedFolderPath:
+          type: string
+          description: Path of the selected folder
+        template:
+          type: string
+          description: Template for the project
+        attachmentCategory:
+          type: string
+          enum: [Projects, Parts]
+          description: Attachment category
+        currentGlobalOpsFolder:
+          type: string
+          description: Current global operations folder
+        currentEntityNo:
+          type: string
+          description: Current entity number
+        currentPartNo:
+          type: string
+          description: Current part number
+        selectedFolderAttachmentType:
+          type: string
+          description: Attachment type of the selected folder
+
+    CreateFolderResponseModel:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates whether the folder was created successfully
+        message:
+          type: string
+          description: Message describing the result of the operation
+        folderPath:
+          type: string
+          description: The full path of the created folder (if successful)
+
+    UploadAllProjectFilesResponseModel:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates whether the upload operation was successful
+        message:
+          type: string
+          description: Message describing the result of the operation
+        foldersProcessed:
+          type: integer
+          description: The number of folders processed
+        filesProcessed:
+          type: integer
+          description: The number of files processed
+
+    ProjectFolderGuidResponse:
+      type: object
+      properties:
+        guid:
+          type: string
+          format: uuid
+          description: The GUID for the project folder
+        message:
+          type: string
+          description: Message describing the operation result
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: File Sharing
+    description: Operations for sharing files and folders with users
+  - name: Folder Management
+    description: Operations for creating and managing folders
+  - name: File Indexing
+    description: Operations for indexing and searching files
+  - name: Project Management
+    description: Operations for managing project files and folders 

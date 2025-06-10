@@ -351,7 +351,7 @@ namespace ClairTourTiny.Core.Services
             return results.ToList();
         }
     
-    public async Task<List<DropboxInviteeDetails>> GetDropboxInviteesAsync(string entityNo)
+       public async Task<List<DropboxInviteeDetails>> GetDropboxInviteesAsync(string entityNo)
         {
             using var connection = new SqlConnection(_connectionString);
             await connection.OpenAsync();

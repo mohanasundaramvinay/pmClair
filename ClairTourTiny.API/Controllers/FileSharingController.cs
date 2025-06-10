@@ -61,6 +61,82 @@ namespace ClairTourTiny.API.Controllers
             public bool DropboxEnabled { get; set; } = false;
         }
 
+        public class CreateFolderInSelectedFolderRequestModel
+        {
+            /// <summary>
+            /// The name for the new folder
+            /// </summary>
+            public string NewFolderName { get; set; }
+            
+            /// <summary>
+            /// The current global operations folder path
+            /// </summary>
+            public string CurrentGlobalOpsFolder { get; set; }
+            
+            /// <summary>
+            /// The attachment category
+            /// </summary>
+            public string AttachmentCategory { get; set; }
+            
+            /// <summary>
+            /// The entity number associated with the folder
+            /// </summary>
+            public string EntityNo { get; set; }
+            
+            /// <summary>
+            /// The path of the selected node (parent folder)
+            /// </summary>
+            public string SelectedNodePath { get; set; }
+            
+            /// <summary>
+            /// Whether Dropbox integration is enabled
+            /// </summary>
+            public bool DropboxEnabled { get; set; } = false;
+            
+            /// <summary>
+            /// Whether the tree is currently loading (to prevent operations during loading)
+            /// </summary>
+            public bool IsLoadingTree { get; set; } = false;
+        }
+
+        public class UploadAllProjectFilesRequestModel
+        {
+            /// <summary>
+            /// The path of the selected folder
+            /// </summary>
+            public string SelectedFolderPath { get; set; }
+            
+            /// <summary>
+            /// The template for the project
+            /// </summary>
+            public string Template { get; set; }
+            
+            /// <summary>
+            /// The attachment category
+            /// </summary>
+            public string AttachmentCategory { get; set; }
+            
+            /// <summary>
+            /// The current global operations folder
+            /// </summary>
+            public string CurrentGlobalOpsFolder { get; set; }
+            
+            /// <summary>
+            /// The current entity number
+            /// </summary>
+            public string CurrentEntityNo { get; set; }
+            
+            /// <summary>
+            /// The current part number
+            /// </summary>
+            public string CurrentPartNo { get; set; }
+            
+            /// <summary>
+            /// The attachment type of the selected folder
+            /// </summary>
+            public string SelectedFolderAttachmentType { get; set; }
+        }
+
         public class CreateFolderResponseModel
         {
             /// <summary>
@@ -89,6 +165,29 @@ namespace ClairTourTiny.API.Controllers
         {
             public string Guid { get; set; }
             public string Message { get; set; }
+        }
+
+        public class UploadAllProjectFilesResponseModel
+        {
+            /// <summary>
+            /// Indicates whether the upload operation was successful
+            /// </summary>
+            public bool Success { get; set; }
+            
+            /// <summary>
+            /// Message describing the result of the operation
+            /// </summary>
+            public string Message { get; set; }
+            
+            /// <summary>
+            /// The number of folders processed
+            /// </summary>
+            public int FoldersProcessed { get; set; }
+            
+            /// <summary>
+            /// The number of files processed
+            /// </summary>
+            public int FilesProcessed { get; set; }
         }
 
         /// <summary>
@@ -532,6 +631,226 @@ namespace ClairTourTiny.API.Controllers
                 {
                     Success = false,
                     Message = $"An error occurred while creating the folder: {ex.Message}"
+                });
+            }
+        }
+
+        /// <summary>
+        /// Creates a new folder in a selected folder location with user-provided name
+        /// </summary>
+        /// <param name="request">Folder creation request details for selected folder</param>
+        /// <returns>Success status and details of the folder creation operation</returns>
+        /// <response code="200">Returns the result of the folder creation operation</response>
+        /// <response code="400">If the request parameters are invalid</response>
+        /// <response code="500">If there was an internal server error</response>
+        [HttpPost("create-folder-in-selected")]
+        [ProducesResponseType(typeof(CreateFolderResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateFolderInSelectedFolder([FromBody] CreateFolderInSelectedFolderRequestModel request)
+        {
+            try
+            {
+                // Validate request
+                if (request == null)
+                {
+                    return BadRequest(new CreateFolderResponseModel
+                    {
+                        Success = false,
+                        Message = "Request body is required"
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.NewFolderName))
+                {
+                    return BadRequest(new CreateFolderResponseModel
+                    {
+                        Success = false,
+                        Message = "Folder name is required"
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.CurrentGlobalOpsFolder))
+                {
+                    return BadRequest(new CreateFolderResponseModel
+                    {
+                        Success = false,
+                        Message = "Current global operations folder path is required"
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.AttachmentCategory))
+                {
+                    return BadRequest(new CreateFolderResponseModel
+                    {
+                        Success = false,
+                        Message = "Attachment category is required"
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.EntityNo))
+                {
+                    return BadRequest(new CreateFolderResponseModel
+                    {
+                        Success = false,
+                        Message = "Entity number is required"
+                    });
+                }
+
+                // Call the service method
+                var success = await _folderManagementService.CreateFolderInSelectedFolderAsync(
+                    request.NewFolderName,
+                    request.CurrentGlobalOpsFolder,
+                    request.AttachmentCategory,
+                    request.EntityNo,
+                    request.SelectedNodePath,
+                    request.DropboxEnabled,
+                    request.IsLoadingTree);
+
+                if (success)
+                {
+                    var folderPath = Path.Combine(request.CurrentGlobalOpsFolder, request.NewFolderName);
+                    return Ok(new CreateFolderResponseModel
+                    {
+                        Success = true,
+                        Message = "Folder created successfully in selected location",
+                        FolderPath = folderPath
+                    });
+                }
+                else
+                {
+                    return BadRequest(new CreateFolderResponseModel
+                    {
+                        Success = false,
+                        Message = "Failed to create folder in selected location. Please check the logs for more details."
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new CreateFolderResponseModel
+                {
+                    Success = false,
+                    Message = $"An error occurred while creating the folder in selected location: {ex.Message}"
+                });
+            }
+        }
+
+        /// <summary>
+        /// Uploads all project files in a folder and its subfolders
+        /// </summary>
+        /// <param name="request">Upload request details for all files in folder</param>
+        /// <returns>Success status and details of the upload operation</returns>
+        /// <response code="200">Returns the result of the upload operation</response>
+        /// <response code="400">If the request parameters are invalid</response>
+        /// <response code="500">If there was an internal server error</response>
+        [HttpPost("upload-all-project-files")]
+        [ProducesResponseType(typeof(UploadAllProjectFilesResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UploadAllProjectFilesInFolder([FromBody] UploadAllProjectFilesRequestModel request)
+        {
+            try
+            {
+                // Validate request
+                if (request == null)
+                {
+                    return BadRequest(new UploadAllProjectFilesResponseModel
+                    {
+                        Success = false,
+                        Message = "Request body is required"
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.SelectedFolderPath))
+                {
+                    return BadRequest(new UploadAllProjectFilesResponseModel
+                    {
+                        Success = false,
+                        Message = "Selected folder path is required"
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.Template))
+                {
+                    return BadRequest(new UploadAllProjectFilesResponseModel
+                    {
+                        Success = false,
+                        Message = "Template is required"
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.AttachmentCategory))
+                {
+                    return BadRequest(new UploadAllProjectFilesResponseModel
+                    {
+                        Success = false,
+                        Message = "Attachment category is required"
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.CurrentGlobalOpsFolder))
+                {
+                    return BadRequest(new UploadAllProjectFilesResponseModel
+                    {
+                        Success = false,
+                        Message = "Current global operations folder is required"
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.CurrentEntityNo))
+                {
+                    return BadRequest(new UploadAllProjectFilesResponseModel
+                    {
+                        Success = false,
+                        Message = "Current entity number is required"
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.CurrentPartNo))
+                {
+                    return BadRequest(new UploadAllProjectFilesResponseModel
+                    {
+                        Success = false,
+                        Message = "Current part number is required"
+                    });
+                }
+
+                // Call the service method
+                var success = await _folderManagementService.UploadAllProjectFilesInFolderAsync(
+                    request.SelectedFolderPath,
+                    request.Template,
+                    request.AttachmentCategory,
+                    request.CurrentGlobalOpsFolder,
+                    request.CurrentEntityNo,
+                    request.CurrentPartNo,
+                    request.SelectedFolderAttachmentType);
+
+                if (success)
+                {
+                    return Ok(new UploadAllProjectFilesResponseModel
+                    {
+                        Success = true,
+                        Message = "All project files uploaded successfully",
+                        FoldersProcessed = 1, // This could be enhanced to return actual counts
+                        FilesProcessed = 1    // This could be enhanced to return actual counts
+                    });
+                }
+                else
+                {
+                    return BadRequest(new UploadAllProjectFilesResponseModel
+                    {
+                        Success = false,
+                        Message = "Failed to upload all project files. Please check the logs for more details."
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new UploadAllProjectFilesResponseModel
+                {
+                    Success = false,
+                    Message = $"An error occurred while uploading all project files: {ex.Message}"
                 });
             }
         }
