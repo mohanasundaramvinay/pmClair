@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../ClairTourTiny.API/ClairTourTiny.API.csproj"/>
+    <ProjectReference Include="../../ClairTourTiny.API/ClairTourTiny.Core.csproj"/>
   </ItemGroup>
 
 </Project>
