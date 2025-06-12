@@ -301,6 +301,20 @@ namespace ClairTourTiny.Core.Interfaces
         Task<List<PartSearchResultDto>> SearchPartsAsync(PartSearchRequestDto request);
 
         /// <summary>
+        /// Search for parts based on various criteria without category and subcategory filtering
+        /// </summary>
+        /// <param name="request">Search parameters including text and filters (excluding category/subcategory)</param>
+        /// <returns>List of matching parts</returns>
+        Task<List<PartSearchResultDto>> SearchPartsWithoutCategoryFilterAsync(PartSearchRequestDto request);
+
+        /// <summary>
+        /// Get all parts without any filtering but with filtering parameters available in result set
+        /// </summary>
+        /// <param name="request">Request parameters (filtering parameters are available but not applied)</param>
+        /// <returns>List of all parts with their details including weight, cubic, and value information</returns>
+        Task<List<PartSearchResultDto>> GetAllPartsAsync(PartSearchRequestDto request);
+
+        /// <summary>
         /// Get all available part categories
         /// </summary>
         /// <returns>List of part categories</returns>
@@ -318,5 +332,12 @@ namespace ClairTourTiny.Core.Interfaces
         /// </summary>
         /// <returns>Default project settings including warehouse, currency, units, and other user preferences</returns>
         Task<ClairTourTiny.Infrastructure.Dto.DTOs.DefaultProjectSettingsDto> GetDefaultProjectSettingsAsync(string username = null);
+
+        /// <summary>
+        /// Calculate bottleneck values for a list of part numbers
+        /// </summary>
+        /// <param name="request">Request containing part numbers and optional from date</param>
+        /// <returns>List of bottleneck calculations for each part number</returns>
+        Task<List<PartBottleneckDto>> CalculatePartBottlenecksAsync(PartBottleneckRequestDto request);
     }
 } 

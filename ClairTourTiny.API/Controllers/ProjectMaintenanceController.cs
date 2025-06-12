@@ -206,6 +206,69 @@ namespace ClairTourTiny.API.Controllers
             return Ok(addresses);
         }
 
+        /// <summary>
+        /// Calculate bottleneck values for equipment items
+        /// </summary>
+        /// <remarks>
+        /// This endpoint calculates inventory bottleneck values for equipment items based on:
+        /// * Current inventory levels
+        /// * Internal project demands (parts leaving/returning)
+        /// * External project demands
+        /// * Early checkouts
+        /// 
+        /// Sample request:
+        ///     POST /api/bottleneck-calculation
+        ///     {
+        ///         "projectNumber": "PROJ123",
+        ///         "equipmentItems": [
+        ///             {
+        ///                 "entityNo": "PROJ123-001",
+        ///                 "partNo": "PART001",
+        ///                 "warehouse": "WH001",
+        ///                 "startDate": "2024-01-15T00:00:00",
+        ///                 "endDate": "2024-02-15T00:00:00",
+        ///                 "quantity": 10,
+        ///                 "checkedOut": 2
+        ///             }
+        ///         ]
+        ///     }
+        /// 
+        /// Returns bottleneck calculations including:
+        /// * Overall availability across project duration
+        /// * 1-day availability on start date
+        /// * 1-week availability within first 7 days
+        /// * Base inventory and demand analysis
+        /// </remarks>
+        /// <param name="request">Bottleneck calculation request</param>
+        /// <returns>Bottleneck calculation results</returns>
+        /// <response code="200">Returns the bottleneck calculation results</response>
+        /// <response code="400">If the request is invalid</response>
+        /// <response code="500">If there was an internal server error</response>
+        // [HttpPost("bottleneck-calculation")]
+        // [ProducesResponseType(typeof(BottleneckCalculationResponse), StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        // [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        // public async Task<IActionResult> CalculateBottlenecks([FromBody] BottleneckCalculationRequest request)
+        // {
+        //     try
+        //     {
+        //         if (!ModelState.IsValid)
+        //         {
+        //             return BadRequest(ModelState);
+        //         }
+
+        //         var result = await _pjtMaintenanceService.CalculateBottlenecks(request);
+        //         return Ok(result);
+        //     }
+        //     catch (ArgumentException ex)
+        //     {
+        //         return BadRequest(ex.Message);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return StatusCode(500, $"Internal server error: {ex.Message}");
+        //     }
+        // }
 
         [HttpPost("projects/{entityNo}/save")]
         [ProducesResponseType(StatusCodes.Status201Created)]

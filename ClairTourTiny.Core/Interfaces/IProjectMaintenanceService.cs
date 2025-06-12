@@ -54,5 +54,12 @@ namespace ClairTourTiny.Core.Interfaces
 
         Task<bool> SubmitPhases(string entityNo, ProjectSaveModel model);
         Task<BidSummaryResponse> GetBidSummaryData(string entityNo);
+
+        /// <summary>
+        /// Calculate bottleneck values for equipment items
+        /// </summary>
+        /// <param name="request">Bottleneck calculation request containing equipment data</param>
+        /// <returns>Bottleneck calculation results</returns>
+        Task<BottleneckCalculationResponse> CalculateBottlenecks(BottleneckCalculationRequest request);
     }
 }

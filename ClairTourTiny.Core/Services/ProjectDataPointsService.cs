@@ -1113,21 +1113,43 @@ namespace ClairTourTiny.Core.Services
                     query = query.Where(p => p.AvailMultipartGroup1s.Any());
                 }
 
+                // Get user warehouses for result set flags
+                var userWarehousesForFlags = request.OnlyMyWarehouses ? 
+                    await _context.Pjtfrusrs.Select(u => u.WarehouseEntity).ToListAsync() : 
+                    new List<string>();
+
                 // Execute query and map results
                 var results = await query
-                    .Select(p => new PartSearchResultDto
+                    .GroupJoin(
+                        _context.PartsListWeightsValues,
+                        p => p.Partno,
+                        w => w.Partno,
+                        (p, weights) => new { Part = p, Weights = weights }
+                    )
+                    .SelectMany(
+                        x => x.Weights.DefaultIfEmpty(),
+                        (x, weight) => new { x.Part, Weight = weight }
+                    )
+                    .Select(x => new PartSearchResultDto
                     {
-                        PartNumber = p.Partno ?? string.Empty,
-                        PartDescription = p.Partdesc ?? string.Empty,
-                        Commodity = p.Commmodity ?? string.Empty,
-                        PartGroup = p.AvailMultipartGroup1s
+                        PartNumber = x.Part.Partno ?? string.Empty,
+                        PartDescription = x.Part.Partdesc ?? string.Empty,
+                        Commodity = x.Part.Commmodity ?? string.Empty,
+                        PartGroup = x.Part.AvailMultipartGroup1s
                             .OrderBy(g => g.Partgroup)
                             .Select(g => g.Partgroup)
                             .FirstOrDefault() ?? "!Barcode",
-                        PartSequence = p.AvailMultipartGroup1s
+                        PartSequence = x.Part.AvailMultipartGroup1s
                             .OrderBy(g => g.Partseq)
                             .Select(g => (int?)g.Partseq)
-                            .FirstOrDefault() ?? 0
+                            .FirstOrDefault() ?? 0,
+                        PartsListWeight = string.IsNullOrEmpty(x.Weight.Partno) ? 0.0 : x.Weight.Partslistweight,
+                        PartsListCubic = string.IsNullOrEmpty(x.Weight.Partno) ? (double?)null : x.Weight.Partslistcubic,
+                        PartsListValue = string.IsNullOrEmpty(x.Weight.Partno) ? 0.0 : x.Weight.Partslistvalue,
+                        Sku = x.Part.Sku ?? string.Empty,
+                        IsUnusedPart = x.Part.Commmodity == "UNUSED",
+                        IsInMyWarehouse = userWarehousesForFlags.Any() && x.Part.Inpartsubs.Any(ips => userWarehousesForFlags.Contains(ips.Bld)),
+                        IsMyPart = x.Part.AvailMultipartGroup1s.Any()
                     })
                     .OrderBy(p => p.PartGroup)
                     .ThenBy(p => p.PartSequence)
@@ -1136,10 +1158,163 @@ namespace ClairTourTiny.Core.Services
                     
                     
 
+                // Handle null values for keyless entity after the query
+                foreach (var result in results)
+                {
+                    if (result.PartsListWeight == 0 && result.PartsListValue == 0)
+                    {
+                        result.PartsListWeight = 0.0;
+                        result.PartsListCubic = null;
+                        result.PartsListValue = 0.0;
+                    }
+                }
+
                 return results;
             }
             catch (Exception ex)
             {
+                throw new ApplicationException("An error occurred while searching parts. Please try again later.", ex);
+            }
+        }
+
+        public async Task<List<PartSearchResultDto>> SearchPartsWithoutCategoryFilterAsync(PartSearchRequestDto request)
+        {
+            try
+            {
+                if (request == null)
+                {
+                    throw new ArgumentNullException(nameof(request));
+                }
+
+                var query = _context.Inparts
+                    .Include(p => p.CommmodityNavigation)
+                   // .Include(p => p.PartSecondaryCategories)
+                    .Include(p => p.AvailMultipartGroup1s)
+                    .Include(p => p.Inpartsubs)
+                    .AsQueryable();
+
+                Console.WriteLine("query1111111111111: " + query.ToString());
+                // Apply search text filter
+                if (!string.IsNullOrWhiteSpace(request.SearchText))
+                {
+                    var searchTerms = request.SearchText.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(term => term.ToLower())
+                        .Distinct()
+                        .ToArray();
+
+                    if (request.SearchForBarcode)
+                    {
+                        // Search by barcode (SKU)
+                        query = query.Where(p => searchTerms.Any(term => 
+                            p.Sku != null && p.Sku.ToLower().Contains(term)));
+                    }
+                    else
+                    {
+                        // Search by part description, part number, or tags
+                        query = query.Where(p => searchTerms.All(term =>
+                            (p.Partdesc != null && p.Partdesc.ToLower().Contains(term)) ||
+                            (p.Partno != null && p.Partno.ToLower().Contains(term))));
+                    }
+                }
+
+                // Apply warehouse filter
+                // if (request.OnlyMyWarehouses)
+                // {
+                // //    // var userName = _httpContextAccessor.HttpContext?.User?.Identity?.Name;
+                // //     if (string.IsNullOrEmpty(userName))
+                // //     {
+                // //         _logger.LogWarning("User identity not found when filtering by warehouses");
+                // //         return new List<PartSearchResultDto>();
+                // //     }
+
+                //     var userWarehouses = await _context.Pjtfrusrs
+                //        // .Where(u => u.UserName == userName)
+                //         .Select(u => u.WarehouseEntity)
+                //         .ToListAsync();
+
+                //     if (!userWarehouses.Any())
+                //     {
+                //         return new List<PartSearchResultDto>();
+                //     }
+
+                //     query = query.Where(p => p.Inpartsubs.Any(ips => 
+                //         userWarehouses.Contains(ips.Bld)));
+                // }
+
+                // Apply unused parts filter
+                if (request.HideUnusedParts)
+                {
+                    query = query.Where(p => p.Commmodity != "UNUSED");
+                }
+
+                // Apply my parts only filter
+                if (request.MyPartsOnly)
+                {
+                    query = query.Where(p => p.AvailMultipartGroup1s.Any());
+                }
+
+                // Get user warehouses for result set flags
+                // var userWarehousesForFlags = request.OnlyMyWarehouses ? 
+                //     await _context.Pjtfrusrs.Select(u => u.WarehouseEntity).ToListAsync() : 
+                //     new List<string>();
+
+                // Execute query and map results
+                var results = await query
+                    .GroupJoin(
+                        _context.PartsListWeightsValues,
+                        p => p.Partno,
+                        w => w.Partno,
+                        (p, weights) => new { Part = p, Weights = weights }
+                    )
+                    .SelectMany(
+                        x => x.Weights.DefaultIfEmpty(),
+                        (x, weight) => new { x.Part, Weight = weight }
+                    )
+                    .Select(x => new PartSearchResultDto
+                    {
+                        PartNumber = x.Part.Partno ?? string.Empty,
+                        PartDescription = x.Part.Partdesc ?? string.Empty,
+                        Commodity = x.Part.Commmodity ?? string.Empty,
+                        PartGroup = x.Part.AvailMultipartGroup1s
+                            .OrderBy(g => g.Partgroup)
+                            .Select(g => g.Partgroup)
+                            .FirstOrDefault() ?? "!Barcode",
+                        PartSequence = x.Part.AvailMultipartGroup1s
+                            .OrderBy(g => g.Partseq)
+                            .Select(g => (int?)g.Partseq)
+                            .FirstOrDefault() ?? 0,
+                        PartsListWeight = string.IsNullOrEmpty(x.Weight.Partno) ? 0.0 : x.Weight.Partslistweight,
+                        PartsListCubic = string.IsNullOrEmpty(x.Weight.Partno) ? (double?)null : x.Weight.Partslistcubic,
+                        PartsListValue = string.IsNullOrEmpty(x.Weight.Partno) ? 0.0 : x.Weight.Partslistvalue,
+                        Sku = x.Part.Sku ?? string.Empty,
+                        IsUnusedPart = x.Part.Commmodity == "UNUSED",
+                        IsInMyWarehouse = true,
+                        //userWarehousesForFlags.Any() && x.Part.Inpartsubs.Any(ips => userWarehousesForFlags.Contains(ips.Bld)),
+                        IsMyPart = x.Part.AvailMultipartGroup1s.Any()
+                    })
+                    .OrderBy(p => p.PartGroup)
+                    .ThenBy(p => p.PartSequence)
+                    .ThenBy(p => p.PartDescription)
+                    .ToListAsync();
+                    
+                    
+
+                // Handle null values for keyless entity after the query
+                foreach (var result in results)
+                {
+                    if (result.PartsListWeight == 0 && result.PartsListValue == 0)
+                    {
+                        result.PartsListWeight = 0.0;
+                        result.PartsListCubic = null;
+                        result.PartsListValue = 0.0;
+                    }
+                }
+
+                return results;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("exxxxxxxxxxxxxxxxxxxxxxxxxxx: " + ex.ToString());
                 throw new ApplicationException("An error occurred while searching parts. Please try again later.", ex);
             }
         }
@@ -1264,6 +1439,179 @@ namespace ClairTourTiny.Core.Services
             }
         }
    
-   
+   public async Task<List<PartSearchResultDto>> GetAllPartsAsync(PartSearchRequestDto request)
+    {
+        try
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var query = _context.Inparts
+                .Include(p => p.CommmodityNavigation)
+               // .Include(p => p.PartSecondaryCategories)
+                .Include(p => p.AvailMultipartGroup1s)
+                .Include(p => p.Inpartsubs)
+                .AsQueryable();
+
+            // Get user warehouses for result set flags
+            var userWarehousesForFlags = request.OnlyMyWarehouses ? 
+                await _context.Pjtfrusrs.Select(u => u.WarehouseEntity).ToListAsync() : 
+                new List<string>();
+
+            // Execute query and map results (no filtering applied)
+            var results = await query
+                .GroupJoin(
+                    _context.PartsListWeightsValues,
+                    p => p.Partno,
+                    w => w.Partno,
+                    (p, weights) => new { Part = p, Weights = weights }
+                )
+                .SelectMany(
+                    x => x.Weights.DefaultIfEmpty(),
+                    (x, weight) => new { x.Part, Weight = weight }
+                )
+                .Select(x => new PartSearchResultDto
+                {
+                    PartNumber = x.Part.Partno ?? string.Empty,
+                    PartDescription = x.Part.Partdesc ?? string.Empty,
+                    Commodity = x.Part.Commmodity ?? string.Empty,
+                    PartGroup = x.Part.AvailMultipartGroup1s
+                        .OrderBy(g => g.Partgroup)
+                        .Select(g => g.Partgroup)
+                        .FirstOrDefault() ?? "!Barcode",
+                    PartSequence = x.Part.AvailMultipartGroup1s
+                        .OrderBy(g => g.Partseq)
+                        .Select(g => (int?)g.Partseq)
+                        .FirstOrDefault() ?? 0,
+                    PartsListWeight = string.IsNullOrEmpty(x.Weight.Partno) ? 0.0 : x.Weight.Partslistweight,
+                    PartsListCubic = string.IsNullOrEmpty(x.Weight.Partno) ? (double?)null : x.Weight.Partslistcubic,
+                    PartsListValue = string.IsNullOrEmpty(x.Weight.Partno) ? 0.0 : x.Weight.Partslistvalue,
+                    Sku = x.Part.Sku ?? string.Empty,
+                    IsUnusedPart = x.Part.Commmodity == "UNUSED",
+                    IsInMyWarehouse = userWarehousesForFlags.Any() && x.Part.Inpartsubs.Any(ips => userWarehousesForFlags.Contains(ips.Bld)),
+                    IsMyPart = x.Part.AvailMultipartGroup1s.Any()
+                })
+                .OrderBy(p => p.PartGroup)
+                .ThenBy(p => p.PartSequence)
+                .ThenBy(p => p.PartDescription)
+                .ToListAsync();
+                
+                
+
+            return results;
+        }
+        catch (Exception ex)
+        {
+            throw new ApplicationException("An error occurred while retrieving all parts. Please try again later.", ex);
+        }
     }
+
+    /// <summary>
+    /// Calculate bottleneck values for a list of part numbers
+    /// </summary>
+    /// <param name="request">Request containing part numbers and optional from date</param>
+    /// <returns>List of bottleneck calculations for each part number</returns>
+    public async Task<List<PartBottleneckDto>> CalculatePartBottlenecksAsync(PartBottleneckRequestDto request)
+    {
+        try
+        {
+            if (request == null || request.PartNumbers == null || !request.PartNumbers.Any())
+            {
+                return new List<PartBottleneckDto>();
+            }
+
+            // Get warehouse quantities for the parts
+            var warehouseQtys = await _context.WarehousePartQties
+                .Where(wpq => request.PartNumbers.Contains(wpq.Partno))
+                .GroupBy(wpq => wpq.Partno)
+                .Select(g => new
+                {
+                    Partno = g.Key,
+                    TotalQty = g.Sum(wpq => wpq.TotalQty)
+                })
+                .ToListAsync();
+
+            // Get maximum cumulative quantities from transactions (filtered by fromDate if provided)
+            var maxCumulativeQtys = await _context.MergedJobBudgetsPartsTransactionsTbls
+                .Where(t => request.PartNumbers.Contains(t.Partno) &&
+                           (!request.FromDate.HasValue || t.Fromdate >= request.FromDate.Value))
+                .GroupBy(t => t.Partno)
+                .Select(g => new
+                {
+                    Partno = g.Key,
+                    MaxCumulativeQty = g.Max(t => t.CumulativeQty)
+                })
+                .ToListAsync();
+
+            // Get day of demand for each part
+            var dayOfDemand = await _context.Pjjobbudexps
+                .Where(e => request.PartNumbers.Contains(e.Partno))
+                .GroupBy(e => e.Partno)
+                .Select(g => new
+                {
+                    Partno = g.Key,
+                    DayOfDemand = g.Max(e => _context.MergedJobBudgetsPartsTransactionsTbls
+                        .Where(t => t.Partno == e.Partno && t.Fromdate == e.Trandate)
+                        .Select(t => t.CumulativeQty)
+                        .FirstOrDefault())
+                })
+                .ToListAsync();
+
+            // Get week of demand for each part
+            var weekOfDemand = await _context.Pjjobbudexps
+                .Where(e => request.PartNumbers.Contains(e.Partno))
+                .GroupBy(e => e.Partno)
+                .Select(g => new
+                {
+                    Partno = g.Key,
+                    WeekOfDemand = g.Max(e => _context.MergedJobBudgetsPartsTransactionsTbls
+                        .Where(t => t.Partno == e.Partno && 
+                                  t.Fromdate >= e.Trandate && 
+                                  t.Fromdate <= e.Trandate.AddDays(6))
+                        .Select(t => t.CumulativeQty)
+                        .FirstOrDefault())
+                })
+                .ToListAsync();
+
+            // Calculate bottlenecks for each part
+            var results = new List<PartBottleneckDto>();
+
+            foreach (var partNo in request.PartNumbers)
+            {
+                var warehouseQty = warehouseQtys.FirstOrDefault(w => w.Partno == partNo)?.TotalQty ?? 0;
+                var maxCumulativeQty = maxCumulativeQtys.FirstOrDefault(m => m.Partno == partNo)?.MaxCumulativeQty ?? 0;
+                var dayDemand = dayOfDemand.FirstOrDefault(d => d.Partno == partNo)?.DayOfDemand ?? 0;
+                var weekDemand = weekOfDemand.FirstOrDefault(w => w.Partno == partNo)?.WeekOfDemand ?? 0;
+
+                var bottleneck = new PartBottleneckDto
+                {
+                    PartNumber = partNo,
+                    WarehouseQty = warehouseQty,
+                    MaxCumulativeQty = maxCumulativeQty,
+                    DayOfDemand = dayDemand,
+                    WeekOfDemand = weekDemand,
+                    Bottleneck = warehouseQty - maxCumulativeQty,
+                    Bottleneck1d = warehouseQty - dayDemand,
+                    Bottleneck1w = warehouseQty - weekDemand
+                };
+
+                results.Add(bottleneck);
+            }
+
+            return results;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calculating part bottlenecks for parts: {PartNumbers}", 
+                string.Join(", ", request?.PartNumbers ?? new List<string>()));
+            throw new ApplicationException("An error occurred while calculating part bottlenecks. Please try again later.", ex);
+        }
+    }
+
+}
+
+    
+
 } 

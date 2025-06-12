@@ -1389,9 +1389,31 @@ namespace ClairTourTiny.API.Controllers
         /// * Filtering out unused parts
         /// * Filtering by user's warehouses
         /// * Filtering for parts in multipart groups
+        /// 
+        /// Sample response:
+        /// 
+        ///     [
+        ///         {
+        ///             "partNumber": "PART001",
+        ///             "partDescription": "Electrical Cable",
+        ///             "commodity": "ELECTRICAL",
+        ///             "partGroup": "CABLE",
+        ///             "partSequence": 1,
+        ///             "partsListWeight": 2.5,
+        ///             "partsListCubic": 15.2,
+        ///             "partsListValue": 150.00,
+        ///             "sku": "SKU001",
+        ///             "isUnusedPart": false,
+        ///             "isInMyWarehouse": true,
+        ///             "isMyPart": true
+        ///         }
+        ///     ]
+        /// 
+        /// The response includes weight, cubic volume, and value information from the parts_list_weights_values table,
+        /// along with SKU and filtering flags for each part.
         /// </remarks>
         /// <param name="request">Search parameters including text, category, and filters</param>
-        /// <returns>List of matching parts with their details</returns>
+        /// <returns>List of matching parts with their details including weight, cubic, value, SKU, and filtering flags</returns>
         /// <response code="200">Returns the list of parts matching the search criteria</response>
         /// <response code="400">If the request is invalid or malformed</response>
         /// <response code="500">If there was an internal server error</response>
@@ -1417,6 +1439,185 @@ namespace ClairTourTiny.API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Search for parts based on various criteria without category and subcategory filtering
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        /// 
+        ///     POST /api/ProjectDataPoints/parts/search-no-category-filter
+        ///     {
+        ///         "searchText": "part description",
+        ///         "hideUnusedParts": true,
+        ///         "onlyMyWarehouses": false,
+        ///         "myPartsOnly": false,
+        ///         "searchForBarcode": false
+        ///     }
+        /// 
+        /// The search supports the following features:
+        /// * Text search in part description and part number
+        /// * Barcode (SKU) search
+        /// * Filtering out unused parts
+        /// * Filtering by user's warehouses
+        /// * Filtering for parts in multipart groups
+        /// 
+        /// Note: This endpoint does not apply category or subcategory filtering.
+        /// 
+        /// Sample response:
+        /// 
+        ///     [
+        ///         {
+        ///             "partNumber": "PART001",
+        ///             "partDescription": "Electrical Cable",
+        ///             "commodity": "ELECTRICAL",
+        ///             "partGroup": "CABLE",
+        ///             "partSequence": 1,
+        ///             "partsListWeight": 2.5,
+        ///             "partsListCubic": 15.2,
+        ///             "partsListValue": 150.00,
+        ///             "sku": "SKU001",
+        ///             "isUnusedPart": false,
+        ///             "isInMyWarehouse": true,
+        ///             "isMyPart": true
+        ///         },
+        ///         {
+        ///             "partNumber": "PART002",
+        ///             "partDescription": "Mechanical Bracket",
+        ///             "commodity": "MECHANICAL",
+        ///             "partGroup": "BRACKET",
+        ///             "partSequence": 2,
+        ///             "partsListWeight": 1.8,
+        ///             "partsListCubic": 8.5,
+        ///             "partsListValue": 75.00,
+        ///             "sku": "SKU002",
+        ///             "isUnusedPart": false,
+        ///             "isInMyWarehouse": false,
+        ///             "isMyPart": false
+        ///         }
+        ///     ]
+        /// 
+        /// The response includes weight, cubic volume, and value information from the parts_list_weights_values table,
+        /// along with SKU and filtering flags for each part.
+        /// </remarks>
+        /// <param name="request">Search parameters including text and filters (excluding category/subcategory)</param>
+        /// <returns>List of matching parts with their details including weight, cubic, value, SKU, and filtering flags</returns>
+        /// <response code="200">Returns the list of parts matching the search criteria</response>
+        /// <response code="400">If the request is invalid or malformed</response>
+        /// <response code="500">If there was an internal server error</response>
+        // [HttpPost("parts/search-no-category-filter")]
+        // [ProducesResponseType(typeof(List<PartSearchResultDto>), StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        // [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        // [Produces("application/json")]
+        // public async Task<ActionResult<List<PartSearchResultDto>>> SearchPartsWithoutCategoryFilter([FromBody] PartSearchRequestDto request)
+        // {
+        //     if (request == null)
+        //     {
+        //         return BadRequest("Search request cannot be null");
+        //     }
+
+        //     try
+        //     {
+        //         var results = await _projectDataService.SearchPartsWithoutCategoryFilterAsync(request);
+        //         return Ok(results);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return StatusCode(500, $"Internal server error: {ex.Message}");
+        //     }
+        // }
+
+        /// <summary>
+        /// Get all parts without any filtering but with filtering parameters available in result set
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        /// 
+        ///     POST /api/ProjectDataPoints/parts/all
+        ///     {
+        ///         "searchText": "",
+        ///         "category": "",
+        ///         "subCategory": "",
+        ///         "hideUnusedParts": false,
+        ///         "onlyMyWarehouses": false,
+        ///         "myPartsOnly": false,
+        ///         "searchForBarcode": false
+        ///     }
+        /// 
+        /// This endpoint returns all parts in the system without applying any filters.
+        /// The request parameters are accepted but not used for filtering - they are available
+        /// for reference and potential future use.
+        /// 
+        /// Features:
+        /// * Returns all parts regardless of search criteria
+        /// * Includes weight, cubic volume, and value information from parts_list_weights_values
+        /// * Maintains consistent ordering by part group, sequence, and description
+        /// * No filtering applied (searchText, category, subcategory, warehouse, etc. are ignored)
+        /// 
+        /// Sample response:
+        /// 
+        ///     [
+        ///         {
+        ///             "partNumber": "PART001",
+        ///             "partDescription": "Electrical Cable",
+        ///             "commodity": "ELECTRICAL",
+        ///             "partGroup": "CABLE",
+        ///             "partSequence": 1,
+        ///             "partsListWeight": 2.5,
+        ///             "partsListCubic": 15.2,
+        ///             "partsListValue": 150.00,
+        ///             "sku": "SKU001",
+        ///             "isUnusedPart": false,
+        ///             "isInMyWarehouse": true,
+        ///             "isMyPart": true
+        ///         },
+        ///         {
+        ///             "partNumber": "PART002",
+        ///             "partDescription": "Mechanical Bracket",
+        ///             "commodity": "MECHANICAL",
+        ///             "partGroup": "BRACKET",
+        ///             "partSequence": 2,
+        ///             "partsListWeight": 1.8,
+        ///             "partsListCubic": 8.5,
+        ///             "partsListValue": 75.00,
+        ///             "sku": "SKU002",
+        ///             "isUnusedPart": false,
+        ///             "isInMyWarehouse": false,
+        ///             "isMyPart": false
+        ///         }
+        ///     ]
+        /// 
+        /// Note: This endpoint may return a large number of results. Consider using pagination
+        /// or other search endpoints for specific filtering needs.
+        /// </remarks>
+        /// <param name="request">Request parameters (filtering parameters are available but not applied)</param>
+        /// <returns>List of all parts with their details including weight, cubic, value, SKU, and filtering flags</returns>
+        /// <response code="200">Returns the complete list of all parts</response>
+        /// <response code="400">If the request is invalid or malformed</response>
+        /// <response code="500">If there was an internal server error</response>
+        // [HttpPost("parts/all")]
+        // [ProducesResponseType(typeof(List<PartSearchResultDto>), StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        // [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        // [Produces("application/json")]
+        // public async Task<ActionResult<List<PartSearchResultDto>>> GetAllParts([FromBody] PartSearchRequestDto request)
+        // {
+        //     if (request == null)
+        //     {
+        //         return BadRequest("Request cannot be null");
+        //     }
+
+        //     try
+        //     {
+        //         var results = await _projectDataService.GetAllPartsAsync(request);
+        //         return Ok(results);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return StatusCode(500, $"Internal server error: {ex.Message}");
+        //     }
+        // }
 
         /// <summary>
         /// Get all available part categories
@@ -1563,16 +1764,97 @@ namespace ClairTourTiny.API.Controllers
             try
             {
                 var settings = await _projectDataService.GetDefaultProjectSettingsAsync(username);
+                if (settings == null)
+                {
+                    return NotFound("No default project settings found");
+                }
                 return Ok(settings);
-            }
-            catch (ApplicationException ex)
-            {
-                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-     }
+
+        /// <summary>
+        /// Calculate bottleneck values for a list of part numbers
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        /// 
+        ///     POST /api/ProjectDataPoints/parts/calculate-bottlenecks
+        ///     {
+        ///         "partNumbers": ["PART001", "PART002", "PART003"],
+        ///         "fromDate": "2024-01-01T00:00:00"
+        ///     }
+        /// 
+        /// Calculates bottleneck values for the specified parts including:
+        /// * Original bottleneck (warehouse qty - cumulative qty)
+        /// * Day of demand bottleneck (warehouse qty - day of demand)
+        /// * Week of demand bottleneck (warehouse qty - week of demand)
+        /// * Warehouse quantities and demand values
+        /// 
+        /// The calculation excludes entityno filtration and related table joins as requested.
+        /// 
+        /// Sample response:
+        /// 
+        ///     [
+        ///         {
+        ///             "partNumber": "PART001",
+        ///             "bottleneck": 5.0,
+        ///             "bottleneck1d": 3.0,
+        ///             "bottleneck1w": 8.0,
+        ///             "warehouseQty": 15.0,
+        ///             "maxCumulativeQty": 10.0,
+        ///             "dayOfDemand": 12.0,
+        ///             "weekOfDemand": 7.0
+        ///         },
+        ///         {
+        ///             "partNumber": "PART002",
+        ///             "bottleneck": 2.0,
+        ///             "bottleneck1d": 1.5,
+        ///             "bottleneck1w": 4.0,
+        ///             "warehouseQty": 8.0,
+        ///             "maxCumulativeQty": 6.0,
+        ///             "dayOfDemand": 6.5,
+        ///             "weekOfDemand": 4.0
+        ///         }
+        ///     ]
+        /// 
+        /// Note: This endpoint provides a focused bottleneck calculation service helper
+        /// that can be used by other parts of the application.
+        /// </remarks>
+        /// <param name="request">Request containing part numbers and optional from date</param>
+        /// <returns>List of bottleneck calculations for each part number</returns>
+        /// <response code="200">Returns the bottleneck calculations</response>
+        /// <response code="400">If the request is invalid or malformed</response>
+        /// <response code="500">If there was an internal server error</response>
+        [HttpPost("parts/calculate-bottlenecks")]
+        [ProducesResponseType(typeof(List<PartBottleneckDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Produces("application/json")]
+        public async Task<ActionResult<List<PartBottleneckDto>>> CalculatePartBottlenecks([FromBody] PartBottleneckRequestDto request)
+        {
+            if (request == null)
+            {
+                return BadRequest("Request cannot be null");
+            }
+
+            if (request.PartNumbers == null || !request.PartNumbers.Any())
+            {
+                return BadRequest("Part numbers list cannot be null or empty");
+            }
+
+            try
+            {
+                var results = await _projectDataService.CalculatePartBottlenecksAsync(request);
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+    }
 } 
