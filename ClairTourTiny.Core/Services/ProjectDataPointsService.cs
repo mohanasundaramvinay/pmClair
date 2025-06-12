@@ -421,7 +421,7 @@ namespace ClairTourTiny.Core.Services
             using (var connection = new SqlConnection(_connectionString))
             {
                 var sql = @"
-                    SELECT jobtype, jobdesc, hours, isActive, InMyDivision 
+                    SELECT jobtype as JobTypeCode, jobdesc, hours, isActive, InMyDivision 
                     FROM JobTypes_In_My_Division 
                     ORDER BY InMyDivision";
                 return await connection.QueryAsync<JobType>(sql);
