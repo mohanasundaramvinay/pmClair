@@ -42,6 +42,53 @@ namespace ClairTourTiny.API.Controllers
         }
 
         /// <summary>
+        /// Refreshes purchase orders for a specific project (equivalent to VB.NET RefreshPurchaseOrders method)
+        /// </summary>
+        /// <param name="entityNo">The entity number of the project</param>
+        /// <returns>List of purchase orders with refresh metadata</returns>
+        /// <remarks>
+        /// This endpoint is equivalent to the VB.NET RefreshPurchaseOrders method.
+        /// It calls the Get_Purchase_Orders_By_Project stored procedure and returns
+        /// the results with additional metadata about the refresh operation.
+        /// 
+        /// Example usage:
+        /// GET /api/PurchaseOrder/refresh/12345
+        /// 
+        /// Response includes:
+        /// - Success status
+        /// - Message with count of purchase orders
+        /// - Data array of purchase orders
+        /// - Refresh timestamp
+        /// </remarks>
+        [HttpGet("refresh/{entityNo}")]
+        [ProducesResponseType(typeof(PurchaseOrderDto[]), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> RefreshPurchaseOrders(string entityNo)
+        {
+            try
+            {
+                var purchaseOrders = await _purchaseOrderService.RefreshPurchaseOrdersAsync(entityNo);
+                return Ok(new 
+                { 
+                    Success = true,
+                    Message = $"Successfully refreshed {purchaseOrders.Count()} purchase orders for project {entityNo}",
+                    Data = purchaseOrders,
+                    RefreshTime = DateTime.UtcNow
+                });
+            }
+            catch (PurchaseOrderServiceException ex)
+            {
+                return StatusCode(500, new 
+                { 
+                    Success = false,
+                    Message = ex.Message,
+                    RefreshTime = DateTime.UtcNow
+                });
+            }
+        }
+
+        /// <summary>
         /// Gets a specific purchase order by its number
         /// </summary>
         /// <param name="poNumber">The purchase order number</param>

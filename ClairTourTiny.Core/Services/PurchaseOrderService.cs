@@ -56,6 +56,24 @@ namespace ClairTourTiny.Core.Services
             }
         }
 
+        public async Task<IEnumerable<PurchaseOrderDto>> RefreshPurchaseOrdersAsync(string entityNo)
+        {
+            Console.WriteLine($"Refreshing purchase orders for project: {entityNo}");
+            try
+            {
+                // This method is equivalent to the VB.NET RefreshPurchaseOrders method
+                // It uses the same stored procedure and logic
+                var purchaseOrders = await GetPurchaseOrdersByProjectAsync(entityNo);
+                Console.WriteLine($"Successfully refreshed {purchaseOrders.Count()} purchase orders for project {entityNo}");
+                return purchaseOrders;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in RefreshPurchaseOrdersAsync: {ex.Message}");
+                throw new PurchaseOrderServiceException($"Error refreshing purchase orders for project {entityNo}", ex);
+            }
+        }
+
         // public async Task<PurchaseOrderDto> GetPurchaseOrderAsync(int poNumber)
         // {
         //     Console.WriteLine($"Getting purchase order details for PO Number: {poNumber}");

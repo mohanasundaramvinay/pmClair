@@ -12,6 +12,11 @@ namespace ClairTourTiny.Core.Interfaces
         Task<IEnumerable<PurchaseOrderDto>> GetPurchaseOrdersByProjectAsync(string entityNo);
 
         /// <summary>
+        /// Refreshes purchase orders for a specific project (equivalent to VB.NET RefreshPurchaseOrders method)
+        /// </summary>
+        Task<IEnumerable<PurchaseOrderDto>> RefreshPurchaseOrdersAsync(string entityNo);
+
+        /// <summary>
         /// Gets a specific purchase order by its number
         /// </summary>
        // Task<PurchaseOrderDto> GetPurchaseOrderAsync(int poNumber);
