@@ -442,7 +442,7 @@ namespace ClairTourTiny.Core.Services
             using (var connection = new SqlConnection(_connectionString))
             {
                 var sql = @"
-                    SELECT empno, firstname, lastname, empname, GroupStatus, DisplayOrder, InMyDivision 
+                    SELECT empno as employeeNo, firstname, lastname, empname, GroupStatus, DisplayOrder, InMyDivision 
                     FROM Employees_In_My_Division 
                     ORDER BY DisplayOrder, InMyDivision DESC";
                 return await connection.QueryAsync<EmployeeDto>(sql);
