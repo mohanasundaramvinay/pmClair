@@ -5,11 +5,16 @@ namespace ClairTourTiny.Infrastructure.Dto.DTOs;
 /// <summary>
 /// Data transfer object for employee information
 /// </summary>
+/// 
+ 
 public class EmployeeDto
 {
     /// <summary>
     /// The unique identifier of the employee
     /// </summary>
+     public string GroupStatus { get; set; } = null!;
+     public int DisplayOrder { get; set; }
+     public string InMyDivision { get; set; } = null!;
     public int Id { get; set; }
 
     /// <summary>
@@ -20,7 +25,7 @@ public class EmployeeDto
     /// <summary>
     /// The employee number
     /// </summary>
-    public string EmployeeNo { get; set; } = null!;
+    public string employeeNo { get; set; } = null!;
 
     /// <summary>
     /// The first name of the employee
