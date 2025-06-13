@@ -53,7 +53,7 @@ namespace ClairTourTiny.Infrastructure.Dto.ProjectMaintenance
         public string? CRMLeadURL { get; set; }
         public Guid? GUID { get; set; }
 
-        public decimal? PriceLevelValue { get; set; }
+        public double? PriceLevelValue { get; set; }
         public int? TaxTypeKey { get; set; }
 
         [Column("oe_orderno")]

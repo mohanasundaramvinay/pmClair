@@ -74,7 +74,7 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance
         public string? CustNo { get; set; }
         public string? Currency { get; set; }
         public DateTime? ExchangeRateDate { get; set; }
-        public decimal? PriceLevelValue { get; set; }
+        public double? PriceLevelValue { get; set; }
 
         [JsonPropertyName("MatrixCode")]
         public string? MatrixCd { get; set; }
