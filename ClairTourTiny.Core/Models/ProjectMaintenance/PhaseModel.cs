@@ -105,5 +105,9 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance
         public double TotalCubicInches { get; set; } = 0;
         [JsonPropertyName("TotalEquipmentCost")]
         public double TotalEquipmentCost { get; set; } = 0;
+        
+        [JsonPropertyName("IsRackConfigured")]
+        public bool? IsRackConfigured { get; set; }
+
     }
 }

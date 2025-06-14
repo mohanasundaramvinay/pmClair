@@ -72,6 +72,9 @@ namespace ClairTourTiny.Infrastructure.Dto.ProjectMaintenance
         public double TotalCubicInches { get; set; } = 0;
         public double TotalWeight { get; set; } = 0;
         public double TotalEquipmentCost { get; set; } = 0;
+
+        public bool? IsRackConfigured { get; set; }
+
     }
 
 }
