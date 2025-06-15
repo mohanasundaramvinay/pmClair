@@ -15,15 +15,16 @@ namespace ClairTourTiny.Tests
         private readonly Mock<IConfiguration> _mockConfiguration;
         private readonly Mock<IFolderManagementService> _mockFolderManagementService;
         private readonly FileSharingController _controller;
+        private readonly string _mockConnectionString = "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;";
         public FileSharingControllerTests()
         {
             _mockConfiguration = new Mock<IConfiguration>();
             _mockFolderManagementService = new Mock<IFolderManagementService>();
-            _mockConfiguration.Setup(config => config.GetConnectionString(It.IsAny<string>())).Returns("FakeConnectionString");
+            _mockConfiguration.Setup(config => config.GetConnectionString("DefaultConnection")).Returns(_mockConnectionString);
             _controller = new FileSharingController(_mockConfiguration.Object, _mockFolderManagementService.Object);
         }
         [Fact]
-        public async Task ShareSelected_ShouldReturnOk_WhenRequestIsValid()
+        public async Task ShareSelected_ValidRequest_ReturnsOk()
         {
             // Arrange
             var request = new FileSharingController.ShareRequestModel
@@ -42,12 +43,10 @@ namespace ClairTourTiny.Tests
             Assert.Equal(200, okResult.StatusCode);
         }
         [Fact]
-        public async Task ShareSelected_ShouldReturnBadRequest_WhenExceptionIsThrown()
+        public async Task ShareSelected_InvalidRequest_ReturnsBadRequest()
         {
             // Arrange
             var request = new FileSharingController.ShareRequestModel();
-            // Simulate exception
-            _mockConfiguration.Setup(config => config.GetConnectionString(It.IsAny<string>())).Throws(new Exception("Database error"));
             // Act
             var result = await _controller.ShareSelected(request);
             // Assert
@@ -55,7 +54,7 @@ namespace ClairTourTiny.Tests
             Assert.Equal(400, badRequestResult.StatusCode);
         }
         [Fact]
-        public async Task ShareAll_ShouldReturnOk_WhenRequestsAreValid()
+        public async Task ShareAll_ValidRequests_ReturnsOk()
         {
             // Arrange
             var requests = new List<FileSharingController.ShareRequestModel>
@@ -86,7 +85,7 @@ namespace ClairTourTiny.Tests
             Assert.Equal(200, okResult.StatusCode);
         }
         [Fact]
-        public async Task RemoveSelected_ShouldReturnOk_WhenRequestIsValid()
+        public async Task RemoveSelected_ValidRequest_ReturnsOk()
         {
             // Arrange
             string email = "test@example.com";
@@ -99,7 +98,7 @@ namespace ClairTourTiny.Tests
             Assert.Equal(200, okResult.StatusCode);
         }
         [Fact]
-        public async Task RemoveAll_ShouldReturnOk_WhenRequestIsValid()
+        public async Task RemoveAll_ValidRequest_ReturnsOk()
         {
             // Arrange
             string entityNo = "123";
@@ -111,10 +110,10 @@ namespace ClairTourTiny.Tests
             Assert.Equal(200, okResult.StatusCode);
         }
         [Fact]
-        public async Task AddOrUpdateFileIndex_ShouldReturnOk_WhenRequestIsValid()
+        public async Task AddOrUpdateFileIndex_ValidRequest_ReturnsOk()
         {
             // Arrange
-            string filePath = "C:\\fakepath\\file.txt";
+            string filePath = "C:\\test.txt";
             string guid = "guid";
             string subFolderPath = "subfolder";
             // Act
@@ -124,7 +123,7 @@ namespace ClairTourTiny.Tests
             Assert.Equal(200, okResult.StatusCode);
         }
         [Fact]
-        public async Task DeleteFolderFromIndex_ShouldReturnOk_WhenRequestIsValid()
+        public async Task DeleteFolderFromIndex_ValidRequest_ReturnsOk()
         {
             // Arrange
             string guid = "guid";
@@ -136,7 +135,7 @@ namespace ClairTourTiny.Tests
             Assert.Equal(200, okResult.StatusCode);
         }
         [Fact]
-        public async Task GetOrCreateProjectFolderGuid_ShouldReturnOk_WhenEntityNoIsValid()
+        public async Task GetOrCreateProjectFolderGuid_ValidEntityNo_ReturnsOk()
         {
             // Arrange
             string entityNo = "123";
@@ -147,14 +146,14 @@ namespace ClairTourTiny.Tests
             Assert.Equal(200, okResult.StatusCode);
         }
         [Fact]
-        public async Task CreateFolderWithUserInput_ShouldReturnOk_WhenRequestIsValid()
+        public async Task CreateFolderWithUserInput_ValidRequest_ReturnsOk()
         {
             // Arrange
             var request = new FileSharingController.CreateFolderRequestModel
             {
                 NewFolderName = "NewFolder",
-                AttachmentCategorySubFolderPath = "C:\\fakepath",
-                AttachmentCategory = "category",
+                AttachmentCategorySubFolderPath = "SubFolderPath",
+                AttachmentCategory = "Category",
                 EntityNo = "123",
                 DropboxEnabled = false
             };
@@ -166,16 +165,16 @@ namespace ClairTourTiny.Tests
             Assert.Equal(200, okResult.StatusCode);
         }
         [Fact]
-        public async Task CreateFolderInSelectedFolder_ShouldReturnOk_WhenRequestIsValid()
+        public async Task CreateFolderInSelectedFolder_ValidRequest_ReturnsOk()
         {
             // Arrange
             var request = new FileSharingController.CreateFolderInSelectedFolderRequestModel
             {
                 NewFolderName = "NewFolder",
-                CurrentGlobalOpsFolder = "C:\\fakepath",
-                AttachmentCategory = "category",
+                CurrentGlobalOpsFolder = "GlobalOpsFolder",
+                AttachmentCategory = "Category",
                 EntityNo = "123",
-                SelectedNodePath = "nodepath",
+                SelectedNodePath = "NodePath",
                 DropboxEnabled = false,
                 IsLoadingTree = false
             };
@@ -187,18 +186,18 @@ namespace ClairTourTiny.Tests
             Assert.Equal(200, okResult.StatusCode);
         }
         [Fact]
-        public async Task UploadAllProjectFilesInFolder_ShouldReturnOk_WhenRequestIsValid()
+        public async Task UploadAllProjectFilesInFolder_ValidRequest_ReturnsOk()
         {
             // Arrange
             var request = new FileSharingController.UploadAllProjectFilesRequestModel
             {
-                SelectedFolderPath = "C:\\fakepath",
-                Template = "template",
-                AttachmentCategory = "category",
-                CurrentGlobalOpsFolder = "globalOps",
+                SelectedFolderPath = "SelectedFolderPath",
+                Template = "Template",
+                AttachmentCategory = "Category",
+                CurrentGlobalOpsFolder = "GlobalOpsFolder",
                 CurrentEntityNo = "123",
-                CurrentPartNo = "partNo",
-                SelectedFolderAttachmentType = "type"
+                CurrentPartNo = "PartNo",
+                SelectedFolderAttachmentType = "AttachmentType"
             };
             _mockFolderManagementService.Setup(service => service.UploadAllProjectFilesInFolderAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
             // Act

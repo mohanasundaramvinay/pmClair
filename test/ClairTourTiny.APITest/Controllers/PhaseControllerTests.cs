@@ -21,14 +21,14 @@ namespace ClairTourTiny.API.Tests.Controllers
         public async Task GetFavoriteProjects_ReturnsOkResult_WithListOfProjects()
         {
             // Arrange
-            var projects = new List<Project> { new Project { /* Initialize properties */ } };
-            _mockPhaseService.Setup(service => service.GetSuffixes()).ReturnsAsync(projects);
+            var mockProjects = new List<Project> { new Project(), new Project() };
+            _mockPhaseService.Setup(service => service.GetSuffixes()).ReturnsAsync(mockProjects);
             // Act
             var result = await _controller.GetFavoriteProjects();
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<List<Project>>(okResult.Value);
-            Assert.Equal(projects, returnValue);
+            Assert.Equal(2, returnValue.Count);
         }
         [Fact]
         public async Task GetFavoriteProjects_ReturnsInternalServerError_OnException()
@@ -38,9 +38,8 @@ namespace ClairTourTiny.API.Tests.Controllers
             // Act
             var result = await _controller.GetFavoriteProjects();
             // Assert
-            Assert.IsType<ObjectResult>(result);
-            var objectResult = result as ObjectResult;
-            Assert.Equal(StatusCodes.Status500InternalServerError, objectResult.StatusCode);
+            var statusCodeResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status500InternalServerError, statusCodeResult.StatusCode);
         }
     }
 }

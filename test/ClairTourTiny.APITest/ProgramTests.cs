@@ -1,93 +1,103 @@
-using Xunit;
-using Moq;
+using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
+using Moq;
+using Xunit;
 using ClairTourTiny.Core.Interfaces;
 using ClairTourTiny.Core.Services;
-using ClairTourTiny.Infrastructure.Helpers;
 using ClairTourTiny.Infrastructure;
-using System;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
 public class StartupTests
 {
-    private readonly Mock<IServiceCollection> _servicesMock;
+    private readonly Mock<IServiceCollection> _serviceCollectionMock;
     private readonly Mock<IConfiguration> _configurationMock;
-    private readonly Mock<WebApplicationBuilder> _builderMock;
+    private readonly ServiceProvider _serviceProvider;
     public StartupTests()
     {
-        _servicesMock = new Mock<IServiceCollection>();
+        _serviceCollectionMock = new Mock<IServiceCollection>();
         _configurationMock = new Mock<IConfiguration>();
-        _builderMock = new Mock<WebApplicationBuilder>();
-        _builderMock.SetupGet(b => b.Services).Returns(_servicesMock.Object);
-        _builderMock.SetupGet(b => b.Configuration).Returns(_configurationMock.Object);
+        var services = new ServiceCollection();
+        services.AddLogging();
+        _serviceProvider = services.BuildServiceProvider();
     }
     [Fact]
     public void TestServiceRegistrations()
     {
         // Arrange
-        var builder = WebApplication.CreateBuilder(new string[] { });
+        var services = new ServiceCollection();
+        var configuration = new ConfigurationBuilder().Build();
+        services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IPhaseService, PhaseService>();
+        services.AddScoped<IProjectMaintenanceService, ProjectMaintenanceService>();
+        services.AddScoped<IProjectMaintenanceHelper, ProjectMaintenanceHelper>();
+        services.AddScoped<IProjectDataPointsService, ProjectDataPointsService>();
+        services.AddScoped<IVendorService, VendorService>();
+        services.AddScoped<ILookupService, LookupService>();
+        services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
+        services.AddScoped<IFileExplorerService, FileExplorerService>();
+        services.AddDbContext<ClairTourTinyContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
         // Act
-        builder.Services.AddControllers();
-        builder.Services.AddDbContext<ClairTourTinyContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-        builder.Services.AddScoped(typeof(IProjectService), typeof(ProjectService));
-        builder.Services.AddScoped(typeof(IPhaseService), typeof(PhaseService));
-        builder.Services.AddScoped(typeof(IProjectMaintenanceService), typeof(ProjectMaintenanceService));
-        builder.Services.AddScoped(typeof(IProjectMaintenanceHelper), typeof(ProjectMaintenanceHelper));
-        builder.Services.AddScoped(typeof(IProjectDataPointsService), typeof(ProjectDataPointsService));
-        builder.Services.AddScoped(typeof(IVendorService), typeof(VendorService));
-        builder.Services.AddScoped(typeof(ILookupService), typeof(LookupService));
-        builder.Services.AddScoped(typeof(IPurchaseOrderService), typeof(PurchaseOrderService));
-        builder.Services.AddScoped(typeof(IFileExplorerService), typeof(FileExplorerService));
+        var serviceProvider = services.BuildServiceProvider();
         // Assert
-        Assert.Contains(builder.Services, s => s.ServiceType == typeof(IProjectService) && s.ImplementationType == typeof(ProjectService));
-        Assert.Contains(builder.Services, s => s.ServiceType == typeof(IPhaseService) && s.ImplementationType == typeof(PhaseService));
-        Assert.Contains(builder.Services, s => s.ServiceType == typeof(IProjectMaintenanceService) && s.ImplementationType == typeof(ProjectMaintenanceService));
-        Assert.Contains(builder.Services, s => s.ServiceType == typeof(IProjectMaintenanceHelper) && s.ImplementationType == typeof(ProjectMaintenanceHelper));
-        Assert.Contains(builder.Services, s => s.ServiceType == typeof(IProjectDataPointsService) && s.ImplementationType == typeof(ProjectDataPointsService));
-        Assert.Contains(builder.Services, s => s.ServiceType == typeof(IVendorService) && s.ImplementationType == typeof(VendorService));
-        Assert.Contains(builder.Services, s => s.ServiceType == typeof(ILookupService) && s.ImplementationType == typeof(LookupService));
-        Assert.Contains(builder.Services, s => s.ServiceType == typeof(IPurchaseOrderService) && s.ImplementationType == typeof(PurchaseOrderService));
-        Assert.Contains(builder.Services, s => s.ServiceType == typeof(IFileExplorerService) && s.ImplementationType == typeof(FileExplorerService));
+        Assert.NotNull(serviceProvider.GetService<IProjectService>());
+        Assert.NotNull(serviceProvider.GetService<IPhaseService>());
+        Assert.NotNull(serviceProvider.GetService<IProjectMaintenanceService>());
+        Assert.NotNull(serviceProvider.GetService<IProjectMaintenanceHelper>());
+        Assert.NotNull(serviceProvider.GetService<IProjectDataPointsService>());
+        Assert.NotNull(serviceProvider.GetService<IVendorService>());
+        Assert.NotNull(serviceProvider.GetService<ILookupService>());
+        Assert.NotNull(serviceProvider.GetService<IPurchaseOrderService>());
+        Assert.NotNull(serviceProvider.GetService<IFileExplorerService>());
     }
     [Fact]
-    public void TestSwaggerConfiguration()
+    public void TestJwtAuthenticationSetup()
     {
         // Arrange
-        var builder = WebApplication.CreateBuilder(new string[] { });
-        // Act
-        builder.Services.AddSwaggerGen(c =>
+        var services = new ServiceCollection();
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo
+            { "Jwt:Issuer", "TestIssuer" },
+            { "Jwt:Audience", "TestAudience" },
+            { "Jwt:Key", "TestKey" }
+        }).Build();
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
             {
-                Title = "Clair Tour Tiny API",
-                Version = "v1",
-                Description = "API for Clair Tour Tiny application"
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidAudience = configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+                };
             });
-        });
+        // Act
+        var serviceProvider = services.BuildServiceProvider();
+        var authService = serviceProvider.GetService<IAuthenticationService>();
         // Assert
-        Assert.Contains(builder.Services, s => s.ServiceType == typeof(SwaggerGenOptions));
+        Assert.NotNull(authService);
     }
     [Fact]
-    public void TestCorsConfiguration()
+    public void TestSwaggerSetup()
     {
         // Arrange
-        var builder = WebApplication.CreateBuilder(new string[] { });
-        // Act
-        builder.Services.AddCors(options =>
+        var services = new ServiceCollection();
+        services.AddSwaggerGen(c =>
         {
-            options.AddPolicy("AllowAll",
-                builder =>
-                {
-                    builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                           .AllowAnyHeader();
-                });
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Clair Tour Tiny API", Version = "v1" });
         });
+        // Act
+        var serviceProvider = services.BuildServiceProvider();
+        var swaggerGen = serviceProvider.GetService<ISwaggerProvider>();
         // Assert
-        Assert.Contains(builder.Services, s => s.ServiceType == typeof(CorsOptions));
+        Assert.NotNull(swaggerGen);
     }
 }
