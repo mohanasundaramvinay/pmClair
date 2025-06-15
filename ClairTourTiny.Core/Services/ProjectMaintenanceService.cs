@@ -58,7 +58,7 @@ namespace ClairTourTiny.Core.Services
         public async Task<List<ProjectEquipmentModel>> GetEquipments(string entityNo)
         {
             var param = new SqlParameter("@entityno", entityNo);
-            var equipmentDtos = await _dbContext.ExecuteStoredProcedureAsync<EquipmentDto>("pm2_get_equipment", param);
+            var equipmentDtos = await _dbContext.ExecuteStoredProcedureAsync<EquipmentDto>("pm2_get_equipment_new", param);
             return _mapper.Map<List<ProjectEquipmentModel>>(equipmentDtos);
         }
 
