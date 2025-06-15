@@ -1,4 +1,5 @@
-﻿using ClairTourTiny.Infrastructure.Dto.ProjectMaintenance;
+﻿using ClairTourTiny.Infrastructure.Dto.FileStorage;
+using ClairTourTiny.Infrastructure.Dto.ProjectMaintenance;
 using ClairTourTiny.Infrastructure.Dto.Projects;
 using ClairTourTiny.Infrastructure.Models;
 using Microsoft.Data.SqlClient;
@@ -3004,6 +3005,15 @@ public partial class ClairTourTinyContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ProjectFavouriteDto>().HasNoKey().ToView(null);
+        modelBuilder.Entity<UploadedFileDto>().HasNoKey().ToView(null);
+        modelBuilder.Entity<AttachmentCategoryDto>().HasNoKey().ToView(null);
+        modelBuilder.Entity<CloudFolderTemplateResultDto>().HasNoKey().ToView(null);
+        modelBuilder.Entity<CloudFolderTemplateDto>().HasNoKey().ToView(null);
+        modelBuilder.Entity<FolderTypeDto>().HasNoKey().ToView(null);
+        modelBuilder.Entity<AvailableUserDto>().HasNoKey().ToView(null);
+        modelBuilder.Entity<MappedUserDto>().HasNoKey().ToView(null);
+        modelBuilder.Entity<UserFolderDto>().HasNoKey().ToView(null);
+        modelBuilder.Entity<AttachmentTypeDto>().HasNoKey().ToView(null);
         modelBuilder.Entity<ProjectRecentDto>().HasNoKey().ToView(null);
         modelBuilder.Entity<ProjectSearchDto>().HasNoKey().ToView(null);
         modelBuilder.Entity<PhaseDto>().HasNoKey().ToView(null);

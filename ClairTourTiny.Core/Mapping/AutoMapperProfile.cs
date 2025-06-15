@@ -1,7 +1,9 @@
 using AutoMapper;
+using ClairTourTiny.Core.Models.FileStorage;
 using ClairTourTiny.Core.Models.ProjectMaintenance;
 using ClairTourTiny.Core.Models.ProjectMaintenance.Save;
 using ClairTourTiny.Core.Models.Projects;
+using ClairTourTiny.Infrastructure.Dto.FileStorage;
 using ClairTourTiny.Infrastructure.Dto.ProjectMaintenance;
 using ClairTourTiny.Infrastructure.Dto.Projects;
 using ClairTourTiny.Infrastructure.Models;
@@ -132,6 +134,16 @@ namespace ClairTourTiny.Core.Mapping
 
             CreateMap<BillingPeriodItemDto, ProjectBillingPeriodItemModel>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            CreateMap<AvailableUserDto, UserModel>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name ?? string.Empty))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.LevelId, opt => opt.MapFrom(src => src.LevelId));
+
+            CreateMap<MappedUserDto, UserModel>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name ?? string.Empty))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.LevelId, opt => opt.MapFrom(src => src.LevelId));
 
             CreateMap<ClientShippingAddressDto, ProjectClientShippingAddressModel>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
