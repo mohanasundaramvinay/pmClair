@@ -1,177 +1,325 @@
-using System;
-using Xunit;
+using NUnit.Framework;
 using ClairTourTiny.Core.Models.ProjectMaintenance;
+using System;
+
 namespace ClairTourTiny.Tests
 {
+    [TestFixture]
     public class ProjectEquipmentModelTests
     {
-        [Fact]
-        public void Entityno_Should_BeSetAndRetrievedCorrectly()
+        [Test]
+        public void TestEntitynoProperty()
         {
+            // Arrange
             var model = new ProjectEquipmentModel();
             var expected = "Entity123";
+
+            // Act
             model.Entityno = expected;
-            Assert.Equal(expected, model.Entityno);
+            var actual = model.Entityno;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
-        [Fact]
-        public void Category_Should_BeSetAndRetrievedCorrectly()
+
+        [Test]
+        public void TestCategoryProperty()
         {
+            // Arrange
             var model = new ProjectEquipmentModel();
             var expected = "CategoryA";
+
+            // Act
             model.Category = expected;
-            Assert.Equal(expected, model.Category);
+            var actual = model.Category;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
-        [Fact]
-        public void Seqno_Should_BeSetAndRetrievedCorrectly()
+
+        [Test]
+        public void TestSeqnoProperty()
         {
-            var model = new ProjectEquipmentModel();
-            var expected = 1;
-            model.Seqno = expected;
-            Assert.Equal(expected, model.Seqno);
-        }
-        [Fact]
-        public void Partno_Should_BeSetAndRetrievedCorrectly()
-        {
-            var model = new ProjectEquipmentModel();
-            var expected = "Part123";
-            model.Partno = expected;
-            Assert.Equal(expected, model.Partno);
-        }
-        [Fact]
-        public void PartDescription_Should_BeSetAndRetrievedCorrectly()
-        {
-            var model = new ProjectEquipmentModel();
-            var expected = "Description of Part";
-            model.PartDescription = expected;
-            Assert.Equal(expected, model.PartDescription);
-        }
-        [Fact]
-        public void Quantity_Should_BeSetAndRetrievedCorrectly()
-        {
+            // Arrange
             var model = new ProjectEquipmentModel();
             var expected = 10;
+
+            // Act
+            model.Seqno = expected;
+            var actual = model.Seqno;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void TestPartnoProperty()
+        {
+            // Arrange
+            var model = new ProjectEquipmentModel();
+            var expected = "Part123";
+
+            // Act
+            model.Partno = expected;
+            var actual = model.Partno;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void TestPartDescriptionProperty()
+        {
+            // Arrange
+            var model = new ProjectEquipmentModel();
+            var expected = "Description of part";
+
+            // Act
+            model.PartDescription = expected;
+            var actual = model.PartDescription;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void TestQuantityProperty()
+        {
+            // Arrange
+            var model = new ProjectEquipmentModel();
+            var expected = 5;
+
+            // Act
             model.Quantity = expected;
-            Assert.Equal(expected, model.Quantity);
+            var actual = model.Quantity;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
-        [Fact]
-        public void DayBottleneck_Should_BeSetAndRetrievedCorrectly()
+
+        [Test]
+        public void TestDayBottleneckProperty()
         {
-            var model = new ProjectEquipmentModel();
-            int? expected = 5;
-            model.DayBottleneck = expected;
-            Assert.Equal(expected, model.DayBottleneck);
-        }
-        [Fact]
-        public void WeekBottleneck_Should_BeSetAndRetrievedCorrectly()
-        {
-            var model = new ProjectEquipmentModel();
-            int? expected = 7;
-            model.WeekBottleneck = expected;
-            Assert.Equal(expected, model.WeekBottleneck);
-        }
-        [Fact]
-        public void Bottleneck_Should_BeSetAndRetrievedCorrectly()
-        {
-            var model = new ProjectEquipmentModel();
-            int? expected = 3;
-            model.Bottleneck = expected;
-            Assert.Equal(expected, model.Bottleneck);
-        }
-        [Fact]
-        public void QuantityToSubhire_Should_BeSetAndRetrievedCorrectly()
-        {
+            // Arrange
             var model = new ProjectEquipmentModel();
             int? expected = 2;
-            model.QuantityToSubhire = expected;
-            Assert.Equal(expected, model.QuantityToSubhire);
+
+            // Act
+            model.DayBottleneck = expected;
+            var actual = model.DayBottleneck;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
-        [Fact]
-        public void StartDate_Should_BeSetAndRetrievedCorrectly()
+
+        [Test]
+        public void TestWeekBottleneckProperty()
         {
+            // Arrange
+            var model = new ProjectEquipmentModel();
+            int? expected = 3;
+
+            // Act
+            model.WeekBottleneck = expected;
+            var actual = model.WeekBottleneck;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void TestBottleneckProperty()
+        {
+            // Arrange
+            var model = new ProjectEquipmentModel();
+            int? expected = 4;
+
+            // Act
+            model.Bottleneck = expected;
+            var actual = model.Bottleneck;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void TestQuantityToSubhireProperty()
+        {
+            // Arrange
+            var model = new ProjectEquipmentModel();
+            int? expected = 6;
+
+            // Act
+            model.QuantityToSubhire = expected;
+            var actual = model.QuantityToSubhire;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void TestStartDateProperty()
+        {
+            // Arrange
             var model = new ProjectEquipmentModel();
             var expected = new DateTime(2023, 1, 1);
+
+            // Act
             model.StartDate = expected;
-            Assert.Equal(expected, model.StartDate);
+            var actual = model.StartDate;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
-        [Fact]
-        public void EndDate_Should_BeSetAndRetrievedCorrectly()
+
+        [Test]
+        public void TestEndDateProperty()
         {
+            // Arrange
             var model = new ProjectEquipmentModel();
             var expected = new DateTime(2023, 12, 31);
+
+            // Act
             model.EndDate = expected;
-            Assert.Equal(expected, model.EndDate);
+            var actual = model.EndDate;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
-        [Fact]
-        public void Notes_Should_BeSetAndRetrievedCorrectly()
+
+        [Test]
+        public void TestNotesProperty()
         {
+            // Arrange
             var model = new ProjectEquipmentModel();
             var expected = "Some notes";
+
+            // Act
             model.Notes = expected;
-            Assert.Equal(expected, model.Notes);
+            var actual = model.Notes;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
-        [Fact]
-        public void NoteInternal_Should_BeSetAndRetrievedCorrectly()
+
+        [Test]
+        public void TestNoteInternalProperty()
         {
+            // Arrange
             var model = new ProjectEquipmentModel();
             var expected = "Internal notes";
+
+            // Act
             model.NoteInternal = expected;
-            Assert.Equal(expected, model.NoteInternal);
+            var actual = model.NoteInternal;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
-        [Fact]
-        public void UnitPrice_Should_BeSetAndRetrievedCorrectly()
+
+        [Test]
+        public void TestUnitPriceProperty()
         {
+            // Arrange
             var model = new ProjectEquipmentModel();
-            decimal expected = 99.99m;
+            var expected = 99.99m;
+
+            // Act
             model.UnitPrice = expected;
-            Assert.Equal(expected, model.UnitPrice);
+            var actual = model.UnitPrice;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
-        [Fact]
-        public void MfgNo_Should_BeSetAndRetrievedCorrectly()
+
+        [Test]
+        public void TestMfgNoProperty()
         {
+            // Arrange
             var model = new ProjectEquipmentModel();
             var expected = "MFG123";
+
+            // Act
             model.MfgNo = expected;
-            Assert.Equal(expected, model.MfgNo);
+            var actual = model.MfgNo;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
-        [Fact]
-        public void CheckedOut_Should_BeSetAndRetrievedCorrectly()
+
+        [Test]
+        public void TestCheckedOutProperty()
         {
+            // Arrange
             var model = new ProjectEquipmentModel();
             var expected = 1;
+
+            // Act
             model.CheckedOut = expected;
-            Assert.Equal(expected, model.CheckedOut);
+            var actual = model.CheckedOut;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
-        [Fact]
-        public void Markup_Should_BeSetAndRetrievedCorrectly()
+
+        [Test]
+        public void TestMarkupProperty()
         {
+            // Arrange
             var model = new ProjectEquipmentModel();
-            double expected = 0.15;
+            var expected = 0.15;
+
+            // Act
             model.Markup = expected;
-            Assert.Equal(expected, model.Markup);
+            var actual = model.Markup;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
-        [Fact]
-        public void PriceLevelValue_Should_BeSetAndRetrievedCorrectly()
+
+        [Test]
+        public void TestPriceLevelValueProperty()
         {
+            // Arrange
             var model = new ProjectEquipmentModel();
             double? expected = 1.25;
+
+            // Act
             model.PriceLevelValue = expected;
-            Assert.Equal(expected, model.PriceLevelValue);
+            var actual = model.PriceLevelValue;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
-        [Fact]
-        public void Totmatcost4_Should_BeSetAndRetrievedCorrectly()
+
+        [Test]
+        public void TestTotmatcost4Property()
         {
+            // Arrange
             var model = new ProjectEquipmentModel();
-            double expected = 200.50;
+            var expected = 200.50;
+
+            // Act
             model.Totmatcost4 = expected;
-            Assert.Equal(expected, model.Totmatcost4);
+            var actual = model.Totmatcost4;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
-        [Fact]
-        public void MatrixCd_Should_BeSetAndRetrievedCorrectly()
+
+        [Test]
+        public void TestMatrixCdProperty()
         {
+            // Arrange
             var model = new ProjectEquipmentModel();
-            var expected = "Matrix123";
+            string? expected = "Matrix123";
+
+            // Act
             model.MatrixCd = expected;
-            Assert.Equal(expected, model.MatrixCd);
+            var actual = model.MatrixCd;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
     }
 }

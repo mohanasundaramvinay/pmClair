@@ -1,107 +1,49 @@
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
+using Xunit;
 using ClairTourTiny.Core.Models.ProjectMaintenance;
-
-namespace ClairTourTiny.Tests.Models.ProjectMaintenance
+using Moq;
+public class ProjectAssignedCrewModelTests
 {
-    [TestFixture]
-    public class ProjectAssignedCrewModelTests
+    [Fact]
+    public void Test_EntityNo_DefaultValue()
     {
-        [Test]
-        public void TestEntityNoProperty()
-        {
-            var model = new ProjectAssignedCrewModel();
-            model.EntityNo = "12345";
-            Assert.AreEqual("12345", model.EntityNo);
-        }
-
-        [Test]
-        public void TestEmpNoProperty()
-        {
-            var model = new ProjectAssignedCrewModel();
-            model.EmpNo = "E123";
-            Assert.AreEqual("E123", model.EmpNo);
-        }
-
-        [Test]
-        public void TestJobTypeProperty()
-        {
-            var model = new ProjectAssignedCrewModel();
-            model.JobType = "Engineer";
-            Assert.AreEqual("Engineer", model.JobType);
-        }
-
-        [Test]
-        public void TestFromDateProperty()
-        {
-            var model = new ProjectAssignedCrewModel();
-            var date = DateTime.Now;
-            model.FromDate = date;
-            Assert.AreEqual(date, model.FromDate);
-        }
-
-        [Test]
-        public void TestToDateProperty()
-        {
-            var model = new ProjectAssignedCrewModel();
-            var date = DateTime.Now;
-            model.ToDate = date;
-            Assert.AreEqual(date, model.ToDate);
-        }
-
-        [Test]
-        public void TestEstHoursProperty()
-        {
-            var model = new ProjectAssignedCrewModel();
-            model.EstHours = 40.5;
-            Assert.AreEqual(40.5, model.EstHours);
-        }
-
-        [Test]
-        public void TestEmpLineNoProperty()
-        {
-            var model = new ProjectAssignedCrewModel();
-            model.EmpLineNo = 10;
-            Assert.AreEqual(10, model.EmpLineNo);
-        }
-
-        [Test]
-        public void TestStatusCodeProperty()
-        {
-            var model = new ProjectAssignedCrewModel();
-            model.StatusCode = "Active";
-            Assert.AreEqual("Active", model.StatusCode);
-        }
-
-        [Test]
-        public void TestNullableProperties()
-        {
-            var model = new ProjectAssignedCrewModel();
-            model.RfiEntityNo = null;
-            model.RfiSeqNo = null;
-            model.PdRfiEntityNo = null;
-            model.PdRfiSeqNo = null;
-            model.PONumber = null;
-            model.PayingPerDiemStatusCode = null;
-            model.IsPerDiemBillableStatusCode = null;
-            model.Note = null;
-            model.PerDiemRate = null;
-            model.SubInvoiceNumber = null;
-            model.SubInvoiceDate = null;
-            model.AssignedCrewOt = null;
-            Assert.IsNull(model.RfiEntityNo);
-            Assert.IsNull(model.RfiSeqNo);
-            Assert.IsNull(model.PdRfiEntityNo);
-            Assert.IsNull(model.PdRfiSeqNo);
-            Assert.IsNull(model.PONumber);
-            Assert.IsNull(model.PayingPerDiemStatusCode);
-            Assert.IsNull(model.IsPerDiemBillableStatusCode);
-            Assert.IsNull(model.Note);
-            Assert.IsNull(model.PerDiemRate);
-            Assert.IsNull(model.SubInvoiceNumber);
-            Assert.IsNull(model.SubInvoiceDate);
-            Assert.IsNull(model.AssignedCrewOt);
-        }
+        var model = new ProjectAssignedCrewModel();
+        Assert.Equal(string.Empty, model.EntityNo);
     }
+    [Fact]
+    public void Test_EmpNo_DefaultValue()
+    {
+        var model = new ProjectAssignedCrewModel();
+        Assert.Equal(string.Empty, model.EmpNo);
+    }
+    [Fact]
+    public void Test_JobType_DefaultValue()
+    {
+        var model = new ProjectAssignedCrewModel();
+        Assert.Equal(string.Empty, model.JobType);
+    }
+    [Fact]
+    public void Test_StatusCode_DefaultValue()
+    {
+        var model = new ProjectAssignedCrewModel();
+        Assert.Equal(string.Empty, model.StatusCode);
+    }
+    [Fact]
+    public void Test_AssignedCrewOt_CanBeSet()
+    {
+        var model = new ProjectAssignedCrewModel();
+        var mockAssignedCrewOt = new List<ProjectAssignedCrewOtModel>();
+        model.AssignedCrewOt = mockAssignedCrewOt;
+        Assert.Equal(mockAssignedCrewOt, model.AssignedCrewOt);
+    }
+    [Fact]
+    public void Test_PerDiemRate_CanBeSet()
+    {
+        var model = new ProjectAssignedCrewModel();
+        double? rate = 100.0;
+        model.PerDiemRate = rate;
+        Assert.Equal(rate, model.PerDiemRate);
+    }
+    // Additional tests for other properties can be added similarly
 }

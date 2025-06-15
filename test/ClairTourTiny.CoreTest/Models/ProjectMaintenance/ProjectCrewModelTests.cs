@@ -14,8 +14,8 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
             var mockAssignedCrew = new List<ProjectAssignedCrewModel>
             {
                 new ProjectAssignedCrewModel { StatusCode = "A", EstHours = 5.0 },
-                new ProjectAssignedCrewModel { StatusCode = "A", EstHours = 3.0 },
-                new ProjectAssignedCrewModel { StatusCode = "B", EstHours = 2.0 }
+                new ProjectAssignedCrewModel { StatusCode = "B", EstHours = 3.0 },
+                new ProjectAssignedCrewModel { StatusCode = "A", EstHours = 2.0 }
             };
             var projectCrew = new ProjectCrewModel
             {
@@ -24,7 +24,7 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
             // Act
             var assignedHours = projectCrew.AssignedHours;
             // Assert
-            Assert.Equal(8.0, assignedHours);
+            Assert.Equal(7.0, assignedHours);
         }
         [Fact]
         public void AssignedHours_ShouldReturnZero_WhenNoAssignedCrew()
@@ -37,28 +37,28 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
             Assert.Equal(0, assignedHours);
         }
         [Fact]
-        public void Days_ShouldReturnCorrectNumberOfDays_WhenDatesAreDifferent()
+        public void Days_ShouldReturnCorrectDays_WhenFromDateAndToDateAreGiven()
         {
             // Arrange
             var projectCrew = new ProjectCrewModel
             {
                 FromDate = new DateTime(2023, 10, 1),
                 ToDate = new DateTime(2023, 10, 5),
-                CrewSize = 2
+                CrewSize = 3
             };
             // Act
             var days = projectCrew.Days;
             // Assert
-            Assert.Equal(10, days);
+            Assert.Equal(15, days); // 5 days * 3 crew size
         }
         [Fact]
-        public void Days_ShouldReturnZero_WhenFromDateEqualsToDateAndCrewSizeIsZero()
+        public void Days_ShouldReturnZero_WhenCrewSizeIsZero()
         {
             // Arrange
             var projectCrew = new ProjectCrewModel
             {
                 FromDate = new DateTime(2023, 10, 1),
-                ToDate = new DateTime(2023, 10, 1),
+                ToDate = new DateTime(2023, 10, 5),
                 CrewSize = 0
             };
             // Act
@@ -67,15 +67,19 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
             Assert.Equal(0, days);
         }
         [Fact]
-        public void DefaultValues_ShouldBeSetCorrectly()
+        public void Days_ShouldReturnCorrectDays_WhenFromDateEqualsToDate()
         {
-            // Arrange & Act
-            var projectCrew = new ProjectCrewModel();
+            // Arrange
+            var projectCrew = new ProjectCrewModel
+            {
+                FromDate = new DateTime(2023, 10, 1),
+                ToDate = new DateTime(2023, 10, 1),
+                CrewSize = 2
+            };
+            // Act
+            var days = projectCrew.Days;
             // Assert
-            Assert.Equal(string.Empty, projectCrew.EntityNo);
-            Assert.Equal(string.Empty, projectCrew.JobType);
-            Assert.Equal(string.Empty, projectCrew.JobDesc);
-            Assert.Empty(projectCrew.AssignedCrew);
+            Assert.Equal(2, days); // 1 day * 2 crew size
         }
     }
     // Mock class for ProjectAssignedCrewModel

@@ -1,61 +1,60 @@
 using System;
-using NUnit.Framework;
-using ClairTourTiny.Core.Models.ProjectMaintenance.Save;
-
-namespace ClairTourTiny.Tests
+using Xunit;
+namespace ClairTourTiny.Core.Models.ProjectMaintenance.Save.Tests
 {
-    [TestFixture]
     public class FavoriteProjectTests
     {
-        [Test]
-        public void UpdateTime_Property_SetAndGet_ShouldReturnCorrectValue()
+        [Fact]
+        public void Username_ShouldNotBeNull_ByDefault()
         {
-            var favoriteProject = new FavoriteProject();
-            var testDate = DateTime.Now;
-            favoriteProject.UpdateTime = testDate;
-            Assert.AreEqual(testDate, favoriteProject.UpdateTime);
+            var project = new FavoriteProject();
+            Assert.NotNull(project.Username);
         }
 
-        [Test]
-        public void IsInsert_Property_SetAndGet_ShouldReturnCorrectValue()
+        [Fact]
+        public void Entityno_ShouldNotBeNull_ByDefault()
         {
-            var favoriteProject = new FavoriteProject();
-            favoriteProject.IsInsert = true;
-            Assert.IsTrue(favoriteProject.IsInsert);
+            var project = new FavoriteProject();
+            Assert.NotNull(project.Entityno);
         }
 
-        [Test]
-        public void IsUpdate_Property_SetAndGet_ShouldReturnCorrectValue()
+        [Fact]
+        public void UpdateTime_ShouldBeSettable()
         {
-            var favoriteProject = new FavoriteProject();
-            favoriteProject.IsUpdate = true;
-            Assert.IsTrue(favoriteProject.IsUpdate);
+            var project = new FavoriteProject();
+            var now = DateTime.Now;
+            project.UpdateTime = now;
+            Assert.Equal(now, project.UpdateTime);
         }
 
-        [Test]
-        public void IsDelete_Property_SetAndGet_ShouldReturnCorrectValue()
+        [Fact]
+        public void IsInsert_ShouldBeSettable()
         {
-            var favoriteProject = new FavoriteProject();
-            favoriteProject.IsDelete = true;
-            Assert.IsTrue(favoriteProject.IsDelete);
+            var project = new FavoriteProject();
+            project.IsInsert = true;
+            Assert.True(project.IsInsert);
+            project.IsInsert = false;
+            Assert.False(project.IsInsert);
         }
 
-        [Test]
-        public void Username_Property_SetAndGet_ShouldReturnCorrectValue()
+        [Fact]
+        public void IsUpdate_ShouldBeSettable()
         {
-            var favoriteProject = new FavoriteProject();
-            var testUsername = "testuser";
-            favoriteProject.Username = testUsername;
-            Assert.AreEqual(testUsername, favoriteProject.Username);
+            var project = new FavoriteProject();
+            project.IsUpdate = true;
+            Assert.True(project.IsUpdate);
+            project.IsUpdate = false;
+            Assert.False(project.IsUpdate);
         }
 
-        [Test]
-        public void Entityno_Property_SetAndGet_ShouldReturnCorrectValue()
+        [Fact]
+        public void IsDelete_ShouldBeSettable()
         {
-            var favoriteProject = new FavoriteProject();
-            var testEntityno = "12345";
-            favoriteProject.Entityno = testEntityno;
-            Assert.AreEqual(testEntityno, favoriteProject.Entityno);
+            var project = new FavoriteProject();
+            project.IsDelete = true;
+            Assert.True(project.IsDelete);
+            project.IsDelete = false;
+            Assert.False(project.IsDelete);
         }
     }
 }

@@ -1,63 +1,150 @@
 using NUnit.Framework;
 using System;
-namespace ClairTourTiny.Core.Models.ProjectMaintenance.Save.Tests
+using ClairTourTiny.Core.Models.ProjectMaintenance.Save;
+
+namespace ClairTourTiny.Tests
 {
     [TestFixture]
     public class CrewTests
     {
         [Test]
-        public void Test_Crew_Properties()
+        public void TestUpdateTimeProperty()
         {
-            // Arrange
             var crew = new Crew();
-            var updateTime = DateTime.Now;
-            var entityNo = "Entity123";
-            var seqNo = 1;
-            var jobTypeOld = "OldJob";
-            var jobTypeNew = "NewJob";
-            var jobDesc = "Job Description";
-            var fromDate = new DateTime(2023, 1, 1);
-            var toDate = new DateTime(2023, 12, 31);
-            var crewSize = 10;
-            var estHours = 100.5;
-            var estRate = 50.75;
-            var estTotal = 5075.25m;
-            var emplineNo = 12345;
-            
-            // Act
-            crew.UpdateTime = updateTime;
+            var now = DateTime.Now;
+            crew.UpdateTime = now;
+            Assert.AreEqual(now, crew.UpdateTime);
+        }
+
+        [Test]
+        public void TestIsInsertProperty()
+        {
+            var crew = new Crew();
             crew.IsInsert = true;
-            crew.IsUpdate = false;
-            crew.IsDelete = false;
-            crew.Entityno = entityNo;
-            crew.Seqno = seqNo;
-            crew.JobtypeOld = jobTypeOld;
-            crew.JobtypeNew = jobTypeNew;
-            crew.Jobdesc = jobDesc;
-            crew.Fromdate = fromDate;
-            crew.Todate = toDate;
-            crew.CrewSize = crewSize;
-            crew.EstHours = estHours;
-            crew.EstRate = estRate;
-            crew.EstTotal = estTotal;
-            crew.EmplineNo = emplineNo;
-            
-            // Assert
-            Assert.AreEqual(updateTime, crew.UpdateTime);
             Assert.IsTrue(crew.IsInsert);
-            Assert.IsFalse(crew.IsUpdate);
-            Assert.IsFalse(crew.IsDelete);
+        }
+
+        [Test]
+        public void TestIsUpdateProperty()
+        {
+            var crew = new Crew();
+            crew.IsUpdate = true;
+            Assert.IsTrue(crew.IsUpdate);
+        }
+
+        [Test]
+        public void TestIsDeleteProperty()
+        {
+            var crew = new Crew();
+            crew.IsDelete = true;
+            Assert.IsTrue(crew.IsDelete);
+        }
+
+        [Test]
+        public void TestEntitynoProperty()
+        {
+            var crew = new Crew();
+            var entityNo = "Entity123";
+            crew.Entityno = entityNo;
             Assert.AreEqual(entityNo, crew.Entityno);
+        }
+
+        [Test]
+        public void TestSeqnoProperty()
+        {
+            var crew = new Crew();
+            var seqNo = 123;
+            crew.Seqno = seqNo;
             Assert.AreEqual(seqNo, crew.Seqno);
+        }
+
+        [Test]
+        public void TestJobtypeOldProperty()
+        {
+            var crew = new Crew();
+            var jobTypeOld = "OldJob";
+            crew.JobtypeOld = jobTypeOld;
             Assert.AreEqual(jobTypeOld, crew.JobtypeOld);
+        }
+
+        [Test]
+        public void TestJobtypeNewProperty()
+        {
+            var crew = new Crew();
+            var jobTypeNew = "NewJob";
+            crew.JobtypeNew = jobTypeNew;
             Assert.AreEqual(jobTypeNew, crew.JobtypeNew);
+        }
+
+        [Test]
+        public void TestJobdescProperty()
+        {
+            var crew = new Crew();
+            var jobDesc = "Job Description";
+            crew.Jobdesc = jobDesc;
             Assert.AreEqual(jobDesc, crew.Jobdesc);
+        }
+
+        [Test]
+        public void TestFromdateProperty()
+        {
+            var crew = new Crew();
+            var fromDate = DateTime.Now;
+            crew.Fromdate = fromDate;
             Assert.AreEqual(fromDate, crew.Fromdate);
+        }
+
+        [Test]
+        public void TestTodateProperty()
+        {
+            var crew = new Crew();
+            var toDate = DateTime.Now.AddDays(1);
+            crew.Todate = toDate;
             Assert.AreEqual(toDate, crew.Todate);
+        }
+
+        [Test]
+        public void TestCrewSizeProperty()
+        {
+            var crew = new Crew();
+            var crewSize = 10;
+            crew.CrewSize = crewSize;
             Assert.AreEqual(crewSize, crew.CrewSize);
+        }
+
+        [Test]
+        public void TestEstHoursProperty()
+        {
+            var crew = new Crew();
+            var estHours = 40.5;
+            crew.EstHours = estHours;
             Assert.AreEqual(estHours, crew.EstHours);
+        }
+
+        [Test]
+        public void TestEstRateProperty()
+        {
+            var crew = new Crew();
+            var estRate = 25.75;
+            crew.EstRate = estRate;
             Assert.AreEqual(estRate, crew.EstRate);
+        }
+
+        [Test]
+        public void TestEstTotalProperty()
+        {
+            var crew = new Crew();
+            var estTotal = 1000.50m;
+            crew.EstTotal = estTotal;
             Assert.AreEqual(estTotal, crew.EstTotal);
+        }
+
+        [Test]
+        public void TestEmplineNoProperty()
+        {
+            var crew = new Crew();
+            var emplineNo = 456;
+            crew.EmplineNo = emplineNo;
             Assert.AreEqual(emplineNo, crew.EmplineNo);
         }
     }

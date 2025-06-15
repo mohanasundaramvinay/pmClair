@@ -1,77 +1,46 @@
 using NUnit.Framework;
 namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
 {
-    public enum VarianceIndicator
-    {
-        Neutral,
-        Positive,
-        Negative
-    }
-    
     [TestFixture]
     public class ItemSummaryTests
     {
         [Test]
-        public void CalculateVariance_ProjectBenchmarkIsZero_SetsVarianceToZeroAndIndicatorToNeutral()
+        public void CalculateVariance_ProjectBenchmarkIsZero_SetsVarianceToZeroAndNeutral()
         {
-            var itemSummary = new ItemSummary
-            {
-                ProjectTotal = 1000,
-                ProjectBenchmark = 0
-            };
-            
+            var itemSummary = new ItemSummary { ProjectBenchmark = 0, ProjectTotal = 100 };
             itemSummary.CalculateVariance();
-            
             Assert.AreEqual(0, itemSummary.VariancePercentage);
             Assert.AreEqual(0, itemSummary.VarianceDollars);
             Assert.AreEqual(VarianceIndicator.Neutral, itemSummary.VarianceIndicator);
         }
-        
+
         [Test]
-        public void CalculateVariance_ProjectTotalGreaterThanBenchmark_SetsPositiveVarianceAndIndicator()
+        public void CalculateVariance_ProjectTotalGreaterThanBenchmark_SetsPositiveVariance()
         {
-            var itemSummary = new ItemSummary
-            {
-                ProjectTotal = 1200,
-                ProjectBenchmark = 1000
-            };
-            
+            var itemSummary = new ItemSummary { ProjectBenchmark = 100, ProjectTotal = 150 };
             itemSummary.CalculateVariance();
-            
-            Assert.AreEqual(20, itemSummary.VariancePercentage);
-            Assert.AreEqual(200, itemSummary.VarianceDollars);
+            Assert.AreEqual(50, itemSummary.VarianceDollars);
+            Assert.AreEqual(50, itemSummary.VariancePercentage);
             Assert.AreEqual(VarianceIndicator.Positive, itemSummary.VarianceIndicator);
         }
-        
+
         [Test]
-        public void CalculateVariance_ProjectTotalLessThanBenchmark_SetsNegativeVarianceAndIndicator()
+        public void CalculateVariance_ProjectTotalLessThanBenchmark_SetsNegativeVariance()
         {
-            var itemSummary = new ItemSummary
-            {
-                ProjectTotal = 800,
-                ProjectBenchmark = 1000
-            };
-            
+            var itemSummary = new ItemSummary { ProjectBenchmark = 150, ProjectTotal = 100 };
             itemSummary.CalculateVariance();
-            
-            Assert.AreEqual(-20, itemSummary.VariancePercentage);
-            Assert.AreEqual(-200, itemSummary.VarianceDollars);
+            Assert.AreEqual(-50, itemSummary.VarianceDollars);
+            Assert.AreEqual(-33.33, itemSummary.VariancePercentage);
             Assert.AreEqual(VarianceIndicator.Negative, itemSummary.VarianceIndicator);
         }
-        
+
         [Test]
-        public void CalculateVariance_ProjectTotalEqualsBenchmark_SetsZeroVarianceAndNeutralIndicator()
+        public void CalculateVariance_ProjectTotalEqualsBenchmark_SetsNeutralVariance()
         {
-            var itemSummary = new ItemSummary
-            {
-                ProjectTotal = 1000,
-                ProjectBenchmark = 1000
-            };
-            
+            var itemSummary = new ItemSummary { ProjectBenchmark = 100, ProjectTotal = 100 };
             itemSummary.CalculateVariance();
-            
-            Assert.AreEqual(0, itemSummary.VariancePercentage);
             Assert.AreEqual(0, itemSummary.VarianceDollars);
+            Assert.AreEqual(0, itemSummary.VariancePercentage);
             Assert.AreEqual(VarianceIndicator.Neutral, itemSummary.VarianceIndicator);
         }
     }

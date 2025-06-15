@@ -1,11 +1,14 @@
 using NUnit.Framework;
-namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
+using ClairTourTiny.Core.Models.ProjectMaintenance;
+using System;
+
+namespace ClairTourTiny.Tests.Models.ProjectMaintenance
 {
     [TestFixture]
     public class ProjectBillingPeriodItemModelTests
     {
         [Test]
-        public void DefaultValues_ShouldBeSetCorrectly()
+        public void DefaultValues_ShouldBeInitializedCorrectly()
         {
             var model = new ProjectBillingPeriodItemModel();
 
@@ -42,42 +45,41 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
         }
 
         [Test]
-        public void SetValues_ShouldBeRetrievable()
+        public void SetAndGetProperties_ShouldWorkCorrectly()
         {
-            var model = new ProjectBillingPeriodItemModel
-            {
-                BidEntityNo = "B123",
-                PeriodNo = 1,
-                ItemNo = 2,
-                ItemDescription = "Test Item",
-                StartDate = new DateTime(2023, 1, 1),
-                EndDate = new DateTime(2023, 12, 31),
-                ActualDailyRate = 100.0,
-                IsActive = true,
-                BillingDays = 10.0,
-                CrewSeqNo = 5,
-                ExpenseEntityNo = "E123",
-                Category = "Test Category",
-                ExpenseSeqNo = 10,
-                CrewEntityNo = "C123",
-                EquipmentEntityNo = "EQ123"
-            };
+            var model = new ProjectBillingPeriodItemModel();
 
-            Assert.AreEqual("B123", model.BidEntityNo);
+            model.BidEntityNo = "BID123";
+            model.PeriodNo = 1;
+            model.ItemNo = 2;
+            model.ItemDescription = "Description";
+            model.StartDate = new DateTime(2023, 1, 1);
+            model.EndDate = new DateTime(2023, 12, 31);
+            model.ActualDailyRate = 100.0;
+            model.IsActive = true;
+            model.BillingDays = 10.0;
+            model.CrewSeqNo = 5;
+            model.ExpenseEntityNo = "EXP123";
+            model.Category = "Category1";
+            model.ExpenseSeqNo = 10;
+            model.CrewEntityNo = "CREW123";
+            model.EquipmentEntityNo = "EQUIP123";
+
+            Assert.AreEqual("BID123", model.BidEntityNo);
             Assert.AreEqual(1, model.PeriodNo);
             Assert.AreEqual(2, model.ItemNo);
-            Assert.AreEqual("Test Item", model.ItemDescription);
+            Assert.AreEqual("Description", model.ItemDescription);
             Assert.AreEqual(new DateTime(2023, 1, 1), model.StartDate);
             Assert.AreEqual(new DateTime(2023, 12, 31), model.EndDate);
             Assert.AreEqual(100.0, model.ActualDailyRate);
             Assert.IsTrue(model.IsActive);
             Assert.AreEqual(10.0, model.BillingDays);
             Assert.AreEqual(5, model.CrewSeqNo);
-            Assert.AreEqual("E123", model.ExpenseEntityNo);
-            Assert.AreEqual("Test Category", model.Category);
+            Assert.AreEqual("EXP123", model.ExpenseEntityNo);
+            Assert.AreEqual("Category1", model.Category);
             Assert.AreEqual(10, model.ExpenseSeqNo);
-            Assert.AreEqual("C123", model.CrewEntityNo);
-            Assert.AreEqual("EQ123", model.EquipmentEntityNo);
+            Assert.AreEqual("CREW123", model.CrewEntityNo);
+            Assert.AreEqual("EQUIP123", model.EquipmentEntityNo);
         }
     }
 }

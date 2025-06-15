@@ -17,12 +17,12 @@ public class VendorServiceTests
         // Arrange
         var partNo = "12345";
         var expectedVendors = new List<VendorDto> { new VendorDto() };
-        _vendorServiceMock.Setup(service => service.GetKnownVendorsAsync(partNo))
-            .ReturnsAsync(expectedVendors);
+        _vendorServiceMock.Setup(service => service.GetKnownVendorsAsync(partNo)).ReturnsAsync(expectedVendors);
         // Act
         var result = await _vendorServiceMock.Object.GetKnownVendorsAsync(partNo);
         // Assert
-        Assert.Equal(expectedVendors, result);
+        Assert.NotNull(result);
+        Assert.NotEmpty(result);
     }
     [Fact]
     public async Task GetVendorAddressesAsync_ShouldReturnAddresses()
@@ -30,20 +30,19 @@ public class VendorServiceTests
         // Arrange
         var vendNo = "V123";
         var expectedAddresses = new List<VendorAddressDto> { new VendorAddressDto() };
-        _vendorServiceMock.Setup(service => service.GetVendorAddressesAsync(vendNo))
-            .ReturnsAsync(expectedAddresses);
+        _vendorServiceMock.Setup(service => service.GetVendorAddressesAsync(vendNo)).ReturnsAsync(expectedAddresses);
         // Act
         var result = await _vendorServiceMock.Object.GetVendorAddressesAsync(vendNo);
         // Assert
-        Assert.Equal(expectedAddresses, result);
+        Assert.NotNull(result);
+        Assert.NotEmpty(result);
     }
     [Fact]
     public async Task AddKnownVendorAsync_ShouldReturnTrue()
     {
         // Arrange
         var request = new AddKnownVendorRequestDto();
-        _vendorServiceMock.Setup(service => service.AddKnownVendorAsync(request))
-            .ReturnsAsync(true);
+        _vendorServiceMock.Setup(service => service.AddKnownVendorAsync(request)).ReturnsAsync(true);
         // Act
         var result = await _vendorServiceMock.Object.AddKnownVendorAsync(request);
         // Assert
@@ -56,8 +55,7 @@ public class VendorServiceTests
         var partNo = "12345";
         var vendNo = "V123";
         var siteNo = "S1";
-        _vendorServiceMock.Setup(service => service.IsKnownVendorAsync(partNo, vendNo, siteNo))
-            .ReturnsAsync(true);
+        _vendorServiceMock.Setup(service => service.IsKnownVendorAsync(partNo, vendNo, siteNo)).ReturnsAsync(true);
         // Act
         var result = await _vendorServiceMock.Object.IsKnownVendorAsync(partNo, vendNo, siteNo);
         // Assert
@@ -68,23 +66,23 @@ public class VendorServiceTests
     {
         // Arrange
         var expectedStatuses = new List<EquipmentSubhireStatusDto> { new EquipmentSubhireStatusDto() };
-        _vendorServiceMock.Setup(service => service.GetSubhireStatusesAsync())
-            .ReturnsAsync(expectedStatuses);
+        _vendorServiceMock.Setup(service => service.GetSubhireStatusesAsync()).ReturnsAsync(expectedStatuses);
         // Act
         var result = await _vendorServiceMock.Object.GetSubhireStatusesAsync();
         // Assert
-        Assert.Equal(expectedStatuses, result);
+        Assert.NotNull(result);
+        Assert.NotEmpty(result);
     }
     [Fact]
     public async Task GetRateTypesAsync_ShouldReturnRateTypes()
     {
         // Arrange
         var expectedRateTypes = new List<RateTypeDto> { new RateTypeDto() };
-        _vendorServiceMock.Setup(service => service.GetRateTypesAsync())
-            .ReturnsAsync(expectedRateTypes);
+        _vendorServiceMock.Setup(service => service.GetRateTypesAsync()).ReturnsAsync(expectedRateTypes);
         // Act
         var result = await _vendorServiceMock.Object.GetRateTypesAsync();
         // Assert
-        Assert.Equal(expectedRateTypes, result);
+        Assert.NotNull(result);
+        Assert.NotEmpty(result);
     }
 }

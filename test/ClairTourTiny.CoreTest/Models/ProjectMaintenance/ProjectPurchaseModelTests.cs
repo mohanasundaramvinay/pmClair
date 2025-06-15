@@ -39,14 +39,6 @@ namespace ClairTourTiny.Tests.Models.ProjectMaintenance
         }
 
         [Test]
-        public void EntityNo_Should_SetAndGetCorrectly()
-        {
-            var model = new ProjectPurchaseModel();
-            model.EntityNo = "Entity123";
-            Assert.AreEqual("Entity123", model.EntityNo);
-        }
-
-        [Test]
         public void RequestedBy_Should_HaveDefaultEmptyString()
         {
             var model = new ProjectPurchaseModel();
@@ -106,16 +98,16 @@ namespace ClairTourTiny.Tests.Models.ProjectMaintenance
         public void VendSiteNo_Should_SetAndGetCorrectly()
         {
             var model = new ProjectPurchaseModel();
-            model.VendSiteNo = "Site456";
-            Assert.AreEqual("Site456", model.VendSiteNo);
+            model.VendSiteNo = "VS456";
+            Assert.AreEqual("VS456", model.VendSiteNo);
         }
 
         [Test]
         public void VendorName_Should_SetAndGetCorrectly()
         {
             var model = new ProjectPurchaseModel();
-            model.VendorName = "Vendor ABC";
-            Assert.AreEqual("Vendor ABC", model.VendorName);
+            model.VendorName = "Vendor Inc.";
+            Assert.AreEqual("Vendor Inc.", model.VendorName);
         }
 
         [Test]

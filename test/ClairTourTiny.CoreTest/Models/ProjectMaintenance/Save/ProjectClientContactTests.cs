@@ -1,47 +1,13 @@
 using System;
 using NUnit.Framework;
+
 namespace ClairTourTiny.Core.Models.ProjectMaintenance.Save.Tests
 {
     [TestFixture]
     public class ProjectClientContactTests
     {
         [Test]
-        public void Entityno_ShouldNotBeNullByDefault()
-        {
-            var contact = new ProjectClientContact();
-            Assert.IsNotNull(contact.Entityno);
-        }
-
-        [Test]
-        public void ContactNo_ShouldNotBeNullByDefault()
-        {
-            var contact = new ProjectClientContact();
-            Assert.IsNotNull(contact.ContactNo);
-        }
-
-        [Test]
-        public void IsInsert_ShouldBeFalseByDefault()
-        {
-            var contact = new ProjectClientContact();
-            Assert.IsFalse(contact.IsInsert);
-        }
-
-        [Test]
-        public void IsUpdate_ShouldBeFalseByDefault()
-        {
-            var contact = new ProjectClientContact();
-            Assert.IsFalse(contact.IsUpdate);
-        }
-
-        [Test]
-        public void IsDelete_ShouldBeFalseByDefault()
-        {
-            var contact = new ProjectClientContact();
-            Assert.IsFalse(contact.IsDelete);
-        }
-
-        [Test]
-        public void UpdateTime_ShouldBeSettable()
+        public void UpdateTime_Property_SetAndGet_ShouldReturnCorrectValue()
         {
             var contact = new ProjectClientContact();
             var now = DateTime.Now;
@@ -50,11 +16,54 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Save.Tests
         }
 
         [Test]
-        public void IdContactCategory_ShouldBeSettable()
+        public void IsInsert_Property_SetAndGet_ShouldReturnCorrectValue()
         {
             var contact = new ProjectClientContact();
-            contact.IdContactCategory = 5;
-            Assert.AreEqual(5, contact.IdContactCategory);
+            contact.IsInsert = true;
+            Assert.IsTrue(contact.IsInsert);
+        }
+
+        [Test]
+        public void IsUpdate_Property_SetAndGet_ShouldReturnCorrectValue()
+        {
+            var contact = new ProjectClientContact();
+            contact.IsUpdate = true;
+            Assert.IsTrue(contact.IsUpdate);
+        }
+
+        [Test]
+        public void IsDelete_Property_SetAndGet_ShouldReturnCorrectValue()
+        {
+            var contact = new ProjectClientContact();
+            contact.IsDelete = true;
+            Assert.IsTrue(contact.IsDelete);
+        }
+
+        [Test]
+        public void Entityno_Property_SetAndGet_ShouldReturnCorrectValue()
+        {
+            var contact = new ProjectClientContact();
+            var entityNo = "Entity123";
+            contact.Entityno = entityNo;
+            Assert.AreEqual(entityNo, contact.Entityno);
+        }
+
+        [Test]
+        public void IdContactCategory_Property_SetAndGet_ShouldReturnCorrectValue()
+        {
+            var contact = new ProjectClientContact();
+            var categoryId = 5;
+            contact.IdContactCategory = categoryId;
+            Assert.AreEqual(categoryId, contact.IdContactCategory);
+        }
+
+        [Test]
+        public void ContactNo_Property_SetAndGet_ShouldReturnCorrectValue()
+        {
+            var contact = new ProjectClientContact();
+            var contactNo = "Contact456";
+            contact.ContactNo = contactNo;
+            Assert.AreEqual(contactNo, contact.ContactNo);
         }
     }
 }

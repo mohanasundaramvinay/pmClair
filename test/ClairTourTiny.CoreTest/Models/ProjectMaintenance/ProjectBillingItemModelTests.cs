@@ -1,72 +1,79 @@
 using NUnit.Framework;
-using ClairTourTiny.Core.Models.ProjectMaintenance;
-
-namespace ClairTourTiny.Tests.Models.ProjectMaintenance
+namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
 {
     [TestFixture]
     public class ProjectBillingItemModelTests
     {
         [Test]
-        public void BidEntityNo_DefaultValue_ShouldBeEmptyString()
+        public void TestBidEntityNoProperty()
         {
             var model = new ProjectBillingItemModel();
-            Assert.AreEqual(string.Empty, model.BidEntityNo);
+            var expected = "12345";
+            model.BidEntityNo = expected;
+            Assert.AreEqual(expected, model.BidEntityNo);
         }
 
         [Test]
-        public void ItemNo_ShouldBeSetAndRetrievedCorrectly()
+        public void TestItemNoProperty()
         {
             var model = new ProjectBillingItemModel();
-            model.ItemNo = 5;
-            Assert.AreEqual(5, model.ItemNo);
+            short expected = 10;
+            model.ItemNo = expected;
+            Assert.AreEqual(expected, model.ItemNo);
         }
 
         [Test]
-        public void EquipmentEntityNo_ShouldBeSetAndRetrievedCorrectly()
+        public void TestEquipmentEntityNoProperty()
         {
             var model = new ProjectBillingItemModel();
-            model.EquipmentEntityNo = "EQ123";
-            Assert.AreEqual("EQ123", model.EquipmentEntityNo);
+            var expected = "EQ123";
+            model.EquipmentEntityNo = expected;
+            Assert.AreEqual(expected, model.EquipmentEntityNo);
         }
 
         [Test]
-        public void ExpenseEntityNo_ShouldBeSetAndRetrievedCorrectly()
+        public void TestExpenseEntityNoProperty()
         {
             var model = new ProjectBillingItemModel();
-            model.ExpenseEntityNo = "EXP456";
-            Assert.AreEqual("EXP456", model.ExpenseEntityNo);
+            var expected = "EXP456";
+            model.ExpenseEntityNo = expected;
+            Assert.AreEqual(expected, model.ExpenseEntityNo);
         }
 
         [Test]
-        public void ExpenseSeqNo_ShouldBeSetAndRetrievedCorrectly()
+        public void TestExpenseSeqNoProperty()
         {
             var model = new ProjectBillingItemModel();
-            model.ExpenseSeqNo = 10;
-            Assert.AreEqual(10, model.ExpenseSeqNo);
+            int? expected = 100;
+            model.ExpenseSeqNo = expected;
+            Assert.AreEqual(expected, model.ExpenseSeqNo);
         }
 
         [Test]
-        public void CrewEntityNo_ShouldBeSetAndRetrievedCorrectly()
+        public void TestCrewEntityNoProperty()
         {
             var model = new ProjectBillingItemModel();
-            model.CrewEntityNo = "CR789";
-            Assert.AreEqual("CR789", model.CrewEntityNo);
+            var expected = "CRW789";
+            model.CrewEntityNo = expected;
+            Assert.AreEqual(expected, model.CrewEntityNo);
         }
 
         [Test]
-        public void CrewEmpLineNo_ShouldBeSetAndRetrievedCorrectly()
+        public void TestCrewEmpLineNoProperty()
         {
             var model = new ProjectBillingItemModel();
-            model.CrewEmpLineNo = 15;
-            Assert.AreEqual(15, model.CrewEmpLineNo);
+            int? expected = 5;
+            model.CrewEmpLineNo = expected;
+            Assert.AreEqual(expected, model.CrewEmpLineNo);
         }
 
         [Test]
-        public void NominalDailyRate_ShouldBeSetAndRetrievedCorrectly()
+        public void TestNominalDailyRateProperty()
         {
             var model = new ProjectBillingItemModel();
-            model.NominalDailyRate = 200.50;
-            Assert.AreEqual(200.50, model.NominalDailyRate);
+            double expected = 250.75;
+            model.NominalDailyRate = expected;
+            Assert.AreEqual(expected, model.NominalDailyRate);
         }
     }
 }

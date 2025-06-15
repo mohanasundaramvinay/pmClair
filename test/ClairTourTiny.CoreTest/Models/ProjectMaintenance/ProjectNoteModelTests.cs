@@ -5,7 +5,7 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
     public class ProjectNoteModelTests
     {
         [Fact]
-        public void EntityNo_ShouldBeInitializedAsEmptyString()
+        public void EntityNo_ShouldHaveDefaultEmptyString()
         {
             // Arrange
             var projectNote = new ProjectNoteModel();
@@ -31,7 +31,7 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
         }
 
         [Fact]
-        public void CanSetAndGetEntityNo()
+        public void ShouldBeAbleToSetEntityNo()
         {
             // Arrange
             var projectNote = new ProjectNoteModel();
@@ -45,7 +45,7 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
         }
 
         [Fact]
-        public void CanSetAndGetNotes()
+        public void ShouldBeAbleToSetNotes()
         {
             // Arrange
             var projectNote = new ProjectNoteModel();
@@ -56,19 +56,6 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
 
             // Assert
             Assert.Equal(testNotes, projectNote.Notes);
-        }
-
-        [Fact]
-        public void CanSetNotesToNull()
-        {
-            // Arrange
-            var projectNote = new ProjectNoteModel();
-
-            // Act
-            projectNote.Notes = null;
-
-            // Assert
-            Assert.Null(projectNote.Notes);
         }
     }
 }

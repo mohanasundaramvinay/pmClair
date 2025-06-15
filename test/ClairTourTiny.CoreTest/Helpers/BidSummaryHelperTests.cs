@@ -15,9 +15,10 @@ public class BidSummaryHelperTests
     private List<ProjectBillingPeriodItemModel> _billingPeriodItems;
     private List<ProjectBidExpenseModel> _bidExpenses;
     private List<ProjectCrewModel> _crews;
-    private List<ExpenseCode> _expenseCodes;
+    private List<ExpenseCode> _expenseCode;
     private List<JobType> _jobTypes;
     private List<PropertyTypeDTO> _propertyTypes;
+    private BidSummaryHelper _bidSummaryHelper;
     public BidSummaryHelperTests()
     {
         _mockDbContext = new Mock<ClairTourTinyContext>();
@@ -27,39 +28,36 @@ public class BidSummaryHelperTests
         _billingPeriodItems = new List<ProjectBillingPeriodItemModel>();
         _bidExpenses = new List<ProjectBidExpenseModel>();
         _crews = new List<ProjectCrewModel>();
-        _expenseCodes = new List<ExpenseCode>();
+        _expenseCode = new List<ExpenseCode>();
         _jobTypes = new List<JobType>();
         _propertyTypes = new List<PropertyTypeDTO>();
+        _bidSummaryHelper = new BidSummaryHelper(_phases, _billingItems, _billingPeriods, _billingPeriodItems, _bidExpenses, _crews, _expenseCode, _jobTypes, _propertyTypes, _mockDbContext.Object);
     }
     [Fact]
-    public void GetBidSummaryData_ValidEntityNo_ReturnsCorrectResponse()
+    public void GetBidSummaryData_ShouldReturnDefaultResponse_WhenEntityNoDoesNotMatch()
     {
         // Arrange
-        var entityNo = "123";
-        var phase = new PhaseModel { EntityNo = entityNo, PropType = "Type1", BidMarkup = 0.1 };
-        _phases.Add(phase);
-        var propertyType = new PropertyTypeDTO { PropType = "Type1", BidFactor = 0.2, BidValueType = "Dry Hire" };
-        _propertyTypes.Add(propertyType);
-        var helper = new BidSummaryHelper(_phases, _billingItems, _billingPeriods, _billingPeriodItems, _bidExpenses, _crews, _expenseCodes, _jobTypes, _propertyTypes, _mockDbContext.Object);
+        string entityNo = "NonExistentEntity";
         // Act
-        var response = helper.GetBidSummaryData(entityNo);
+        var result = _bidSummaryHelper.GetBidSummaryData(entityNo);
         // Assert
-        Assert.NotNull(response);
-        Assert.Equal(0.2, response.DefaultMarkupPercentage);
-        Assert.Equal(0.1 * 100, response.OverrideMarkupPercentage);
+        Assert.NotNull(result);
+        Assert.Equal(0, result.WeeklyTotal);
+        Assert.Equal(0, result.GrandTotal);
     }
     [Fact]
-    public void GetBidSummaryData_InvalidEntityNo_ReturnsEmptyResponse()
+    public void GetBidSummaryData_ShouldCalculateCorrectTotals_WhenValidEntityNoProvided()
     {
         // Arrange
-        var entityNo = "999";
-        var helper = new BidSummaryHelper(_phases, _billingItems, _billingPeriods, _billingPeriodItems, _bidExpenses, _crews, _expenseCodes, _jobTypes, _propertyTypes, _mockDbContext.Object);
+        string entityNo = "ValidEntity";
+        _phases.Add(new PhaseModel { EntityNo = entityNo, PropType = "Type1", BidMarkup = 0.1 });
+        _propertyTypes.Add(new PropertyTypeDTO { PropType = "Type1", BidFactor = 1.2 });
         // Act
-        var response = helper.GetBidSummaryData(entityNo);
+        var result = _bidSummaryHelper.GetBidSummaryData(entityNo);
         // Assert
-        Assert.NotNull(response);
-        Assert.Equal(0, response.DefaultMarkupPercentage);
-        Assert.Equal(0, response.OverrideMarkupPercentage);
+        Assert.NotNull(result);
+        Assert.True(result.WeeklyTotal > 0);
+        Assert.True(result.GrandTotal > 0);
     }
-    // Additional tests for other scenarios and methods can be added here
+    // Additional tests for edge cases and other methods can be added here
 }

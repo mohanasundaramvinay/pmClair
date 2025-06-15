@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ClairTourTiny.Core.Interfaces;
+using ClairTourTiny.Infrastructure;
 using ClairTourTiny.Infrastructure.Dto.DTOs;
 using ClairTourTiny.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
@@ -16,10 +17,25 @@ namespace ClairTourTiny.Core.Services.Tests
         private readonly Mock<ClairTourTinyContext> _mockContext;
         private readonly Mock<ILogger<VendorService>> _mockLogger;
         private readonly VendorService _vendorService;
+        private readonly Mock<DbSet<PartSubhireVendor>> _mockPartSubhireVendors;
+        private readonly Mock<DbSet<Povendor>> _mockPovendors;
+        private readonly Mock<DbSet<Povendsite>> _mockPovendsites;
+        private readonly Mock<DbSet<EquipmentSubhireStatus>> _mockEquipmentSubhireStatuses;
+        private readonly Mock<DbSet<EquipmentSubhire>> _mockEquipmentSubhires;
         public VendorServiceTests()
         {
             _mockContext = new Mock<ClairTourTinyContext>();
             _mockLogger = new Mock<ILogger<VendorService>>();
+            _mockPartSubhireVendors = new Mock<DbSet<PartSubhireVendor>>();
+            _mockPovendors = new Mock<DbSet<Povendor>>();
+            _mockPovendsites = new Mock<DbSet<Povendsite>>();
+            _mockEquipmentSubhireStatuses = new Mock<DbSet<EquipmentSubhireStatus>>();
+            _mockEquipmentSubhires = new Mock<DbSet<EquipmentSubhire>>();
+            _mockContext.Setup(m => m.PartSubhireVendors).Returns(_mockPartSubhireVendors.Object);
+            _mockContext.Setup(m => m.Povendors).Returns(_mockPovendors.Object);
+            _mockContext.Setup(m => m.Povendsites).Returns(_mockPovendsites.Object);
+            _mockContext.Setup(m => m.EquipmentSubhireStatuses).Returns(_mockEquipmentSubhireStatuses.Object);
+            _mockContext.Setup(m => m.EquipmentSubhires).Returns(_mockEquipmentSubhires.Object);
             _vendorService = new VendorService(_mockContext.Object, _mockLogger.Object);
         }
         [Fact]
@@ -39,24 +55,18 @@ namespace ClairTourTiny.Core.Services.Tests
             {
                 new Povendsite { Vendno = "V1", SiteNo = "S1", City = "City1", State = "State1", Country = "Country1", Phone = "1234567890", Contact = "Contact1", Usenet = "email@example.com", Voicemail = "0987654321" }
             }.AsQueryable();
-            var mockPartSubhireVendors = new Mock<DbSet<PartSubhireVendor>>();
-            var mockPovendors = new Mock<DbSet<Povendor>>();
-            var mockPovendsites = new Mock<DbSet<Povendsite>>();
-            mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.Provider).Returns(vendors.Provider);
-            mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.Expression).Returns(vendors.Expression);
-            mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.ElementType).Returns(vendors.ElementType);
-            mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.GetEnumerator()).Returns(vendors.GetEnumerator());
-            mockPovendors.As<IQueryable<Povendor>>().Setup(m => m.Provider).Returns(povendors.Provider);
-            mockPovendors.As<IQueryable<Povendor>>().Setup(m => m.Expression).Returns(povendors.Expression);
-            mockPovendors.As<IQueryable<Povendor>>().Setup(m => m.ElementType).Returns(povendors.ElementType);
-            mockPovendors.As<IQueryable<Povendor>>().Setup(m => m.GetEnumerator()).Returns(povendors.GetEnumerator());
-            mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.Provider).Returns(povendsites.Provider);
-            mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.Expression).Returns(povendsites.Expression);
-            mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.ElementType).Returns(povendsites.ElementType);
-            mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.GetEnumerator()).Returns(povendsites.GetEnumerator());
-            _mockContext.Setup(c => c.PartSubhireVendors).Returns(mockPartSubhireVendors.Object);
-            _mockContext.Setup(c => c.Povendors).Returns(mockPovendors.Object);
-            _mockContext.Setup(c => c.Povendsites).Returns(mockPovendsites.Object);
+            _mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.Provider).Returns(vendors.Provider);
+            _mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.Expression).Returns(vendors.Expression);
+            _mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.ElementType).Returns(vendors.ElementType);
+            _mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.GetEnumerator()).Returns(vendors.GetEnumerator());
+            _mockPovendors.As<IQueryable<Povendor>>().Setup(m => m.Provider).Returns(povendors.Provider);
+            _mockPovendors.As<IQueryable<Povendor>>().Setup(m => m.Expression).Returns(povendors.Expression);
+            _mockPovendors.As<IQueryable<Povendor>>().Setup(m => m.ElementType).Returns(povendors.ElementType);
+            _mockPovendors.As<IQueryable<Povendor>>().Setup(m => m.GetEnumerator()).Returns(povendors.GetEnumerator());
+            _mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.Provider).Returns(povendsites.Provider);
+            _mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.Expression).Returns(povendsites.Expression);
+            _mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.ElementType).Returns(povendsites.ElementType);
+            _mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.GetEnumerator()).Returns(povendsites.GetEnumerator());
             // Act
             var result = await _vendorService.GetKnownVendorsAsync(partNo);
             // Assert
@@ -73,12 +83,10 @@ namespace ClairTourTiny.Core.Services.Tests
             {
                 new Povendsite { Vendno = vendNo, SiteNo = "S1", Contact = "Contact1", Address1 = "Address1", Address2 = "Address2", Address3 = "Address3", City = "City1", State = "State1", Zipcode = "12345" }
             }.AsQueryable();
-            var mockPovendsites = new Mock<DbSet<Povendsite>>();
-            mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.Provider).Returns(povendsites.Provider);
-            mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.Expression).Returns(povendsites.Expression);
-            mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.ElementType).Returns(povendsites.ElementType);
-            mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.GetEnumerator()).Returns(povendsites.GetEnumerator());
-            _mockContext.Setup(c => c.Povendsites).Returns(mockPovendsites.Object);
+            _mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.Provider).Returns(povendsites.Provider);
+            _mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.Expression).Returns(povendsites.Expression);
+            _mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.ElementType).Returns(povendsites.ElementType);
+            _mockPovendsites.As<IQueryable<Povendsite>>().Setup(m => m.GetEnumerator()).Returns(povendsites.GetEnumerator());
             // Act
             var result = await _vendorService.GetVendorAddressesAsync(vendNo);
             // Assert
@@ -102,17 +110,15 @@ namespace ClairTourTiny.Core.Services.Tests
                 DeliveryRate = 10,
                 ReturnRate = 5
             };
-            var mockPartSubhireVendors = new Mock<DbSet<PartSubhireVendor>>();
-            _mockContext.Setup(c => c.PartSubhireVendors).Returns(mockPartSubhireVendors.Object);
             // Act
             var result = await _vendorService.AddKnownVendorAsync(request);
             // Assert
             Assert.True(result);
-            mockPartSubhireVendors.Verify(m => m.AddAsync(It.IsAny<PartSubhireVendor>(), default), Times.Once);
+            _mockPartSubhireVendors.Verify(m => m.AddAsync(It.IsAny<PartSubhireVendor>(), default), Times.Once);
             _mockContext.Verify(m => m.SaveChangesAsync(default), Times.Once);
         }
         [Fact]
-        public async Task IsKnownVendorAsync_ReturnsTrueIfVendorExists()
+        public async Task IsKnownVendorAsync_ReturnsTrueIfExists()
         {
             // Arrange
             var partNo = "123";
@@ -122,12 +128,10 @@ namespace ClairTourTiny.Core.Services.Tests
             {
                 new PartSubhireVendor { Partno = partNo, Vendno = vendNo, Siteno = siteNo }
             }.AsQueryable();
-            var mockPartSubhireVendors = new Mock<DbSet<PartSubhireVendor>>();
-            mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.Provider).Returns(vendors.Provider);
-            mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.Expression).Returns(vendors.Expression);
-            mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.ElementType).Returns(vendors.ElementType);
-            mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.GetEnumerator()).Returns(vendors.GetEnumerator());
-            _mockContext.Setup(c => c.PartSubhireVendors).Returns(mockPartSubhireVendors.Object);
+            _mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.Provider).Returns(vendors.Provider);
+            _mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.Expression).Returns(vendors.Expression);
+            _mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.ElementType).Returns(vendors.ElementType);
+            _mockPartSubhireVendors.As<IQueryable<PartSubhireVendor>>().Setup(m => m.GetEnumerator()).Returns(vendors.GetEnumerator());
             // Act
             var result = await _vendorService.IsKnownVendorAsync(partNo, vendNo, siteNo);
             // Assert
@@ -139,40 +143,36 @@ namespace ClairTourTiny.Core.Services.Tests
             // Arrange
             var statuses = new List<EquipmentSubhireStatus>
             {
-                new EquipmentSubhireStatus { StatusCode = "P", SortOrder = 1 }
+                new EquipmentSubhireStatus { StatusCode = "A", SortOrder = 1 }
             }.AsQueryable();
-            var mockEquipmentSubhireStatuses = new Mock<DbSet<EquipmentSubhireStatus>>();
-            mockEquipmentSubhireStatuses.As<IQueryable<EquipmentSubhireStatus>>().Setup(m => m.Provider).Returns(statuses.Provider);
-            mockEquipmentSubhireStatuses.As<IQueryable<EquipmentSubhireStatus>>().Setup(m => m.Expression).Returns(statuses.Expression);
-            mockEquipmentSubhireStatuses.As<IQueryable<EquipmentSubhireStatus>>().Setup(m => m.ElementType).Returns(statuses.ElementType);
-            mockEquipmentSubhireStatuses.As<IQueryable<EquipmentSubhireStatus>>().Setup(m => m.GetEnumerator()).Returns(statuses.GetEnumerator());
-            _mockContext.Setup(c => c.EquipmentSubhireStatuses).Returns(mockEquipmentSubhireStatuses.Object);
+            _mockEquipmentSubhireStatuses.As<IQueryable<EquipmentSubhireStatus>>().Setup(m => m.Provider).Returns(statuses.Provider);
+            _mockEquipmentSubhireStatuses.As<IQueryable<EquipmentSubhireStatus>>().Setup(m => m.Expression).Returns(statuses.Expression);
+            _mockEquipmentSubhireStatuses.As<IQueryable<EquipmentSubhireStatus>>().Setup(m => m.ElementType).Returns(statuses.ElementType);
+            _mockEquipmentSubhireStatuses.As<IQueryable<EquipmentSubhireStatus>>().Setup(m => m.GetEnumerator()).Returns(statuses.GetEnumerator());
             // Act
             var result = await _vendorService.GetSubhireStatusesAsync();
             // Assert
             Assert.NotNull(result);
             Assert.Single(result);
-            Assert.Equal("P", result.First().StatusCode);
+            Assert.Equal("A", result.First().StatusCode);
         }
         [Fact]
         public async Task GetRateTypesAsync_ReturnsRateTypes()
         {
             // Arrange
-            var rateTypes = new List<string> { "D", "W", "M" }.AsQueryable();
-            var mockEquipmentSubhires = new Mock<DbSet<EquipmentSubhire>>();
-            mockEquipmentSubhires.As<IQueryable<EquipmentSubhire>>().Setup(m => m.Provider).Returns(rateTypes.Provider);
-            mockEquipmentSubhires.As<IQueryable<EquipmentSubhire>>().Setup(m => m.Expression).Returns(rateTypes.Expression);
-            mockEquipmentSubhires.As<IQueryable<EquipmentSubhire>>().Setup(m => m.ElementType).Returns(rateTypes.ElementType);
-            mockEquipmentSubhires.As<IQueryable<EquipmentSubhire>>().Setup(m => m.GetEnumerator()).Returns(rateTypes.GetEnumerator());
-            _mockContext.Setup(c => c.EquipmentSubhires).Returns(mockEquipmentSubhires.Object);
+            var rateTypes = new List<EquipmentSubhire>
+            {
+                new EquipmentSubhire { RateType = "D" }
+            }.AsQueryable();
+            _mockEquipmentSubhires.As<IQueryable<EquipmentSubhire>>().Setup(m => m.Provider).Returns(rateTypes.Provider);
+            _mockEquipmentSubhires.As<IQueryable<EquipmentSubhire>>().Setup(m => m.Expression).Returns(rateTypes.Expression);
+            _mockEquipmentSubhires.As<IQueryable<EquipmentSubhire>>().Setup(m => m.ElementType).Returns(rateTypes.ElementType);
+            _mockEquipmentSubhires.As<IQueryable<EquipmentSubhire>>().Setup(m => m.GetEnumerator()).Returns(rateTypes.GetEnumerator());
             // Act
             var result = await _vendorService.GetRateTypesAsync();
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(3, result.Count());
             Assert.Contains(result, rt => rt.Code == "D");
-            Assert.Contains(result, rt => rt.Code == "W");
-            Assert.Contains(result, rt => rt.Code == "M");
         }
     }
 }

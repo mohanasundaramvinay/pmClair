@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using Xunit;
+using ClairTourTiny.Core.Models.ProjectMaintenance;
 
-namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
+namespace ClairTourTiny.Tests.Core.Models.ProjectMaintenance
 {
     public class CrewSummaryResponseTests
     {
@@ -17,7 +18,7 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
         }
 
         [Fact]
-        public void CrewSummaryResponse_InitializesWithSubtotal()
+        public void CrewSummaryResponse_InitializesWithNonNullSubtotal()
         {
             // Arrange & Act
             var response = new CrewSummaryResponse();
@@ -31,7 +32,7 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
         {
             // Arrange
             var response = new CrewSummaryResponse();
-            var item = new ItemSummary();
+            var item = new ItemSummary(); // Assuming ItemSummary has a parameterless constructor
 
             // Act
             response.Items.Add(item);
@@ -42,5 +43,3 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
         }
     }
 }
-
-// Note: ItemSummary and SubtotalSummary classes need to be defined or mocked if they have specific behaviors to test.

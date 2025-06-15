@@ -5,34 +5,25 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
     public class ProjectPartBidValueModelTests
     {
         [Test]
-        public void PartNo_ShouldBeSetAndRetrievedCorrectly()
+        public void DefaultValues_ShouldBeEmptyOrZero()
+        {
+            var model = new ProjectPartBidValueModel();
+            Assert.AreEqual(string.Empty, model.PartNo);
+            Assert.AreEqual(string.Empty, model.Currency);
+            Assert.AreEqual(string.Empty, model.ValueType);
+            Assert.AreEqual(0.0, model.BidValue);
+        }
+        [Test]
+        public void SetAndGetProperties_ShouldReturnCorrectValues()
         {
             var model = new ProjectPartBidValueModel();
             model.PartNo = "12345";
-            Assert.AreEqual("12345", model.PartNo);
-        }
-
-        [Test]
-        public void Currency_ShouldBeSetAndRetrievedCorrectly()
-        {
-            var model = new ProjectPartBidValueModel();
             model.Currency = "USD";
-            Assert.AreEqual("USD", model.Currency);
-        }
-
-        [Test]
-        public void ValueType_ShouldBeSetAndRetrievedCorrectly()
-        {
-            var model = new ProjectPartBidValueModel();
             model.ValueType = "Fixed";
-            Assert.AreEqual("Fixed", model.ValueType);
-        }
-
-        [Test]
-        public void BidValue_ShouldBeSetAndRetrievedCorrectly()
-        {
-            var model = new ProjectPartBidValueModel();
             model.BidValue = 1000.50;
+            Assert.AreEqual("12345", model.PartNo);
+            Assert.AreEqual("USD", model.Currency);
+            Assert.AreEqual("Fixed", model.ValueType);
             Assert.AreEqual(1000.50, model.BidValue);
         }
     }

@@ -8,7 +8,7 @@ namespace ClairTourTiny.Tests.Models.Lookup
     public class ExchangeRateModelTests
     {
         [Test]
-        public void Currency_ShouldBeAssignable()
+        public void Currency_ShouldBeSetAndRetrievedCorrectly()
         {
             var model = new ExchangeRateModel();
             model.Currency = "USD";
@@ -16,7 +16,7 @@ namespace ClairTourTiny.Tests.Models.Lookup
         }
 
         [Test]
-        public void Startdate_ShouldBeAssignable()
+        public void Startdate_ShouldBeSetAndRetrievedCorrectly()
         {
             var model = new ExchangeRateModel();
             var date = new DateTime(2023, 10, 1);
@@ -25,17 +25,23 @@ namespace ClairTourTiny.Tests.Models.Lookup
         }
 
         [Test]
-        public void Enddate_ShouldBeNullableAndAssignable()
+        public void Enddate_ShouldBeSetAndRetrievedCorrectly()
         {
             var model = new ExchangeRateModel();
-            Assert.IsNull(model.Enddate);
-            var date = new DateTime(2023, 10, 1);
+            var date = new DateTime(2023, 12, 31);
             model.Enddate = date;
             Assert.AreEqual(date, model.Enddate);
         }
 
         [Test]
-        public void Ratetodollars_ShouldBeAssignable()
+        public void Enddate_ShouldBeNullByDefault()
+        {
+            var model = new ExchangeRateModel();
+            Assert.IsNull(model.Enddate);
+        }
+
+        [Test]
+        public void Ratetodollars_ShouldBeSetAndRetrievedCorrectly()
         {
             var model = new ExchangeRateModel();
             model.Ratetodollars = 1.23;

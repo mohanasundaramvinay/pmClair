@@ -1,69 +1,64 @@
+using System;
 using NUnit.Framework;
 using ClairTourTiny.Core.Models.ProjectMaintenance;
-using System;
 
-namespace ClairTourTiny.Tests
+namespace ClairTourTiny.Tests.Models.ProjectMaintenance
 {
     [TestFixture]
     public class ProjectAssignedCrewOtModelTests
     {
         [Test]
-        public void EmpNo_ShouldBeSetAndRetrievedCorrectly()
+        public void Test_EmpNo_Property()
         {
             var model = new ProjectAssignedCrewOtModel();
-            model.EmpNo = "12345";
-            Assert.AreEqual("12345", model.EmpNo);
+            var testValue = "12345";
+            model.EmpNo = testValue;
+            Assert.AreEqual(testValue, model.EmpNo);
         }
 
         [Test]
-        public void EntityNo_ShouldBeSetAndRetrievedCorrectly()
+        public void Test_EntityNo_Property()
         {
             var model = new ProjectAssignedCrewOtModel();
-            model.EntityNo = "67890";
-            Assert.AreEqual("67890", model.EntityNo);
+            var testValue = "ENT001";
+            model.EntityNo = testValue;
+            Assert.AreEqual(testValue, model.EntityNo);
         }
 
         [Test]
-        public void JobType_ShouldBeSetAndRetrievedCorrectly()
+        public void Test_JobType_Property()
         {
             var model = new ProjectAssignedCrewOtModel();
-            model.JobType = "FullTime";
-            Assert.AreEqual("FullTime", model.JobType);
+            var testValue = "FullTime";
+            model.JobType = testValue;
+            Assert.AreEqual(testValue, model.JobType);
         }
 
         [Test]
-        public void FromDate_ShouldBeSetAndRetrievedCorrectly()
+        public void Test_FromDate_Property()
         {
             var model = new ProjectAssignedCrewOtModel();
-            var date = new DateTime(2023, 10, 1);
-            model.FromDate = date;
-            Assert.AreEqual(date, model.FromDate);
+            var testValue = new DateTime(2023, 10, 1);
+            model.FromDate = testValue;
+            Assert.AreEqual(testValue, model.FromDate);
         }
 
         [Test]
-        public void RateType_ShouldBeSetAndRetrievedCorrectly()
+        public void Test_RateType_Property()
         {
             var model = new ProjectAssignedCrewOtModel();
-            model.RateType = "Hourly";
-            Assert.AreEqual("Hourly", model.RateType);
+            var testValue = "Hourly";
+            model.RateType = testValue;
+            Assert.AreEqual(testValue, model.RateType);
         }
 
         [Test]
-        public void Hours_ShouldBeSetAndRetrievedCorrectly()
+        public void Test_Hours_Property()
         {
             var model = new ProjectAssignedCrewOtModel();
-            model.Hours = 8.5;
-            Assert.AreEqual(8.5, model.Hours);
-        }
-
-        [Test]
-        public void DefaultValues_ShouldBeInitializedCorrectly()
-        {
-            var model = new ProjectAssignedCrewOtModel();
-            Assert.AreEqual(string.Empty, model.EmpNo);
-            Assert.AreEqual(string.Empty, model.EntityNo);
-            Assert.AreEqual(string.Empty, model.JobType);
-            Assert.AreEqual(string.Empty, model.RateType);
+            var testValue = 8.5;
+            model.Hours = testValue;
+            Assert.AreEqual(testValue, model.Hours);
         }
     }
 }
