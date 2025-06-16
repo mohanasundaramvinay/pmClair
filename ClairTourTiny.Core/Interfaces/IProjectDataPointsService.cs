@@ -339,5 +339,20 @@ namespace ClairTourTiny.Core.Interfaces
         /// <param name="request">Request containing part numbers and optional from date</param>
         /// <returns>List of bottleneck calculations for each part number</returns>
         Task<List<PartBottleneckDto>> CalculatePartBottlenecksAsync(PartBottleneckRequestDto request);
+
+        /// <summary>
+        /// Gets vendors for a specific part number or all vendors based on the isKnownVendor flag
+        /// </summary>
+        /// <param name="partNo">The part number to get vendors for</param>
+        /// <param name="isKnownVendor">Flag indicating if the part is known (true = get part-specific vendors, false = get all vendors)</param>
+        /// <returns>List of vendor information for the specified part or all vendors based on the flag</returns>
+        Task<IEnumerable<VendorDto>> GetPartVendorsAsync(string partNo, bool isKnownVendor);
+
+        /// <summary>
+        /// Searches vendors by name, vendor number, or contact information
+        /// </summary>
+        /// <param name="searchTerm">The search term to filter vendors</param>
+        /// <returns>List of matching vendors</returns>
+        Task<IEnumerable<VendorDto>> SearchVendorsAsync(string searchTerm);
     }
 } 

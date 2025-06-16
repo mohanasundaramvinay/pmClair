@@ -1611,6 +1611,153 @@ namespace ClairTourTiny.Core.Services
         }
     }
 
+    /// <summary>
+    /// Gets vendors for a specific part number or all vendors based on the isKnownVendor flag
+    /// </summary>
+    /// <param name="partNo">The part number to get vendors for</param>
+    /// <param name="isKnownVendor">Flag indicating if the part is known (true = get part-specific vendors, false = get all vendors)</param>
+    /// <returns>List of vendor information for the specified part or all vendors based on the flag</returns>
+    public async Task<IEnumerable<VendorDto>> GetPartVendorsAsync(string partNo, bool isKnownVendor)
+    {
+        try
+        {
+            // Configure context for read-only performance
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            if (isKnownVendor)
+            {
+                // Part is known - get vendors for this specific part with optimized joins
+                var vendors = await _context.PartSubhireVendors
+                    .Where(p => p.Partno == partNo)
+                    .Join(_context.Povendors,
+                        p => p.Vendno,
+                        v => v.Vendno,
+                        (p, v) => new { PartVendor = p, Vendor = v })
+                    .Join(_context.Povendsites,
+                        pv => new { pv.PartVendor.Vendno, SiteNo = pv.PartVendor.Siteno },
+                        s => new { s.Vendno, SiteNo = s.SiteNo },
+                        (pv, s) => new VendorDto
+                        {
+                            VendNo = pv.PartVendor.Vendno,
+                            SiteNo = pv.PartVendor.Siteno,
+                            VendorName = pv.Vendor.VendorName,
+                            Currency = pv.PartVendor.Currency ?? "USD",
+                            Rate = pv.PartVendor.Rate,
+                            RateType = pv.PartVendor.RateType,
+                            TwoDayWeek = pv.PartVendor.RateType == "D" ? pv.PartVendor.Rate * 2 : 0,
+                            ThreeDayWeek = pv.PartVendor.RateType == "D" ? pv.PartVendor.Rate * 3 : 0,
+                            DeliveryRate = pv.PartVendor.DeliveryRate,
+                            ReturnRate = pv.PartVendor.ReturnRate,
+                            City = s.City,
+                            State = s.State,
+                            Country = s.Country,
+                            Phone = s.Phone,
+                            Contact = s.Contact,
+                            Email = s.Usenet,
+                            Mobile = s.Voicemail
+                        })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                return vendors;
+            }
+            else
+            {
+                // Part is not known - get all vendors with optimized query
+                var allVendors = await _context.Povendors
+                    .Join(_context.Povendsites,
+                        v => v.Vendno,
+                        s => s.Vendno,
+                        (v, s) => new VendorDto
+                        {
+                            VendNo = v.Vendno,
+                            SiteNo = s.SiteNo,
+                            VendorName = v.VendorName,
+                            Currency = "USD", // Default currency when no part-specific data
+                            Rate = 0, // Default rate when no part-specific data
+                            RateType = "D", // Default rate type
+                            TwoDayWeek = 0,
+                            ThreeDayWeek = 0,
+                            DeliveryRate = 0,
+                            ReturnRate = 0,
+                            City = s.City,
+                            State = s.State,
+                            Country = s.Country,
+                            Phone = s.Phone,
+                            Contact = s.Contact,
+                            Email = s.Usenet,
+                            Mobile = s.Voicemail
+                        })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                return allVendors;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving vendors for part {PartNo} with isKnownVendor flag {IsKnownVendor}", partNo, isKnownVendor);
+            throw new ApplicationException("An error occurred while retrieving vendors. Please try again later.", ex);
+        }
+    }
+
+    /// <summary>
+    /// Searches vendors by name, vendor number, or contact information
+    /// </summary>
+    /// <param name="searchTerm">The search term to filter vendors</param>
+    /// <returns>List of matching vendors</returns>
+    public async Task<IEnumerable<VendorDto>> SearchVendorsAsync(string searchTerm)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return new List<VendorDto>();
+            }
+
+            // Configure context for read-only performance
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            // Search vendors with optimized query
+            var searchResults = await _context.Povendors
+                .Where(v => v.VendorName.Contains(searchTerm) || 
+                           v.Vendno.Contains(searchTerm))
+                .Join(_context.Povendsites,
+                    v => v.Vendno,
+                    s => s.Vendno,
+                    (v, s) => new VendorDto
+                    {
+                        VendNo = v.Vendno,
+                        SiteNo = s.SiteNo,
+                        VendorName = v.VendorName,
+                        Currency = "USD", // Default currency for search results
+                        Rate = 0, // Default rate for search results
+                        RateType = "D", // Default rate type
+                        TwoDayWeek = 0,
+                        ThreeDayWeek = 0,
+                        DeliveryRate = 0,
+                        ReturnRate = 0,
+                        City = s.City,
+                        State = s.State,
+                        Country = s.Country,
+                        Phone = s.Phone,
+                        Contact = s.Contact,
+                        Email = s.Usenet,
+                        Mobile = s.Voicemail
+                    })
+                .AsNoTracking()
+                .OrderBy(v => v.VendorName)
+                .ToListAsync();
+
+            return searchResults;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error searching vendors with term {SearchTerm}", searchTerm);
+            throw new ApplicationException("An error occurred while searching vendors. Please try again later.", ex);
+        }
+    }
+
 }
 
     

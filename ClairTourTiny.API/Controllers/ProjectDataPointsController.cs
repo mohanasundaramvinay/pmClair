@@ -1856,5 +1856,150 @@ namespace ClairTourTiny.API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Gets vendors for a specific part number or all vendors based on the isKnownVendor flag
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///     GET /api/ProjectDataPoints/part-vendors/PART001?isKnownVendor=true
+        ///     GET /api/ProjectDataPoints/part-vendors/PART001?isKnownVendor=false
+        /// 
+        /// Returns vendor information including:
+        /// * Vendor number and site number
+        /// * Vendor name and contact information
+        /// * Currency and rate information
+        /// * Two day and three day week rates (calculated for daily rate type)
+        /// * Delivery and return rates
+        /// * Location information (city, state, country)
+        /// * Contact details (phone, contact person, email, mobile)
+        /// 
+        /// When isKnownVendor is true: Returns only vendors for the specified part from PartSubhireVendors table.
+        /// When isKnownVendor is false: Returns all vendor details from the system.
+        /// 
+        /// Sample response:
+        /// 
+        ///     [
+        ///         {
+        ///             "vendNo": "V001",
+        ///             "siteNo": "S001",
+        ///             "vendorName": "ABC Equipment Co.",
+        ///             "currency": "USD",
+        ///             "rate": 150.00,
+        ///             "rateType": "D",
+        ///             "twoDayWeek": 300.00,
+        ///             "threeDayWeek": 450.00,
+        ///             "deliveryRate": 25.00,
+        ///             "returnRate": 25.00,
+        ///             "city": "New York",
+        ///             "state": "NY",
+        ///             "country": "USA",
+        ///             "phone": "555-123-4567",
+        ///             "contact": "John Smith",
+        ///             "email": "john.smith@abcequipment.com",
+        ///             "mobile": "555-987-6543"
+        ///         }
+        ///     ]
+        /// 
+        /// The query joins PartSubhireVendors, povendor, and povendsite tables to provide
+        /// comprehensive vendor information with calculated rates for different time periods.
+        /// </remarks>
+        /// <param name="partNo">The part number to get vendors for</param>
+        /// <param name="isKnownVendor">Flag indicating if the part is known (true = get part-specific vendors, false = get all vendors)</param>
+        /// <returns>List of vendor information for the specified part or all vendors based on the flag</returns>
+        /// <response code="200">Returns the list of vendors</response>
+        /// <response code="400">If the part number is empty</response>
+        /// <response code="500">If there was an internal server error</response>
+        [HttpGet("part-vendors/{partNo}")]
+        [ProducesResponseType(typeof(IEnumerable<VendorDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Produces("application/json")]
+        public async Task<ActionResult<IEnumerable<VendorDto>>> GetPartVendors(string partNo, [FromQuery] bool isKnownVendor)
+        {
+            if (string.IsNullOrWhiteSpace(partNo))
+            {
+                return BadRequest("Part number cannot be empty");
+            }
+
+            try
+            {
+                var vendors = await _projectDataService.GetPartVendorsAsync(partNo, isKnownVendor);
+                return Ok(vendors);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Searches vendors by name, vendor number, or contact information
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///     GET /api/ProjectDataPoints/vendors/search?searchTerm=ABC
+        ///     GET /api/ProjectDataPoints/vendors/search?searchTerm=V001
+        /// 
+        /// Searches for vendors where the search term matches:
+        /// * Vendor name (partial match)
+        /// * Vendor number (partial match)
+        /// 
+        /// Results are ordered by vendor name.
+        /// 
+        /// Sample response:
+        /// 
+        ///     [
+        ///         {
+        ///             "vendNo": "V001",
+        ///             "siteNo": "S001",
+        ///             "vendorName": "ABC Equipment Co.",
+        ///             "currency": "USD",
+        ///             "rate": 0,
+        ///             "rateType": "D",
+        ///             "twoDayWeek": 0,
+        ///             "threeDayWeek": 0,
+        ///             "deliveryRate": 0,
+        ///             "returnRate": 0,
+        ///             "city": "New York",
+        ///             "state": "NY",
+        ///             "country": "USA",
+        ///             "phone": "555-123-4567",
+        ///             "contact": "John Smith",
+        ///             "email": "john.smith@abcequipment.com",
+        ///             "mobile": "555-987-6543"
+        ///         }
+        ///     ]
+        /// 
+        /// Note: Search results include default values for rate-related fields
+        /// since they are not part-specific in the search context.
+        /// </remarks>
+        /// <param name="searchTerm">The search term to filter vendors</param>
+        /// <returns>List of matching vendors</returns>
+        /// <response code="200">Returns the list of matching vendors</response>
+        /// <response code="400">If the search term is empty</response>
+        /// <response code="500">If there was an internal server error</response>
+        [HttpGet("vendors/search")]
+        [ProducesResponseType(typeof(IEnumerable<VendorDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Produces("application/json")]
+        public async Task<ActionResult<IEnumerable<VendorDto>>> SearchVendors([FromQuery] string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return BadRequest("Search term cannot be empty");
+            }
+
+            try
+            {
+                var vendors = await _projectDataService.SearchVendorsAsync(searchTerm);
+                return Ok(vendors);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 } 
