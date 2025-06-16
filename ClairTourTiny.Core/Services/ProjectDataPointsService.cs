@@ -1035,11 +1035,26 @@ namespace ClairTourTiny.Core.Services
                     throw new ArgumentNullException(nameof(request));
                 }
 
+                // Configure context for read-only performance
+                _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+                // Get user warehouses once if needed
+                List<string> userWarehousesForFlags = new List<string>();
+                if (request.OnlyMyWarehouses)
+                {
+                    userWarehousesForFlags = await _context.Pjtfrusrs
+                        .Select(u => u.WarehouseEntity)
+                        .ToListAsync();
+                    
+                    if (!userWarehousesForFlags.Any())
+                    {
+                        return new List<PartSearchResultDto>();
+                    }
+                }
+
+                // Build the base query with minimal includes
                 var query = _context.Inparts
                     .Include(p => p.CommmodityNavigation)
-                   // .Include(p => p.PartSecondaryCategories)
-                    .Include(p => p.AvailMultipartGroup1s)
-                    .Include(p => p.Inpartsubs)
                     .AsQueryable();
 
                 // Apply search text filter
@@ -1080,25 +1095,8 @@ namespace ClairTourTiny.Core.Services
                 // Apply warehouse filter
                 if (request.OnlyMyWarehouses)
                 {
-                //    // var userName = _httpContextAccessor.HttpContext?.User?.Identity?.Name;
-                //     if (string.IsNullOrEmpty(userName))
-                //     {
-                //         _logger.LogWarning("User identity not found when filtering by warehouses");
-                //         return new List<PartSearchResultDto>();
-                //     }
-
-                    var userWarehouses = await _context.Pjtfrusrs
-                       // .Where(u => u.UserName == userName)
-                        .Select(u => u.WarehouseEntity)
-                        .ToListAsync();
-
-                    if (!userWarehouses.Any())
-                    {
-                        return new List<PartSearchResultDto>();
-                    }
-
                     query = query.Where(p => p.Inpartsubs.Any(ips => 
-                        userWarehouses.Contains(ips.Bld)));
+                        userWarehousesForFlags.Contains(ips.Bld)));
                 }
 
                 // Apply unused parts filter
@@ -1113,63 +1111,66 @@ namespace ClairTourTiny.Core.Services
                     query = query.Where(p => p.AvailMultipartGroup1s.Any());
                 }
 
-                // Get user warehouses for result set flags
-                var userWarehousesForFlags = request.OnlyMyWarehouses ? 
-                    await _context.Pjtfrusrs.Select(u => u.WarehouseEntity).ToListAsync() : 
-                    new List<string>();
-
-                // Execute query and map results
+                // Execute the main query with optimized joins
                 var results = await query
-                    .GroupJoin(
-                        _context.PartsListWeightsValues,
-                        p => p.Partno,
-                        w => w.Partno,
-                        (p, weights) => new { Part = p, Weights = weights }
-                    )
-                    .SelectMany(
-                        x => x.Weights.DefaultIfEmpty(),
-                        (x, weight) => new { x.Part, Weight = weight }
-                    )
-                    .Select(x => new PartSearchResultDto
+                    .Select(p => new
                     {
-                        PartNumber = x.Part.Partno ?? string.Empty,
-                        PartDescription = x.Part.Partdesc ?? string.Empty,
-                        Commodity = x.Part.Commmodity ?? string.Empty,
-                        PartGroup = x.Part.AvailMultipartGroup1s
+                        Part = p,
+                        // Get the first part group and sequence in a single query
+                        FirstPartGroup = p.AvailMultipartGroup1s
                             .OrderBy(g => g.Partgroup)
                             .Select(g => g.Partgroup)
-                            .FirstOrDefault() ?? "!Barcode",
-                        PartSequence = x.Part.AvailMultipartGroup1s
+                            .FirstOrDefault(),
+                        FirstPartSequence = p.AvailMultipartGroup1s
                             .OrderBy(g => g.Partseq)
                             .Select(g => (int?)g.Partseq)
-                            .FirstOrDefault() ?? 0,
-                        PartsListWeight = string.IsNullOrEmpty(x.Weight.Partno) ? 0.0 : x.Weight.Partslistweight,
-                        PartsListCubic = string.IsNullOrEmpty(x.Weight.Partno) ? (double?)null : x.Weight.Partslistcubic,
-                        PartsListValue = string.IsNullOrEmpty(x.Weight.Partno) ? 0.0 : x.Weight.Partslistvalue,
-                        Sku = x.Part.Sku ?? string.Empty,
-                        IsUnusedPart = x.Part.Commmodity == "UNUSED",
-                        IsInMyWarehouse = userWarehousesForFlags.Any() && x.Part.Inpartsubs.Any(ips => userWarehousesForFlags.Contains(ips.Bld)),
-                        IsMyPart = x.Part.AvailMultipartGroup1s.Any()
+                            .FirstOrDefault(),
+                        HasPartGroups = p.AvailMultipartGroup1s.Any(),
+                        // Check if part is in user warehouses
+                        IsInMyWarehouse = userWarehousesForFlags.Any() && 
+                            p.Inpartsubs.Any(ips => userWarehousesForFlags.Contains(ips.Bld))
                     })
-                    .OrderBy(p => p.PartGroup)
-                    .ThenBy(p => p.PartSequence)
-                    .ThenBy(p => p.PartDescription)
                     .ToListAsync();
-                    
-                    
 
-                // Handle null values for keyless entity after the query
-                foreach (var result in results)
+                // Get part weights in a separate optimized query
+                var partNumbers = results.Select(r => r.Part.Partno).Where(p => !string.IsNullOrEmpty(p)).ToList();
+                var weightsDict = new Dictionary<string, (double weight, double? cubic, double value)>();
+                
+                if (partNumbers.Any())
                 {
-                    if (result.PartsListWeight == 0 && result.PartsListValue == 0)
-                    {
-                        result.PartsListWeight = 0.0;
-                        result.PartsListCubic = null;
-                        result.PartsListValue = 0.0;
-                    }
+                    var weights = await _context.PartsListWeightsValues
+                        .Where(w => partNumbers.Contains(w.Partno))
+                        .Select(w => new { w.Partno, w.Partslistweight, w.Partslistcubic, w.Partslistvalue })
+                        .ToListAsync();
+                    
+                    weightsDict = weights.ToDictionary(
+                        w => w.Partno,
+                        w => (w.Partslistweight, w.Partslistcubic, w.Partslistvalue)
+                    );
                 }
 
-                return results;
+                // Map to final result
+                var finalResults = results.Select(x => new PartSearchResultDto
+                {
+                    PartNumber = x.Part.Partno ?? string.Empty,
+                    PartDescription = x.Part.Partdesc ?? string.Empty,
+                    Commodity = x.Part.Commmodity ?? string.Empty,
+                    PartGroup = x.FirstPartGroup ?? "!Barcode",
+                    PartSequence = x.FirstPartSequence ?? 0,
+                    PartsListWeight = weightsDict.TryGetValue(x.Part.Partno, out var weight) ? weight.weight : 0.0,
+                    PartsListCubic = weightsDict.TryGetValue(x.Part.Partno, out var cubic) ? cubic.cubic : null,
+                    PartsListValue = weightsDict.TryGetValue(x.Part.Partno, out var value) ? value.value : 0.0,
+                    Sku = x.Part.Sku ?? string.Empty,
+                    IsUnusedPart = x.Part.Commmodity == "UNUSED",
+                    IsInMyWarehouse = x.IsInMyWarehouse,
+                    IsMyPart = x.HasPartGroups
+                })
+                .OrderBy(p => p.PartGroup)
+                .ThenBy(p => p.PartSequence)
+                .ThenBy(p => p.PartDescription)
+                .ToList();
+
+                return finalResults;
             }
             catch (Exception ex)
             {
