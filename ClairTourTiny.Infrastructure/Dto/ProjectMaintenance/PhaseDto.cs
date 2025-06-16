@@ -53,7 +53,7 @@ namespace ClairTourTiny.Infrastructure.Dto.ProjectMaintenance
         public string? CRMLeadURL { get; set; }
         public Guid? GUID { get; set; }
 
-        public decimal? PriceLevelValue { get; set; }
+        public double? PriceLevelValue { get; set; }
         public int? TaxTypeKey { get; set; }
 
         [Column("oe_orderno")]
@@ -72,6 +72,9 @@ namespace ClairTourTiny.Infrastructure.Dto.ProjectMaintenance
         public double TotalCubicInches { get; set; } = 0;
         public double TotalWeight { get; set; } = 0;
         public double TotalEquipmentCost { get; set; } = 0;
+
+        public bool? IsRackConfigured { get; set; }
+
     }
 
 }
