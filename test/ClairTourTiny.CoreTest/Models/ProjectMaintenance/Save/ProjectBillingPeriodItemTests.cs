@@ -1,110 +1,115 @@
-using System;
 using NUnit.Framework;
+using System;
 namespace ClairTourTiny.Core.Models.ProjectMaintenance.Save.Tests
 {
     [TestFixture]
     public class ProjectBillingPeriodItemTests
     {
-        [Test]
-        public void Test_UpdateTime_Property()
+        private ProjectBillingPeriodItem _projectBillingPeriodItem;
+        
+        [SetUp]
+        public void Setup()
         {
-            var item = new ProjectBillingPeriodItem();
-            var now = DateTime.Now;
-            item.UpdateTime = now;
-            Assert.AreEqual(now, item.UpdateTime);
+            _projectBillingPeriodItem = new ProjectBillingPeriodItem();
         }
+        
         [Test]
-        public void Test_IsInsert_Property()
+        public void UpdateTime_ShouldBeSetAndRetrievedCorrectly()
         {
-            var item = new ProjectBillingPeriodItem();
-            item.IsInsert = true;
-            Assert.IsTrue(item.IsInsert);
+            var dateTime = DateTime.Now;
+            _projectBillingPeriodItem.UpdateTime = dateTime;
+            Assert.AreEqual(dateTime, _projectBillingPeriodItem.UpdateTime);
         }
+        
         [Test]
-        public void Test_IsUpdate_Property()
+        public void IsInsert_ShouldBeSetAndRetrievedCorrectly()
         {
-            var item = new ProjectBillingPeriodItem();
-            item.IsUpdate = true;
-            Assert.IsTrue(item.IsUpdate);
+            _projectBillingPeriodItem.IsInsert = true;
+            Assert.IsTrue(_projectBillingPeriodItem.IsInsert);
         }
+        
         [Test]
-        public void Test_IsDelete_Property()
+        public void IsUpdate_ShouldBeSetAndRetrievedCorrectly()
         {
-            var item = new ProjectBillingPeriodItem();
-            item.IsDelete = true;
-            Assert.IsTrue(item.IsDelete);
+            _projectBillingPeriodItem.IsUpdate = true;
+            Assert.IsTrue(_projectBillingPeriodItem.IsUpdate);
         }
+        
         [Test]
-        public void Test_BidEntityno_Property()
+        public void IsDelete_ShouldBeSetAndRetrievedCorrectly()
         {
-            var item = new ProjectBillingPeriodItem();
-            var bidEntityno = "BID123";
-            item.BidEntityno = bidEntityno;
-            Assert.AreEqual(bidEntityno, item.BidEntityno);
+            _projectBillingPeriodItem.IsDelete = true;
+            Assert.IsTrue(_projectBillingPeriodItem.IsDelete);
         }
+        
         [Test]
-        public void Test_Periodno_Property()
+        public void BidEntityno_ShouldNotBeNull()
         {
-            var item = new ProjectBillingPeriodItem();
-            short periodno = 5;
-            item.Periodno = periodno;
-            Assert.AreEqual(periodno, item.Periodno);
+            Assert.Throws<ArgumentNullException>(() => _projectBillingPeriodItem.BidEntityno = null);
         }
+        
         [Test]
-        public void Test_Itemno_Property()
+        public void Periodno_ShouldBeSetAndRetrievedCorrectly()
         {
-            var item = new ProjectBillingPeriodItem();
-            short itemno = 10;
-            item.Itemno = itemno;
-            Assert.AreEqual(itemno, item.Itemno);
+            short periodNo = 5;
+            _projectBillingPeriodItem.Periodno = periodNo;
+            Assert.AreEqual(periodNo, _projectBillingPeriodItem.Periodno);
         }
+        
         [Test]
-        public void Test_StartDate_Property()
+        public void Itemno_ShouldBeSetAndRetrievedCorrectly()
         {
-            var item = new ProjectBillingPeriodItem();
+            short itemNo = 10;
+            _projectBillingPeriodItem.Itemno = itemNo;
+            Assert.AreEqual(itemNo, _projectBillingPeriodItem.Itemno);
+        }
+        
+        [Test]
+        public void StartDate_ShouldBeSetAndRetrievedCorrectly()
+        {
             DateTime? startDate = DateTime.Now;
-            item.StartDate = startDate;
-            Assert.AreEqual(startDate, item.StartDate);
+            _projectBillingPeriodItem.StartDate = startDate;
+            Assert.AreEqual(startDate, _projectBillingPeriodItem.StartDate);
         }
+        
         [Test]
-        public void Test_EndDate_Property()
+        public void EndDate_ShouldBeSetAndRetrievedCorrectly()
         {
-            var item = new ProjectBillingPeriodItem();
             DateTime? endDate = DateTime.Now;
-            item.EndDate = endDate;
-            Assert.AreEqual(endDate, item.EndDate);
+            _projectBillingPeriodItem.EndDate = endDate;
+            Assert.AreEqual(endDate, _projectBillingPeriodItem.EndDate);
         }
+        
         [Test]
-        public void Test_AdjustedWeekly_Property()
+        public void AdjustedWeekly_ShouldBeSetAndRetrievedCorrectly()
         {
-            var item = new ProjectBillingPeriodItem();
             decimal? adjustedWeekly = 100.50m;
-            item.AdjustedWeekly = adjustedWeekly;
-            Assert.AreEqual(adjustedWeekly, item.AdjustedWeekly);
+            _projectBillingPeriodItem.AdjustedWeekly = adjustedWeekly;
+            Assert.AreEqual(adjustedWeekly, _projectBillingPeriodItem.AdjustedWeekly);
         }
+        
         [Test]
-        public void Test_IsActive_Property()
+        public void IsActive_ShouldBeSetAndRetrievedCorrectly()
         {
-            var item = new ProjectBillingPeriodItem();
             int isActive = 1;
-            item.IsActive = isActive;
-            Assert.AreEqual(isActive, item.IsActive);
+            _projectBillingPeriodItem.IsActive = isActive;
+            Assert.AreEqual(isActive, _projectBillingPeriodItem.IsActive);
         }
+        
         [Test]
-        public void Test_BillingDays_Property()
+        public void BillingDays_ShouldBeSetAndRetrievedCorrectly()
         {
-            var item = new ProjectBillingPeriodItem();
             double? billingDays = 5.5;
-            item.BillingDays = billingDays;
-            Assert.AreEqual(billingDays, item.BillingDays);
+            _projectBillingPeriodItem.BillingDays = billingDays;
+            Assert.AreEqual(billingDays, _projectBillingPeriodItem.BillingDays);
         }
+        
         [Test]
-        public void Test_ActualDailyRate_Property()
+        public void ActualDailyRate_ShouldBeSetAndRetrievedCorrectly()
         {
-            var item = new ProjectBillingPeriodItem();
             double actualDailyRate = 200.75;
-            item.ActualDailyRate = actualDailyRate;
-            Assert.AreEqual(actualDailyRate, item.ActualDailyRate);
+            _projectBillingPeriodItem.ActualDailyRate = actualDailyRate;
+            Assert.AreEqual(actualDailyRate, _projectBillingPeriodItem.ActualDailyRate);
         }
     }
 }

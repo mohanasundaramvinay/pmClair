@@ -41,15 +41,15 @@ namespace ClairTourTiny.Tests
         public async Task GetUserCompanyInfo_ShouldReturnUserCompanyInfo()
         {
             // Arrange
-            var expectedInfo = new UserCompanyInfo();
-            _mockService.Setup(service => service.GetUserCompanyInfo()).ReturnsAsync(expectedInfo);
+            var expectedCompanyInfo = new UserCompanyInfo();
+            _mockService.Setup(service => service.GetUserCompanyInfo()).ReturnsAsync(expectedCompanyInfo);
             // Act
             var result = await _mockService.Object.GetUserCompanyInfo();
             // Assert
-            Assert.Equal(expectedInfo, result);
+            Assert.Equal(expectedCompanyInfo, result);
         }
         [Fact]
-        public async Task GetCompanies_ShouldReturnCompanies()
+        public async Task GetCompanies_ShouldReturnListOfCompanies()
         {
             // Arrange
             var expectedCompanies = new List<CompanyInfo>();
@@ -59,6 +59,6 @@ namespace ClairTourTiny.Tests
             // Assert
             Assert.Equal(expectedCompanies, result);
         }
-        // Additional tests for each method in the interface would follow the same pattern
+        // Additional test methods for each method in the interface would follow the same pattern.
     }
 }

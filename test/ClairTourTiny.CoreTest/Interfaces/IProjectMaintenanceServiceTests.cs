@@ -1,5 +1,6 @@
 using ClairTourTiny.Core.Interfaces;
 using ClairTourTiny.Core.Models.ProjectMaintenance;
+using ClairTourTiny.Infrastructure.Models.ProjectMaintenance;
 using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace ClairTourTiny.Tests
         public async Task GetPhases_ShouldReturnListOfPhaseModel()
         {
             // Arrange
-            var entityNo = "123";
+            var entityNo = "entity1";
             var expectedPhases = new List<PhaseModel> { new PhaseModel() };
             _mockService.Setup(service => service.GetPhases(entityNo)).ReturnsAsync(expectedPhases);
 
@@ -50,7 +51,7 @@ namespace ClairTourTiny.Tests
         public async Task SubmitPhases_ShouldReturnTrue()
         {
             // Arrange
-            var entityNo = "123";
+            var entityNo = "entity1";
             var model = new ProjectSaveModel();
             _mockService.Setup(service => service.SubmitPhases(entityNo, model)).ReturnsAsync(true);
 
@@ -65,7 +66,7 @@ namespace ClairTourTiny.Tests
         public async Task GetBidSummaryData_ShouldReturnBidSummaryResponse()
         {
             // Arrange
-            var entityNo = "123";
+            var entityNo = "entity1";
             var expectedResponse = new BidSummaryResponse();
             _mockService.Setup(service => service.GetBidSummaryData(entityNo)).ReturnsAsync(expectedResponse);
 
@@ -76,6 +77,6 @@ namespace ClairTourTiny.Tests
             Assert.Equal(expectedResponse, result);
         }
 
-        // Continue adding tests for each method in the interface
+        // Repeat similar tests for other methods in the interface
     }
 }

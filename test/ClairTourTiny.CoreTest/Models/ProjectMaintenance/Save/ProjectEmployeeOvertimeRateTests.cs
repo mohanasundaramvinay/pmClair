@@ -1,21 +1,23 @@
-using NUnit.Framework;
 using System;
-namespace ClairTourTiny.Core.Models.ProjectMaintenance.Save.Tests
+using NUnit.Framework;
+using ClairTourTiny.Core.Models.ProjectMaintenance.Save;
+
+namespace ClairTourTiny.Tests.Models.ProjectMaintenance.Save
 {
     [TestFixture]
     public class ProjectEmployeeOvertimeRateTests
     {
         [Test]
-        public void UpdateTime_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void UpdateTime_ShouldBeSetAndRetrievedCorrectly()
         {
             var overtimeRate = new ProjectEmployeeOvertimeRate();
-            var expectedDate = DateTime.Now;
-            overtimeRate.UpdateTime = expectedDate;
-            Assert.AreEqual(expectedDate, overtimeRate.UpdateTime);
+            var updateTime = DateTime.Now;
+            overtimeRate.UpdateTime = updateTime;
+            Assert.AreEqual(updateTime, overtimeRate.UpdateTime);
         }
 
         [Test]
-        public void IsInsert_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void IsInsert_ShouldBeSetAndRetrievedCorrectly()
         {
             var overtimeRate = new ProjectEmployeeOvertimeRate();
             overtimeRate.IsInsert = true;
@@ -23,7 +25,7 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Save.Tests
         }
 
         [Test]
-        public void IsUpdate_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void IsUpdate_ShouldBeSetAndRetrievedCorrectly()
         {
             var overtimeRate = new ProjectEmployeeOvertimeRate();
             overtimeRate.IsUpdate = true;
@@ -31,7 +33,7 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Save.Tests
         }
 
         [Test]
-        public void IsDelete_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void IsDelete_ShouldBeSetAndRetrievedCorrectly()
         {
             var overtimeRate = new ProjectEmployeeOvertimeRate();
             overtimeRate.IsDelete = true;
@@ -39,57 +41,57 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Save.Tests
         }
 
         [Test]
-        public void Empno_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void Empno_ShouldBeSetAndRetrievedCorrectly()
         {
             var overtimeRate = new ProjectEmployeeOvertimeRate();
-            var expectedEmpno = "E123";
-            overtimeRate.Empno = expectedEmpno;
-            Assert.AreEqual(expectedEmpno, overtimeRate.Empno);
+            var empno = "E123";
+            overtimeRate.Empno = empno;
+            Assert.AreEqual(empno, overtimeRate.Empno);
         }
 
         [Test]
-        public void Entityno_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void Entityno_ShouldBeSetAndRetrievedCorrectly()
         {
             var overtimeRate = new ProjectEmployeeOvertimeRate();
-            var expectedEntityno = "ENT456";
-            overtimeRate.Entityno = expectedEntityno;
-            Assert.AreEqual(expectedEntityno, overtimeRate.Entityno);
+            var entityno = "ENT456";
+            overtimeRate.Entityno = entityno;
+            Assert.AreEqual(entityno, overtimeRate.Entityno);
         }
 
         [Test]
-        public void Jobtype_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void Jobtype_ShouldBeSetAndRetrievedCorrectly()
         {
             var overtimeRate = new ProjectEmployeeOvertimeRate();
-            var expectedJobtype = "FullTime";
-            overtimeRate.Jobtype = expectedJobtype;
-            Assert.AreEqual(expectedJobtype, overtimeRate.Jobtype);
+            var jobtype = "FullTime";
+            overtimeRate.Jobtype = jobtype;
+            Assert.AreEqual(jobtype, overtimeRate.Jobtype);
         }
 
         [Test]
-        public void Fromdate_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void Fromdate_ShouldBeSetAndRetrievedCorrectly()
         {
             var overtimeRate = new ProjectEmployeeOvertimeRate();
-            var expectedFromdate = new DateTime(2023, 1, 1);
-            overtimeRate.Fromdate = expectedFromdate;
-            Assert.AreEqual(expectedFromdate, overtimeRate.Fromdate);
+            var fromdate = new DateTime(2023, 1, 1);
+            overtimeRate.Fromdate = fromdate;
+            Assert.AreEqual(fromdate, overtimeRate.Fromdate);
         }
 
         [Test]
-        public void RateType_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void RateType_ShouldBeSetAndRetrievedCorrectly()
         {
             var overtimeRate = new ProjectEmployeeOvertimeRate();
-            var expectedRateType = "Overtime";
-            overtimeRate.RateType = expectedRateType;
-            Assert.AreEqual(expectedRateType, overtimeRate.RateType);
+            var rateType = "Overtime";
+            overtimeRate.RateType = rateType;
+            Assert.AreEqual(rateType, overtimeRate.RateType);
         }
 
         [Test]
-        public void Hours_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void Hours_ShouldBeSetAndRetrievedCorrectly()
         {
             var overtimeRate = new ProjectEmployeeOvertimeRate();
-            var expectedHours = 8.5;
-            overtimeRate.Hours = expectedHours;
-            Assert.AreEqual(expectedHours, overtimeRate.Hours);
+            var hours = 8.5;
+            overtimeRate.Hours = hours;
+            Assert.AreEqual(hours, overtimeRate.Hours);
         }
     }
 }

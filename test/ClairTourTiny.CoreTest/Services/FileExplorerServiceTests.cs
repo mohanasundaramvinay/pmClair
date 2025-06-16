@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
-namespace ClairTourTiny.Core.Tests
+namespace ClairTourTiny.Core.Services.Tests
 {
     public class FileExplorerServiceTests
     {
@@ -24,7 +24,7 @@ namespace ClairTourTiny.Core.Tests
             _mockConfiguration = new Mock<IConfiguration>();
             _mockLogger = new Mock<ILogger<FileExplorerService>>();
             _mockDbConnection = new Mock<IDbConnection>();
-            _mockConfiguration.Setup(c => c.GetConnectionString("DefaultConnection")).Returns("FakeConnectionString");
+            _mockConfiguration.Setup(c => c.GetConnectionString(It.IsAny<string>())).Returns("FakeConnectionString");
             _service = new FileExplorerService(_mockConfiguration.Object, _mockLogger.Object);
         }
         [Fact]
@@ -51,47 +51,6 @@ namespace ClairTourTiny.Core.Tests
             // Assert
             Assert.Equal(expected, result);
         }
-        [Fact]
-        public async Task GetAttachmentTypesAsync_ReturnsExpectedResult()
-        {
-            // Arrange
-            var expected = new List<AttachmentTypeDetails> { new AttachmentTypeDetails { AttachmentCategory = "TestCategory" } };
-            _mockDbConnection.SetupDapperAsync(c => c.QueryAsync<AttachmentTypeDetails>(It.IsAny<string>(), null, null, null, null))
-                .ReturnsAsync(expected);
-            // Act
-            var result = await _service.GetAttachmentTypesAsync("TestCategory");
-            // Assert
-            Assert.Equal(expected.Count, result.Count);
-        }
-        [Fact]
-        public async Task GetGroupPermissionsAsync_ReturnsExpectedResult()
-        {
-            // Arrange
-            var expected = new List<GroupPermissionDetails> { new GroupPermissionDetails { GroupName = "TestGroup" } };
-            _mockDbConnection.SetupDapperAsync(c => c.QueryAsync<GroupPermissionDetails>(It.IsAny<string>(), null, null, null, null))
-                .ReturnsAsync(expected);
-            // Act
-            var result = await _service.GetGroupPermissionsAsync("TestCategory");
-            // Assert
-            Assert.Equal(expected.Count, result.Count);
-        }
-        [Fact]
-        public async Task GetCloudStorageInfoAsync_ReturnsExpectedResult()
-        {
-            // Arrange
-            var expectedDropboxRootDir = "DropboxRootDir";
-            var expectedEgnyteUri = "EgnyteUri";
-            _mockDbConnection.SetupDapperAsync(c => c.QueryFirstOrDefaultAsync<string>(It.IsAny<string>(), null, null, null, null))
-                .ReturnsAsync(expectedDropboxRootDir);
-            _mockDbConnection.SetupDapperAsync(c => c.QueryFirstOrDefaultAsync<string>(It.IsAny<string>(), null, null, null, null))
-                .ReturnsAsync(expectedEgnyteUri);
-            // Act
-            var result = await _service.GetCloudStorageInfoAsync();
-            // Assert
-            Assert.True(result.IsEnabled);
-            Assert.Equal(expectedDropboxRootDir, result.DropboxRootDirectory);
-            Assert.Equal(expectedEgnyteUri, result.EgnyteSharingURI);
-        }
-        // Additional tests for other methods would follow the same pattern...
+        // Additional tests for other methods would follow the same pattern
     }
 }

@@ -1,1 +1,26 @@
-using NUnit.Framework;using ClairTourTiny.Core.Models.ProjectMaintenance;namespace ClairTourTiny.Tests{    [TestFixture]    public class OperationalExpenseTotalsTests    {        [Test]        public void EquipmentWeekly_ShouldSetAndGetCorrectly()        {            // Arrange            var expenseTotals = new OperationalExpenseTotals();            double expectedValue = 100.0;            // Act            expenseTotals.EquipmentWeekly = expectedValue;            double actualValue = expenseTotals.EquipmentWeekly;            // Assert            Assert.AreEqual(expectedValue, actualValue);        }        [Test]        public void CrewWeekly_ShouldSetAndGetCorrectly()        {            // Arrange            var expenseTotals = new OperationalExpenseTotals();            double expectedValue = 200.0;            // Act            expenseTotals.CrewWeekly = expectedValue;            double actualValue = expenseTotals.CrewWeekly;            // Assert            Assert.AreEqual(expectedValue, actualValue);        }    }}
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ClairTourTiny.Core.Models.ProjectMaintenance;
+
+namespace ClairTourTiny.Tests
+{
+    [TestClass]
+    public class OperationalExpenseTotalsTests
+    {
+        [TestMethod]
+        public void TestOperationalExpenseTotalsFields()
+        {
+            // Arrange
+            var expenseTotals = new OperationalExpenseTotals();
+            double expectedEquipmentWeekly = 1000.0;
+            double expectedCrewWeekly = 2000.0;
+
+            // Act
+            expenseTotals.EquipmentWeekly = expectedEquipmentWeekly;
+            expenseTotals.CrewWeekly = expectedCrewWeekly;
+
+            // Assert
+            Assert.AreEqual(expectedEquipmentWeekly, expenseTotals.EquipmentWeekly, "EquipmentWeekly field did not return the expected value.");
+            Assert.AreEqual(expectedCrewWeekly, expenseTotals.CrewWeekly, "CrewWeekly field did not return the expected value.");
+        }
+    }
+}

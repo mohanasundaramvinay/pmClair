@@ -6,24 +6,21 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
     public class VarianceIndicatorTests
     {
         [Test]
-        public void VarianceIndicator_ShouldHaveCorrectValues()
+        public void VarianceIndicator_ShouldHaveNeutralValue()
         {
-            Assert.AreEqual(0, (int)VarianceIndicator.Neutral, "Neutral should be 0");
-            Assert.AreEqual(1, (int)VarianceIndicator.Positive, "Positive should be 1");
-            Assert.AreEqual(2, (int)VarianceIndicator.Negative, "Negative should be 2");
+            Assert.AreEqual(0, (int)VarianceIndicator.Neutral);
         }
 
         [Test]
-        public void VarianceIndicator_ShouldBeAssignable()
+        public void VarianceIndicator_ShouldHavePositiveValue()
         {
-            VarianceIndicator indicator = VarianceIndicator.Neutral;
-            Assert.AreEqual(VarianceIndicator.Neutral, indicator);
+            Assert.AreEqual(1, (int)VarianceIndicator.Positive);
+        }
 
-            indicator = VarianceIndicator.Positive;
-            Assert.AreEqual(VarianceIndicator.Positive, indicator);
-
-            indicator = VarianceIndicator.Negative;
-            Assert.AreEqual(VarianceIndicator.Negative, indicator);
+        [Test]
+        public void VarianceIndicator_ShouldHaveNegativeValue()
+        {
+            Assert.AreEqual(2, (int)VarianceIndicator.Negative);
         }
     }
 }

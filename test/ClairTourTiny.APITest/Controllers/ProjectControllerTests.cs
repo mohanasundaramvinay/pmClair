@@ -1,23 +1,25 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using ClairTourTiny.Core.Interfaces;
 using ClairTourTiny.Core.Models.Projects;
-using Microsoft.AspNetCore.Http;
+using ClairTourTiny.API.Controllers.V2;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
-namespace ClairTourTiny.API.Tests.Controllers.V2
+namespace ClairTourTiny.Tests.Controllers.V2
 {
+    [TestClass]
     public class ProjectControllerTests
     {
-        private readonly Mock<IProjectService> _mockProjectService;
-        private readonly ProjectController _controller;
-        public ProjectControllerTests()
+        private Mock<IProjectService> _mockProjectService;
+        private ProjectController _controller;
+        [TestInitialize]
+        public void Setup()
         {
             _mockProjectService = new Mock<IProjectService>();
             _controller = new ProjectController(_mockProjectService.Object);
         }
-        [Fact]
+        [TestMethod]
         public async Task GetFavoriteProjects_ReturnsOkResult_WithListOfProjects()
         {
             // Arrange
@@ -26,24 +28,26 @@ namespace ClairTourTiny.API.Tests.Controllers.V2
             // Act
             var result = await _controller.GetFavoriteProjects();
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<List<Project>>(okResult.Value);
-            Assert.Equal(2, returnValue.Count);
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.AreEqual(mockProjects, okResult.Value);
         }
-        [Fact]
+        [TestMethod]
         public async Task GetRecentProjects_ReturnsOkResult_WithListOfProjects()
         {
             // Arrange
             var mockProjects = new List<Project> { new Project(), new Project() };
             _mockProjectService.Setup(service => service.GetRecentProjects(It.IsAny<int>())).ReturnsAsync(mockProjects);
             // Act
-            var result = await _controller.GetRecentProjects();
+            var result = await _controller.GetRecentProjects(2);
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<List<Project>>(okResult.Value);
-            Assert.Equal(2, returnValue.Count);
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.AreEqual(mockProjects, okResult.Value);
         }
-        [Fact]
+        [TestMethod]
         public async Task SearchProjects_WithValidSearchTerm_ReturnsOkResult_WithListOfProjects()
         {
             // Arrange
@@ -52,30 +56,34 @@ namespace ClairTourTiny.API.Tests.Controllers.V2
             // Act
             var result = await _controller.SearchProjects("test");
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<List<Project>>(okResult.Value);
-            Assert.Equal(2, returnValue.Count);
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.AreEqual(mockProjects, okResult.Value);
         }
-        [Fact]
-        public async Task SearchProjects_WithNullOrWhitespaceSearchTerm_ReturnsOkResult_WithEmptyList()
+        [TestMethod]
+        public async Task SearchProjects_WithEmptySearchTerm_ReturnsOkResult_WithEmptyList()
         {
             // Act
-            var result = await _controller.SearchProjects(null);
+            var result = await _controller.SearchProjects("");
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<List<Project>>(okResult.Value);
-            Assert.Empty(returnValue);
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.AreEqual(0, ((List<Project>)okResult.Value).Count);
         }
-        [Fact]
-        public async Task SearchProjects_WhenExceptionThrown_ReturnsBadRequest()
+        [TestMethod]
+        public async Task SearchProjects_WithException_ReturnsBadRequest()
         {
             // Arrange
             _mockProjectService.Setup(service => service.GetProjects(It.IsAny<string>())).ThrowsAsync(new System.Exception("Error"));
             // Act
             var result = await _controller.SearchProjects("test");
             // Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Error", badRequestResult.Value);
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual(400, badRequestResult.StatusCode);
+            Assert.AreEqual("Error", badRequestResult.Value);
         }
     }
 }

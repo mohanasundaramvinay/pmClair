@@ -2,20 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Moq;
-using Xunit;
+using NUnit.Framework;
 using ClairTourTiny.Core.Interfaces;
-using ClairTourTiny.Infrastructure.Models.FileExplorer;
 using ClairTourTiny.Core.Models.FileExplorer;
+using ClairTourTiny.Infrastructure.Models.FileExplorer;
 namespace ClairTourTiny.Tests
 {
+    [TestFixture]
     public class FileExplorerServiceTests
     {
-        private readonly Mock<IFileExplorerService> _fileExplorerServiceMock;
-        public FileExplorerServiceTests()
+        private Mock<IFileExplorerService> _fileExplorerServiceMock;
+        [SetUp]
+        public void Setup()
         {
             _fileExplorerServiceMock = new Mock<IFileExplorerService>();
         }
-        [Fact]
+        [Test]
         public async Task GetAttachmentCategoryDetailsAsync_ShouldReturnAttachmentCategoryDetails()
         {
             // Arrange
@@ -25,9 +27,9 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _fileExplorerServiceMock.Object.GetAttachmentCategoryDetailsAsync("category");
             // Assert
-            Assert.Equal(expectedDetails, result);
+            Assert.AreEqual(expectedDetails, result);
         }
-        [Fact]
+        [Test]
         public async Task GetFavoritesFolderNameAsync_ShouldReturnFolderName()
         {
             // Arrange
@@ -37,9 +39,9 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _fileExplorerServiceMock.Object.GetFavoritesFolderNameAsync();
             // Assert
-            Assert.Equal(expectedFolderName, result);
+            Assert.AreEqual(expectedFolderName, result);
         }
-        [Fact]
+        [Test]
         public async Task GetAttachmentTypesAsync_ShouldReturnAttachmentTypes()
         {
             // Arrange
@@ -49,9 +51,9 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _fileExplorerServiceMock.Object.GetAttachmentTypesAsync("category");
             // Assert
-            Assert.Equal(expectedTypes, result);
+            Assert.AreEqual(expectedTypes, result);
         }
-        [Fact]
+        [Test]
         public async Task GetGroupPermissionsAsync_ShouldReturnGroupPermissions()
         {
             // Arrange
@@ -61,9 +63,9 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _fileExplorerServiceMock.Object.GetGroupPermissionsAsync("category");
             // Assert
-            Assert.Equal(expectedPermissions, result);
+            Assert.AreEqual(expectedPermissions, result);
         }
-        [Fact]
+        [Test]
         public async Task GetCloudStorageInfoAsync_ShouldReturnCloudStorageInfo()
         {
             // Arrange
@@ -73,9 +75,9 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _fileExplorerServiceMock.Object.GetCloudStorageInfoAsync();
             // Assert
-            Assert.Equal(expectedInfo, result);
+            Assert.AreEqual(expectedInfo, result);
         }
-        [Fact]
+        [Test]
         public async Task GetCloudStorageTemplatesAsync_ShouldReturnCloudStorageTemplates()
         {
             // Arrange
@@ -85,9 +87,9 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _fileExplorerServiceMock.Object.GetCloudStorageTemplatesAsync("category");
             // Assert
-            Assert.Equal(expectedTemplates, result);
+            Assert.AreEqual(expectedTemplates, result);
         }
-        [Fact]
+        [Test]
         public async Task GetCloudFolderTemplatesAsync_ShouldReturnCloudFolderTemplates()
         {
             // Arrange
@@ -97,9 +99,9 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _fileExplorerServiceMock.Object.GetCloudFolderTemplatesAsync();
             // Assert
-            Assert.Equal(expectedTemplates, result);
+            Assert.AreEqual(expectedTemplates, result);
         }
-        [Fact]
+        [Test]
         public async Task GetContactCategoryCloudMappingsAsync_ShouldReturnContactCategoryCloudMappings()
         {
             // Arrange
@@ -109,9 +111,9 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _fileExplorerServiceMock.Object.GetContactCategoryCloudMappingsAsync();
             // Assert
-            Assert.Equal(expectedMappings, result);
+            Assert.AreEqual(expectedMappings, result);
         }
-        [Fact]
+        [Test]
         public async Task GetRootAttachmentTypesAsync_ShouldReturnRootAttachmentTypes()
         {
             // Arrange
@@ -121,9 +123,9 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _fileExplorerServiceMock.Object.GetRootAttachmentTypesAsync();
             // Assert
-            Assert.Equal(expectedTypes, result);
+            Assert.AreEqual(expectedTypes, result);
         }
-        [Fact]
+        [Test]
         public async Task GetFileIndexAsync_ShouldReturnFileIndex()
         {
             // Arrange
@@ -133,9 +135,9 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _fileExplorerServiceMock.Object.GetFileIndexAsync(Guid.NewGuid());
             // Assert
-            Assert.Equal(expectedIndex, result);
+            Assert.AreEqual(expectedIndex, result);
         }
-        [Fact]
+        [Test]
         public async Task GetCloudFileUploadsAsync_ShouldReturnCloudFileUploads()
         {
             // Arrange
@@ -145,9 +147,9 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _fileExplorerServiceMock.Object.GetCloudFileUploadsAsync("category", "entityNo", "partNo");
             // Assert
-            Assert.Equal(expectedUploads, result);
+            Assert.AreEqual(expectedUploads, result);
         }
-        [Fact]
+        [Test]
         public async Task GetUserFoldersAsync_ShouldReturnUserFolders()
         {
             // Arrange
@@ -157,9 +159,9 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _fileExplorerServiceMock.Object.GetUserFoldersAsync("entityNo");
             // Assert
-            Assert.Equal(expectedFolders, result);
+            Assert.AreEqual(expectedFolders, result);
         }
-        [Fact]
+        [Test]
         public async Task GetProjectShareRequestsAsync_ShouldReturnProjectShareRequests()
         {
             // Arrange
@@ -169,9 +171,9 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _fileExplorerServiceMock.Object.GetProjectShareRequestsAsync("entityNo");
             // Assert
-            Assert.Equal(expectedRequests, result);
+            Assert.AreEqual(expectedRequests, result);
         }
-        [Fact]
+        [Test]
         public async Task GetDropboxInviteesAsync_ShouldReturnDropboxInvitees()
         {
             // Arrange
@@ -181,7 +183,7 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _fileExplorerServiceMock.Object.GetDropboxInviteesAsync("entityNo");
             // Assert
-            Assert.Equal(expectedInvitees, result);
+            Assert.AreEqual(expectedInvitees, result);
         }
     }
 }

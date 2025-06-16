@@ -1,160 +1,95 @@
 using System;
 using NUnit.Framework;
-using ClairTourTiny.Core.Models.ProjectMaintenance.Save;
-
-namespace ClairTourTiny.Tests.Models.ProjectMaintenance.Save
+namespace ClairTourTiny.Core.Models.ProjectMaintenance.Save.Tests
 {
     [TestFixture]
     public class BidRevenueTests
     {
         [Test]
-        public void UpdateTime_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void UpdateTime_Property_SetAndGet_ShouldReturnExpectedValue()
         {
-            // Arrange
             var bidRevenue = new BidRevenue();
-            var expectedDate = new DateTime(2023, 10, 1);
-            
-            // Act
+            var expectedDate = DateTime.Now;
             bidRevenue.UpdateTime = expectedDate;
-            var actualDate = bidRevenue.UpdateTime;
-            
-            // Assert
-            Assert.AreEqual(expectedDate, actualDate);
+            Assert.AreEqual(expectedDate, bidRevenue.UpdateTime);
         }
 
         [Test]
-        public void IsInsert_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void IsInsert_Property_SetAndGet_ShouldReturnExpectedValue()
         {
-            // Arrange
             var bidRevenue = new BidRevenue();
-            var expectedValue = true;
-            
-            // Act
-            bidRevenue.IsInsert = expectedValue;
-            var actualValue = bidRevenue.IsInsert;
-            
-            // Assert
-            Assert.AreEqual(expectedValue, actualValue);
+            bidRevenue.IsInsert = true;
+            Assert.IsTrue(bidRevenue.IsInsert);
         }
 
         [Test]
-        public void IsUpdate_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void IsUpdate_Property_SetAndGet_ShouldReturnExpectedValue()
         {
-            // Arrange
             var bidRevenue = new BidRevenue();
-            var expectedValue = true;
-            
-            // Act
-            bidRevenue.IsUpdate = expectedValue;
-            var actualValue = bidRevenue.IsUpdate;
-            
-            // Assert
-            Assert.AreEqual(expectedValue, actualValue);
+            bidRevenue.IsUpdate = true;
+            Assert.IsTrue(bidRevenue.IsUpdate);
         }
 
         [Test]
-        public void IsDelete_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void IsDelete_Property_SetAndGet_ShouldReturnExpectedValue()
         {
-            // Arrange
             var bidRevenue = new BidRevenue();
-            var expectedValue = true;
-            
-            // Act
-            bidRevenue.IsDelete = expectedValue;
-            var actualValue = bidRevenue.IsDelete;
-            
-            // Assert
-            Assert.AreEqual(expectedValue, actualValue);
+            bidRevenue.IsDelete = true;
+            Assert.IsTrue(bidRevenue.IsDelete);
         }
 
         [Test]
-        public void Entityno_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void Entityno_Property_SetAndGet_ShouldReturnExpectedValue()
         {
-            // Arrange
             var bidRevenue = new BidRevenue();
-            var expectedValue = "Entity123";
-            
-            // Act
-            bidRevenue.Entityno = expectedValue;
-            var actualValue = bidRevenue.Entityno;
-            
-            // Assert
-            Assert.AreEqual(expectedValue, actualValue);
+            var expectedEntityno = "Entity123";
+            bidRevenue.Entityno = expectedEntityno;
+            Assert.AreEqual(expectedEntityno, bidRevenue.Entityno);
         }
 
         [Test]
-        public void Seqno_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void Seqno_Property_SetAndGet_ShouldReturnExpectedValue()
         {
-            // Arrange
             var bidRevenue = new BidRevenue();
-            var expectedValue = 123;
-            
-            // Act
-            bidRevenue.Seqno = expectedValue;
-            var actualValue = bidRevenue.Seqno;
-            
-            // Assert
-            Assert.AreEqual(expectedValue, actualValue);
+            var expectedSeqno = 123;
+            bidRevenue.Seqno = expectedSeqno;
+            Assert.AreEqual(expectedSeqno, bidRevenue.Seqno);
         }
 
         [Test]
-        public void Notes_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void Notes_Property_SetAndGet_ShouldReturnExpectedValue()
         {
-            // Arrange
             var bidRevenue = new BidRevenue();
-            var expectedValue = "Some notes";
-            
-            // Act
-            bidRevenue.Notes = expectedValue;
-            var actualValue = bidRevenue.Notes;
-            
-            // Assert
-            Assert.AreEqual(expectedValue, actualValue);
+            var expectedNotes = "Some notes";
+            bidRevenue.Notes = expectedNotes;
+            Assert.AreEqual(expectedNotes, bidRevenue.Notes);
         }
 
         [Test]
-        public void Startdate_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void Startdate_Property_SetAndGet_ShouldReturnExpectedValue()
         {
-            // Arrange
             var bidRevenue = new BidRevenue();
-            var expectedDate = new DateTime(2023, 1, 1);
-            
-            // Act
-            bidRevenue.Startdate = expectedDate;
-            var actualDate = bidRevenue.Startdate;
-            
-            // Assert
-            Assert.AreEqual(expectedDate, actualDate);
+            var expectedStartDate = new DateTime(2023, 1, 1);
+            bidRevenue.Startdate = expectedStartDate;
+            Assert.AreEqual(expectedStartDate, bidRevenue.Startdate);
         }
 
         [Test]
-        public void Enddate_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void Enddate_Property_SetAndGet_ShouldReturnExpectedValue()
         {
-            // Arrange
             var bidRevenue = new BidRevenue();
-            var expectedDate = new DateTime(2023, 12, 31);
-            
-            // Act
-            bidRevenue.Enddate = expectedDate;
-            var actualDate = bidRevenue.Enddate;
-            
-            // Assert
-            Assert.AreEqual(expectedDate, actualDate);
+            var expectedEndDate = new DateTime(2023, 12, 31);
+            bidRevenue.Enddate = expectedEndDate;
+            Assert.AreEqual(expectedEndDate, bidRevenue.Enddate);
         }
 
         [Test]
-        public void Amount_Property_SetAndGet_ShouldReturnCorrectValue()
+        public void Amount_Property_SetAndGet_ShouldReturnExpectedValue()
         {
-            // Arrange
             var bidRevenue = new BidRevenue();
-            var expectedValue = 1000.50;
-            
-            // Act
-            bidRevenue.Amount = expectedValue;
-            var actualValue = bidRevenue.Amount;
-            
-            // Assert
-            Assert.AreEqual(expectedValue, actualValue);
+            var expectedAmount = 1000.50;
+            bidRevenue.Amount = expectedAmount;
+            Assert.AreEqual(expectedAmount, bidRevenue.Amount);
         }
     }
 }

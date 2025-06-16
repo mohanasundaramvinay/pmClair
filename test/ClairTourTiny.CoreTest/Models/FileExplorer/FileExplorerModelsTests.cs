@@ -1,6 +1,5 @@
 using NUnit.Framework;
-using ClairTourTiny.Core.Models.FileExplorer;
-namespace ClairTourTiny.Tests
+namespace ClairTourTiny.Core.Models.FileExplorer.Tests
 {
     [TestFixture]
     public class DropboxInviteeDetailsTests
@@ -40,7 +39,7 @@ namespace ClairTourTiny.Tests
         {
             // Arrange
             var invitee = new DropboxInviteeDetails();
-            var expectedAccessLevelId = 1;
+            var expectedAccessLevelId = 3;
             
             // Act
             invitee.AccessLevelId = expectedAccessLevelId;

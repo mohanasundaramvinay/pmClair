@@ -1,29 +1,27 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
 using ClairTourTiny.Core.Interfaces;
 using ClairTourTiny.Core.Models.Projects;
 using ClairTourTiny.Infrastructure;
 using ClairTourTiny.Infrastructure.Dto.Projects;
-using AutoMapper;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
-namespace ClairTourTiny.Tests
+using Moq;
+using Xunit;
+namespace ClairTourTiny.Core.Services.Tests
 {
-    [TestClass]
     public class ProjectServiceTests
     {
-        private Mock<ClairTourTinyContext> _mockContext;
-        private Mock<IMapper> _mockMapper;
-        private ProjectService _projectService;
-        [TestInitialize]
-        public void Setup()
+        private readonly Mock<ClairTourTinyContext> _mockContext;
+        private readonly Mock<IMapper> _mockMapper;
+        private readonly ProjectService _projectService;
+        public ProjectServiceTests()
         {
             _mockContext = new Mock<ClairTourTinyContext>();
             _mockMapper = new Mock<IMapper>();
             _projectService = new ProjectService(_mockContext.Object, _mockMapper.Object);
         }
-        [TestMethod]
+        [Fact]
         public async Task GetFavouriteProjects_ReturnsMappedProjects()
         {
             // Arrange
@@ -35,10 +33,10 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _projectService.GetFavouriteProjects();
             // Assert
-            Assert.AreEqual(projects, result);
+            Assert.Equal(projects, result);
         }
-        [TestMethod]
-        public async Task GetProjects_ReturnsMappedProjects()
+        [Fact]
+        public async Task GetProjects_WithSearchText_ReturnsMappedProjects()
         {
             // Arrange
             var searchText = "test";
@@ -50,10 +48,10 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _projectService.GetProjects(searchText);
             // Assert
-            Assert.AreEqual(projects, result);
+            Assert.Equal(projects, result);
         }
-        [TestMethod]
-        public async Task GetRecentProjects_ReturnsMappedProjects()
+        [Fact]
+        public async Task GetRecentProjects_WithNumberOfProjects_ReturnsMappedProjects()
         {
             // Arrange
             var numOfProjects = 5;
@@ -65,7 +63,7 @@ namespace ClairTourTiny.Tests
             // Act
             var result = await _projectService.GetRecentProjects(numOfProjects);
             // Assert
-            Assert.AreEqual(projects, result);
+            Assert.Equal(projects, result);
         }
     }
 }

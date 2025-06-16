@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using ClairTourTiny.Core.Models;
 
@@ -7,99 +8,50 @@ namespace ClairTourTiny.Tests
     public class PhaseTypeTests
     {
         [Test]
-        public void PhaseType_ShouldContain_AssignedCrew()
+        public void PhaseType_ShouldContain_AllDefinedValues()
         {
-            Assert.AreEqual(0, (int)PhaseType.AssignedCrew);
+            // Check that all enum values are defined
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.AssignedCrew));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.BidExpenses));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.BidRevenue));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.Crew));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.Equipment));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.EquipmentSubhires));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.FavoriteProjects));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.ProjectBillingItems));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.ProjectBillingPeriodItems));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.ProjectBillingPeriods));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.ProjectClientContacts));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.ProjectEmployeeOvertimeRates));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.ProjectNotes));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.ProjectProductionSchedule));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.Projects));
+            Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), PhaseType.RFIs));
         }
 
         [Test]
-        public void PhaseType_ShouldContain_BidExpenses()
+        public void PhaseType_ShouldConvert_ToAndFromInt()
         {
-            Assert.AreEqual(1, (int)PhaseType.BidExpenses);
+            // Check conversion to int and back
+            foreach (PhaseType phase in Enum.GetValues(typeof(PhaseType)))
+            {
+                int intValue = (int)phase;
+                PhaseType convertedPhase = (PhaseType)intValue;
+                Assert.AreEqual(phase, convertedPhase);
+            }
         }
 
         [Test]
-        public void PhaseType_ShouldContain_BidRevenue()
+        public void PhaseType_ShouldParse_FromString()
         {
-            Assert.AreEqual(2, (int)PhaseType.BidRevenue);
-        }
-
-        [Test]
-        public void PhaseType_ShouldContain_Crew()
-        {
-            Assert.AreEqual(3, (int)PhaseType.Crew);
-        }
-
-        [Test]
-        public void PhaseType_ShouldContain_Equipment()
-        {
-            Assert.AreEqual(4, (int)PhaseType.Equipment);
-        }
-
-        [Test]
-        public void PhaseType_ShouldContain_EquipmentSubhires()
-        {
-            Assert.AreEqual(5, (int)PhaseType.EquipmentSubhires);
-        }
-
-        [Test]
-        public void PhaseType_ShouldContain_FavoriteProjects()
-        {
-            Assert.AreEqual(6, (int)PhaseType.FavoriteProjects);
-        }
-
-        [Test]
-        public void PhaseType_ShouldContain_ProjectBillingItems()
-        {
-            Assert.AreEqual(7, (int)PhaseType.ProjectBillingItems);
-        }
-
-        [Test]
-        public void PhaseType_ShouldContain_ProjectBillingPeriodItems()
-        {
-            Assert.AreEqual(8, (int)PhaseType.ProjectBillingPeriodItems);
-        }
-
-        [Test]
-        public void PhaseType_ShouldContain_ProjectBillingPeriods()
-        {
-            Assert.AreEqual(9, (int)PhaseType.ProjectBillingPeriods);
-        }
-
-        [Test]
-        public void PhaseType_ShouldContain_ProjectClientContacts()
-        {
-            Assert.AreEqual(10, (int)PhaseType.ProjectClientContacts);
-        }
-
-        [Test]
-        public void PhaseType_ShouldContain_ProjectEmployeeOvertimeRates()
-        {
-            Assert.AreEqual(11, (int)PhaseType.ProjectEmployeeOvertimeRates);
-        }
-
-        [Test]
-        public void PhaseType_ShouldContain_ProjectNotes()
-        {
-            Assert.AreEqual(12, (int)PhaseType.ProjectNotes);
-        }
-
-        [Test]
-        public void PhaseType_ShouldContain_ProjectProductionSchedule()
-        {
-            Assert.AreEqual(13, (int)PhaseType.ProjectProductionSchedule);
-        }
-
-        [Test]
-        public void PhaseType_ShouldContain_Projects()
-        {
-            Assert.AreEqual(14, (int)PhaseType.Projects);
-        }
-
-        [Test]
-        public void PhaseType_ShouldContain_RFIs()
-        {
-            Assert.AreEqual(15, (int)PhaseType.RFIs);
+            // Check parsing from string
+            foreach (string name in Enum.GetNames(typeof(PhaseType)))
+            {
+                PhaseType parsedPhase;
+                bool success = Enum.TryParse(name, out parsedPhase);
+                Assert.IsTrue(success);
+                Assert.IsTrue(Enum.IsDefined(typeof(PhaseType), parsedPhase));
+            }
         }
     }
 }

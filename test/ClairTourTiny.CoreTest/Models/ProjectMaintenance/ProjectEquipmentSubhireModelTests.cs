@@ -1,120 +1,90 @@
-using NUnit.Framework;
+using System;
+using Xunit;
+
 public class ProjectEquipmentSubhireModelTests
 {
-    private ProjectEquipmentSubhireModel _model;
-
-    [SetUp]
-    public void Setup()
+    [Fact]
+    public void DefaultValues_ShouldBeCorrect()
     {
-        _model = new ProjectEquipmentSubhireModel();
+        var model = new ProjectEquipmentSubhireModel();
+        Assert.Equal(string.Empty, model.EntityNo);
+        Assert.Equal(string.Empty, model.PartNo);
+        Assert.Equal(string.Empty, model.PartDescription);
+        Assert.Equal(0, model.Quantity);
+        Assert.Null(model.VendorNo);
+        Assert.Null(model.SiteNo);
+        Assert.Equal(string.Empty, model.VendorName);
+        Assert.Null(model.PONumber);
+        Assert.Equal(0m, model.Rate);
+        Assert.Equal(string.Empty, model.RateType);
+        Assert.Equal(0.0, model.BillableDays);
+        Assert.Equal(0m, model.DeliveryRate);
+        Assert.Equal(0m, model.ReturnRate);
+        Assert.Equal(0m, model.Total);
+        Assert.Null(model.InvoiceNo);
+        Assert.Null(model.StatusCode);
+        Assert.Equal(default(DateOnly), model.StartDate);
+        Assert.Equal(default(DateOnly), model.EndDate);
+        Assert.Equal(0, model.LineNo);
+        Assert.Equal(default(DateOnly), model.ShopReceiptDate);
+        Assert.Equal(default(DateOnly), model.ShopReturnDate);
+        Assert.Null(model.TransferInboundEntityno);
+        Assert.Null(model.TransferOutboundEntityno);
+        Assert.False(model.TransferLinkedPhases);
     }
 
-    [Test]
-    public void TestDefaultValues()
+    [Fact]
+    public void SetValues_ShouldBeCorrect()
     {
-        Assert.AreEqual(string.Empty, _model.EntityNo);
-        Assert.AreEqual(string.Empty, _model.PartNo);
-        Assert.AreEqual(string.Empty, _model.PartDescription);
-        Assert.AreEqual(0, _model.Quantity);
-        Assert.IsNull(_model.VendorNo);
-        Assert.IsNull(_model.SiteNo);
-        Assert.AreEqual(string.Empty, _model.VendorName);
-        Assert.IsNull(_model.PONumber);
-        Assert.AreEqual(0m, _model.Rate);
-        Assert.AreEqual(string.Empty, _model.RateType);
-        Assert.AreEqual(0.0, _model.BillableDays);
-        Assert.AreEqual(0m, _model.DeliveryRate);
-        Assert.AreEqual(0m, _model.ReturnRate);
-        Assert.AreEqual(0m, _model.Total);
-        Assert.IsNull(_model.InvoiceNo);
-        Assert.IsNull(_model.StatusCode);
-        Assert.AreEqual(default(DateOnly), _model.StartDate);
-        Assert.AreEqual(default(DateOnly), _model.EndDate);
-        Assert.AreEqual(0, _model.LineNo);
-        Assert.AreEqual(default(DateOnly), _model.ShopReceiptDate);
-        Assert.AreEqual(default(DateOnly), _model.ShopReturnDate);
-        Assert.IsNull(_model.TransferInboundEntityno);
-        Assert.IsNull(_model.TransferOutboundEntityno);
-        Assert.IsFalse(_model.TransferLinkedPhases);
-    }
+        var model = new ProjectEquipmentSubhireModel();
+        model.EntityNo = "E123";
+        model.PartNo = "P456";
+        model.PartDescription = "Part Description";
+        model.Quantity = 10;
+        model.VendorNo = "V789";
+        model.SiteNo = "S012";
+        model.VendorName = "Vendor Name";
+        model.PONumber = "PO345";
+        model.Rate = 100.50m;
+        model.RateType = "Hourly";
+        model.BillableDays = 5.5;
+        model.DeliveryRate = 15.75m;
+        model.ReturnRate = 10.25m;
+        model.Total = 200.00m;
+        model.InvoiceNo = "INV678";
+        model.StatusCode = "Active";
+        model.StartDate = new DateOnly(2023, 1, 1);
+        model.EndDate = new DateOnly(2023, 1, 10);
+        model.LineNo = 1;
+        model.ShopReceiptDate = new DateOnly(2023, 1, 2);
+        model.ShopReturnDate = new DateOnly(2023, 1, 9);
+        model.TransferInboundEntityno = "TIE123";
+        model.TransferOutboundEntityno = "TOE456";
+        model.TransferLinkedPhases = true;
 
-    [Test]
-    public void TestPropertyAssignments()
-    {
-        _model.EntityNo = "E123";
-        Assert.AreEqual("E123", _model.EntityNo);
-
-        _model.PartNo = "P456";
-        Assert.AreEqual("P456", _model.PartNo);
-
-        _model.PartDescription = "Part Description";
-        Assert.AreEqual("Part Description", _model.PartDescription);
-
-        _model.Quantity = 10;
-        Assert.AreEqual(10, _model.Quantity);
-
-        _model.VendorNo = "V789";
-        Assert.AreEqual("V789", _model.VendorNo);
-
-        _model.SiteNo = "S012";
-        Assert.AreEqual("S012", _model.SiteNo);
-
-        _model.VendorName = "Vendor Name";
-        Assert.AreEqual("Vendor Name", _model.VendorName);
-
-        _model.PONumber = "PO345";
-        Assert.AreEqual("PO345", _model.PONumber);
-
-        _model.Rate = 100.50m;
-        Assert.AreEqual(100.50m, _model.Rate);
-
-        _model.RateType = "Hourly";
-        Assert.AreEqual("Hourly", _model.RateType);
-
-        _model.BillableDays = 5.5;
-        Assert.AreEqual(5.5, _model.BillableDays);
-
-        _model.DeliveryRate = 20.75m;
-        Assert.AreEqual(20.75m, _model.DeliveryRate);
-
-        _model.ReturnRate = 15.25m;
-        Assert.AreEqual(15.25m, _model.ReturnRate);
-
-        _model.Total = 500.00m;
-        Assert.AreEqual(500.00m, _model.Total);
-
-        _model.InvoiceNo = "INV678";
-        Assert.AreEqual("INV678", _model.InvoiceNo);
-
-        _model.StatusCode = "Active";
-        Assert.AreEqual("Active", _model.StatusCode);
-
-        var startDate = new DateOnly(2023, 10, 1);
-        _model.StartDate = startDate;
-        Assert.AreEqual(startDate, _model.StartDate);
-
-        var endDate = new DateOnly(2023, 10, 31);
-        _model.EndDate = endDate;
-        Assert.AreEqual(endDate, _model.EndDate);
-
-        _model.LineNo = 1;
-        Assert.AreEqual(1, _model.LineNo);
-
-        var shopReceiptDate = new DateOnly(2023, 10, 5);
-        _model.ShopReceiptDate = shopReceiptDate;
-        Assert.AreEqual(shopReceiptDate, _model.ShopReceiptDate);
-
-        var shopReturnDate = new DateOnly(2023, 10, 25);
-        _model.ShopReturnDate = shopReturnDate;
-        Assert.AreEqual(shopReturnDate, _model.ShopReturnDate);
-
-        _model.TransferInboundEntityno = "TIE123";
-        Assert.AreEqual("TIE123", _model.TransferInboundEntityno);
-
-        _model.TransferOutboundEntityno = "TOE456";
-        Assert.AreEqual("TOE456", _model.TransferOutboundEntityno);
-
-        _model.TransferLinkedPhases = true;
-        Assert.IsTrue(_model.TransferLinkedPhases);
+        Assert.Equal("E123", model.EntityNo);
+        Assert.Equal("P456", model.PartNo);
+        Assert.Equal("Part Description", model.PartDescription);
+        Assert.Equal(10, model.Quantity);
+        Assert.Equal("V789", model.VendorNo);
+        Assert.Equal("S012", model.SiteNo);
+        Assert.Equal("Vendor Name", model.VendorName);
+        Assert.Equal("PO345", model.PONumber);
+        Assert.Equal(100.50m, model.Rate);
+        Assert.Equal("Hourly", model.RateType);
+        Assert.Equal(5.5, model.BillableDays);
+        Assert.Equal(15.75m, model.DeliveryRate);
+        Assert.Equal(10.25m, model.ReturnRate);
+        Assert.Equal(200.00m, model.Total);
+        Assert.Equal("INV678", model.InvoiceNo);
+        Assert.Equal("Active", model.StatusCode);
+        Assert.Equal(new DateOnly(2023, 1, 1), model.StartDate);
+        Assert.Equal(new DateOnly(2023, 1, 10), model.EndDate);
+        Assert.Equal(1, model.LineNo);
+        Assert.Equal(new DateOnly(2023, 1, 2), model.ShopReceiptDate);
+        Assert.Equal(new DateOnly(2023, 1, 9), model.ShopReturnDate);
+        Assert.Equal("TIE123", model.TransferInboundEntityno);
+        Assert.Equal("TOE456", model.TransferOutboundEntityno);
+        Assert.True(model.TransferLinkedPhases);
     }
 }

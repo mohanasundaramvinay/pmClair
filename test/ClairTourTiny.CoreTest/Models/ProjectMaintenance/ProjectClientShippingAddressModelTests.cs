@@ -1,244 +1,159 @@
-using Xunit;
+using NUnit.Framework;
 namespace ClairTourTiny.Core.Models.ProjectMaintenance.Tests
 {
+    [TestFixture]
     public class ProjectClientShippingAddressModelTests
     {
-        [Fact]
-        public void CustNo_Should_SetAndGetCorrectly()
+        [Test]
+        public void CustNo_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "12345";
-            
-            // Act
-            model.CustNo = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.CustNo);
+            model.CustNo = "12345";
+            Assert.AreEqual("12345", model.CustNo);
         }
-        
-        [Fact]
-        public void SubNo_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void SubNo_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "67890";
-            
-            // Act
-            model.SubNo = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.SubNo);
+            model.SubNo = "67890";
+            Assert.AreEqual("67890", model.SubNo);
         }
-        
-        [Fact]
-        public void ShipNo_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void ShipNo_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "54321";
-            
-            // Act
-            model.ShipNo = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.ShipNo);
+            model.ShipNo = "54321";
+            Assert.AreEqual("54321", model.ShipNo);
         }
-        
-        [Fact]
-        public void ShipToName_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void ShipToName_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "John Doe";
-            
-            // Act
-            model.ShipToName = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.ShipToName);
+            model.ShipToName = "John Doe";
+            Assert.AreEqual("John Doe", model.ShipToName);
         }
-        
-        [Fact]
-        public void Contact_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void Contact_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "Jane Doe";
-            
-            // Act
-            model.Contact = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.Contact);
+            model.Contact = "Jane Doe";
+            Assert.AreEqual("Jane Doe", model.Contact);
         }
-        
-        [Fact]
-        public void Attention_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void Attention_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "Attention";
-            
-            // Act
-            model.Attention = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.Attention);
+            model.Attention = "Attention";
+            Assert.AreEqual("Attention", model.Attention);
         }
-        
-        [Fact]
-        public void Addr1_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void Addr1_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "123 Main St";
-            
-            // Act
-            model.Addr1 = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.Addr1);
+            model.Addr1 = "123 Main St";
+            Assert.AreEqual("123 Main St", model.Addr1);
         }
-        
-        [Fact]
-        public void Addr2_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void Addr2_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "Suite 100";
-            
-            // Act
-            model.Addr2 = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.Addr2);
+            model.Addr2 = "Suite 100";
+            Assert.AreEqual("Suite 100", model.Addr2);
         }
-        
-        [Fact]
-        public void Addr3_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void Addr3_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "Building B";
-            
-            // Act
-            model.Addr3 = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.Addr3);
+            model.Addr3 = "Building 5";
+            Assert.AreEqual("Building 5", model.Addr3);
         }
-        
-        [Fact]
-        public void City_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void City_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "Metropolis";
-            
-            // Act
-            model.City = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.City);
+            model.City = "Metropolis";
+            Assert.AreEqual("Metropolis", model.City);
         }
-        
-        [Fact]
-        public void State_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void State_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "NY";
-            
-            // Act
-            model.State = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.State);
+            model.State = "NY";
+            Assert.AreEqual("NY", model.State);
         }
-        
-        [Fact]
-        public void Zip_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void Zip_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "12345";
-            
-            // Act
-            model.Zip = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.Zip);
+            model.Zip = "12345";
+            Assert.AreEqual("12345", model.Zip);
         }
-        
-        [Fact]
-        public void Country_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void Country_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "USA";
-            
-            // Act
-            model.Country = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.Country);
+            model.Country = "USA";
+            Assert.AreEqual("USA", model.Country);
         }
-        
-        [Fact]
-        public void Phone_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void Phone_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "555-1234";
-            
-            // Act
-            model.Phone = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.Phone);
+            model.Phone = "555-1234";
+            Assert.AreEqual("555-1234", model.Phone);
         }
-        
-        [Fact]
-        public void Ext_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void Ext_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "101";
-            
-            // Act
-            model.Ext = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.Ext);
+            model.Ext = "101";
+            Assert.AreEqual("101", model.Ext);
         }
-        
-        [Fact]
-        public void Email_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void Email_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "test@example.com";
-            
-            // Act
-            model.Email = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.Email);
+            model.Email = "test@example.com";
+            Assert.AreEqual("test@example.com", model.Email);
         }
-        
-        [Fact]
-        public void Mobile_Should_SetAndGetCorrectly()
+
+        [Test]
+        public void Mobile_ShouldBeSetAndRetrievedCorrectly()
         {
-            // Arrange
             var model = new ProjectClientShippingAddressModel();
-            var expected = "555-6789";
-            
-            // Act
-            model.Mobile = expected;
-            
-            // Assert
-            Assert.Equal(expected, model.Mobile);
+            model.Mobile = "555-6789";
+            Assert.AreEqual("555-6789", model.Mobile);
+        }
+
+        [Test]
+        public void DefaultValues_ShouldBeCorrect()
+        {
+            var model = new ProjectClientShippingAddressModel();
+            Assert.AreEqual(string.Empty, model.CustNo);
+            Assert.AreEqual(string.Empty, model.SubNo);
+            Assert.AreEqual(string.Empty, model.ShipNo);
+            Assert.AreEqual(string.Empty, model.Contact);
+            Assert.AreEqual(string.Empty, model.Attention);
+            Assert.AreEqual(string.Empty, model.Zip);
+            Assert.AreEqual(string.Empty, model.Phone);
+            Assert.AreEqual(string.Empty, model.Ext);
+            Assert.AreEqual(string.Empty, model.Email);
+            Assert.AreEqual(string.Empty, model.Mobile);
         }
     }
 }

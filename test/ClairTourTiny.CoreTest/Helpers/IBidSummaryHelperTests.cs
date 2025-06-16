@@ -7,20 +7,30 @@ using Xunit;
 public class BidSummaryHelperTests
 {
     [Fact]
-    public void GetBidSummaryData_ShouldReturnExpectedResponse_WhenCalledWithValidEntityNo()
+    public void GetBidSummaryData_ValidEntityNo_ReturnsExpectedResponse()
     {
         // Arrange
         var mockBidSummaryHelper = new Mock<IBidSummaryHelper>();
-        var expectedResponse = new BidSummaryResponse(); // Assuming a default constructor exists
-        string testEntityNo = "12345";
-
-        mockBidSummaryHelper.Setup(helper => helper.GetBidSummaryData(testEntityNo))
-            .Returns(expectedResponse);
+        var expectedResponse = new BidSummaryResponse();
+        mockBidSummaryHelper.Setup(helper => helper.GetBidSummaryData(It.IsAny<string>()))
+                           .Returns(expectedResponse);
 
         // Act
-        var actualResponse = mockBidSummaryHelper.Object.GetBidSummaryData(testEntityNo);
+        var result = mockBidSummaryHelper.Object.GetBidSummaryData("validEntityNo");
 
         // Assert
-        Assert.Equal(expectedResponse, actualResponse);
+        Assert.Equal(expectedResponse, result);
+    }
+
+    [Fact]
+    public void GetBidSummaryData_InvalidEntityNo_ThrowsException()
+    {
+        // Arrange
+        var mockBidSummaryHelper = new Mock<IBidSummaryHelper>();
+        mockBidSummaryHelper.Setup(helper => helper.GetBidSummaryData(It.Is<string>(s => s == "invalidEntityNo")))
+                           .Throws(new ArgumentException("Invalid entity number"));
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => mockBidSummaryHelper.Object.GetBidSummaryData("invalidEntityNo"));
     }
 }
