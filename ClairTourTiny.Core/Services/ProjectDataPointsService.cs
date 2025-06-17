@@ -110,7 +110,7 @@ namespace ClairTourTiny.Core.Services
                     ORDER BY DisplayOrder");
 
                 // Bill Schedules
-                result.BillSchedules = await connection.QueryAsync<BillSchedule>("SELECT billschedule, ScheduleName FROM dbo.pjBillSchedules");
+                result.BillSchedules = await connection.QueryAsync<BillSchedule>("SELECT billschedule as billScheduleCode, ScheduleName FROM dbo.pjBillSchedules");
 
                 // Commodities
                 result.Commodities = await connection.QueryAsync<Commodity>(@"
@@ -353,7 +353,7 @@ namespace ClairTourTiny.Core.Services
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var sql = "SELECT ratetype, ratedesc, perioddays, ShortRateDesc FROM dbo.pjinvratetype";
+                var sql = "SELECT ratetype as RateTypeCode, ratedesc, perioddays, ShortRateDesc FROM dbo.pjinvratetype";
                 return await connection.QueryAsync<RateType>(sql);
             }
         }
