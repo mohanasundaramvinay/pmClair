@@ -569,10 +569,12 @@ namespace ClairTourTiny.Core.Services
             var targetPath = Path.Combine(currentGlobalOpsFolder, request.Path);
             if (string.IsNullOrEmpty(currentGlobalOpsFolder) || !Directory.Exists(currentGlobalOpsFolder) || !Directory.Exists(targetPath))
             {
+                var fullPath = request.Path ?? string.Empty;
+                fullPath = fullPath.Replace(@"\\", Path.DirectorySeparatorChar.ToString());
                 await CreateFolderAsync(entityNo, new CreateFolderRequest()
                 {
-                    FolderName = Path.GetFileName(request.Path ?? string.Empty),
-                    ParentPath = request.Path ?? string.Empty,
+                    FolderName = Path.GetFileName(fullPath),
+                    ParentPath = Path.GetDirectoryName(fullPath) ?? string.Empty,
                 });
             }
             var directoryPath = Path.GetDirectoryName(targetPath);
