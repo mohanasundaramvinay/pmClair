@@ -516,7 +516,7 @@ namespace ClairTourTiny.Core.Services
                 {
                     Name = request.FolderName,
                     Type = "Folder",
-                    FullPath = Path.Combine(request.ParentPath??string.Empty,request.FolderName)
+                    FullPath = Path.Combine(request.ParentPath ?? string.Empty, request.FolderName)
                 };
             }
             catch (Exception ex)
@@ -751,18 +751,25 @@ namespace ClairTourTiny.Core.Services
                     }
                     await CheckIfPathHasDbEntry(entityNo, request.Path, template, request.AttachmentType ?? string.Empty);
                     var folderPath = Path.Combine(currentGlobalOpsFolder, request.Path);
-                    if ((request.IsFile && !File.Exists(folderPath)) || !Directory.Exists(folderPath))
+                    if (request.IsFile && !File.Exists(targetPath))
                     {
                         throw new DirectoryNotFoundException($"File/Folder not found: {request.Path}");
+                    }
+                    else if (!Directory.Exists(pathTillLastFolder))
+                    {
+                        throw new DirectoryNotFoundException($"Directory Not found: {request.Path}");
                     }
                     if (request.IsFile)
                     {
                         await ProcessFileUpload(entityNo, Path.GetDirectoryName(request.Path) ?? string.Empty, Path.GetFileName(folderPath), template, request.AttachmentType);
                     }
-                    var files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories);
-                    foreach (var file in files)
+                    else
                     {
-                        await ProcessFileUpload(entityNo, request.Path, Path.GetFileName(file), template, request.AttachmentType);
+                        var files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories);
+                        foreach (var file in files)
+                        {
+                            await ProcessFileUpload(entityNo, request.Path, Path.GetFileName(file), template, request.AttachmentType);
+                        }
                     }
                 }
             }
