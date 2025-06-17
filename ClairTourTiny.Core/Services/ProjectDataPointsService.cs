@@ -94,7 +94,7 @@ namespace ClairTourTiny.Core.Services
                     WHERE w.isVisible = 1");
 
                 // Rate Types
-                result.RateTypes = await connection.QueryAsync<RateType>("SELECT ratetype, ratedesc, perioddays, ShortRateDesc FROM dbo.pjinvratetype");
+                result.RateTypes = await connection.QueryAsync<RateType>("SELECT ratetype as RateTypeCode, ratedesc, perioddays, ShortRateDesc FROM dbo.pjinvratetype");
 
                 // Contact Categories
                 result.ContactCategories = await connection.QueryAsync<ContactCategoryDto>(@"
@@ -387,7 +387,7 @@ namespace ClairTourTiny.Core.Services
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var sql = "SELECT billschedule, ScheduleName FROM dbo.pjBillSchedules";
+                var sql = "SELECT billschedule as billScheduleCode, ScheduleName FROM dbo.pjBillSchedules";
                 return await connection.QueryAsync<BillSchedule>(sql);
             }
         }
