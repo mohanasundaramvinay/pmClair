@@ -38,7 +38,11 @@ namespace ClairTourTiny.Core.Services
                 Direction = ParameterDirection.Output,
             };
             await _dbContext.ExecuteStoredProcedureNonQueryOutputParamAsync("get_next_project_number", param);
-            return Convert.ToInt32(param.Value ?? 0);
+            if (param?.Value != DBNull.Value)
+            {
+                return Convert.ToInt32(param?.Value ?? 0);
+            }
+            return -1;
         }
 
         public async Task<List<PhaseModel>> GetPhases(string entityNo)
