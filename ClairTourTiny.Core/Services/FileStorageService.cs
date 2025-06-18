@@ -516,7 +516,7 @@ namespace ClairTourTiny.Core.Services
                 {
                     Name = request.FolderName,
                     Type = "Folder",
-                    FullPath = Path.Combine(request.ParentPath??string.Empty,request.FolderName)
+                    FullPath = Path.Combine(request.ParentPath ?? string.Empty, request.FolderName)
                 };
             }
             catch (Exception ex)
@@ -569,10 +569,12 @@ namespace ClairTourTiny.Core.Services
             var targetPath = Path.Combine(currentGlobalOpsFolder, request.Path);
             if (string.IsNullOrEmpty(currentGlobalOpsFolder) || !Directory.Exists(currentGlobalOpsFolder) || !Directory.Exists(targetPath))
             {
+                var fullPath = request.Path ?? string.Empty;
+                fullPath = fullPath.Replace(@"\\", Path.DirectorySeparatorChar.ToString());
                 await CreateFolderAsync(entityNo, new CreateFolderRequest()
                 {
-                    FolderName = Path.GetFileName(request.Path ?? string.Empty),
-                    ParentPath = request.Path ?? string.Empty,
+                    FolderName = Path.GetFileName(fullPath),
+                    ParentPath = Path.GetDirectoryName(fullPath) ?? string.Empty,
                 });
             }
             var directoryPath = Path.GetDirectoryName(targetPath);
@@ -751,18 +753,25 @@ namespace ClairTourTiny.Core.Services
                     }
                     await CheckIfPathHasDbEntry(entityNo, request.Path, template, request.AttachmentType ?? string.Empty);
                     var folderPath = Path.Combine(currentGlobalOpsFolder, request.Path);
-                    if ((request.IsFile && !File.Exists(folderPath)) || !Directory.Exists(folderPath))
+                    if (request.IsFile && !File.Exists(targetPath))
                     {
                         throw new DirectoryNotFoundException($"File/Folder not found: {request.Path}");
+                    }
+                    else if (!Directory.Exists(pathTillLastFolder))
+                    {
+                        throw new DirectoryNotFoundException($"Directory Not found: {request.Path}");
                     }
                     if (request.IsFile)
                     {
                         await ProcessFileUpload(entityNo, Path.GetDirectoryName(request.Path) ?? string.Empty, Path.GetFileName(folderPath), template, request.AttachmentType);
                     }
-                    var files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories);
-                    foreach (var file in files)
+                    else
                     {
-                        await ProcessFileUpload(entityNo, request.Path, Path.GetFileName(file), template, request.AttachmentType);
+                        var files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories);
+                        foreach (var file in files)
+                        {
+                            await ProcessFileUpload(entityNo, request.Path, Path.GetFileName(file), template, request.AttachmentType);
+                        }
                     }
                 }
             }
