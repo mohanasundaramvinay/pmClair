@@ -27,6 +27,15 @@ namespace ClairTourTiny.Infrastructure.Dto.DTOs
         public bool IsUnusedPart { get; set; }
         public bool IsInMyWarehouse { get; set; }
         public bool IsMyPart { get; set; }
+
+        // Bottleneck fields
+        public decimal Bottleneck { get; set; }
+        public decimal Bottleneck1d { get; set; }
+        public decimal Bottleneck1w { get; set; }
+        public decimal WarehouseQty { get; set; }
+        public decimal MaxCumulativeQty { get; set; }
+        public decimal DayOfDemand { get; set; }
+        public decimal WeekOfDemand { get; set; }
     }
 
     public class PartCategoryDto
