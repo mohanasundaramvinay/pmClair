@@ -1150,20 +1150,49 @@ namespace ClairTourTiny.Core.Services
                 }
 
                 // Map to final result
-                var finalResults = results.Select(x => new PartSearchResultDto
+                var bottleneckDict = new Dictionary<string, PartBottleneckDto>();
+                if (partNumbers.Any())
                 {
-                    PartNumber = x.Part.Partno ?? string.Empty,
-                    PartDescription = x.Part.Partdesc ?? string.Empty,
-                    Commodity = x.Part.Commmodity ?? string.Empty,
-                    PartGroup = x.FirstPartGroup ?? "!Barcode",
-                    PartSequence = x.FirstPartSequence ?? 0,
-                    PartsListWeight = weightsDict.TryGetValue(x.Part.Partno, out var weight) ? weight.weight : 0.0,
-                    PartsListCubic = weightsDict.TryGetValue(x.Part.Partno, out var cubic) ? cubic.cubic : null,
-                    PartsListValue = weightsDict.TryGetValue(x.Part.Partno, out var value) ? value.value : 0.0,
-                    Sku = x.Part.Sku ?? string.Empty,
-                    IsUnusedPart = x.Part.Commmodity == "UNUSED",
-                    IsInMyWarehouse = x.IsInMyWarehouse,
-                    IsMyPart = x.HasPartGroups
+                    var bottleneckResults = await CalculatePartBottlenecksAsync(new PartBottleneckRequestDto { PartNumbers = partNumbers });
+                    bottleneckDict = bottleneckResults.ToDictionary(b => b.PartNumber, b => b);
+                }
+
+                var finalResults = results.Select(x => {
+                    var dto = new PartSearchResultDto
+                    {
+                        PartNumber = x.Part.Partno ?? string.Empty,
+                        PartDescription = x.Part.Partdesc ?? string.Empty,
+                        Commodity = x.Part.Commmodity ?? string.Empty,
+                        PartGroup = x.FirstPartGroup ?? "!Barcode",
+                        PartSequence = x.FirstPartSequence ?? 0,
+                        PartsListWeight = weightsDict.TryGetValue(x.Part.Partno, out var weight) ? weight.weight : 0.0,
+                        PartsListCubic = weightsDict.TryGetValue(x.Part.Partno, out var cubic) ? cubic.cubic : null,
+                        PartsListValue = weightsDict.TryGetValue(x.Part.Partno, out var value) ? value.value : 0.0,
+                        Sku = x.Part.Sku ?? string.Empty,
+                        IsUnusedPart = x.Part.Commmodity == "UNUSED",
+                        IsInMyWarehouse = x.IsInMyWarehouse,
+                        IsMyPart = x.HasPartGroups
+                    };
+                    // Add bottleneck fields if available
+                    if (bottleneckDict.TryGetValue(dto.PartNumber, out var bottleneck))
+                    {
+                        dto.Bottleneck = bottleneck.Bottleneck;
+                        dto.Bottleneck1d = bottleneck.Bottleneck1d;
+                        dto.Bottleneck1w = bottleneck.Bottleneck1w;
+                        dto.WarehouseQty = bottleneck.WarehouseQty;
+                        dto.MaxCumulativeQty = bottleneck.MaxCumulativeQty;
+                        dto.DayOfDemand = bottleneck.DayOfDemand;
+                        dto.WeekOfDemand = bottleneck.WeekOfDemand;
+
+                        // dto.Bottleneck = 8;
+                        // dto.Bottleneck1d = 8;
+                        // dto.Bottleneck1w = 8;
+                        // dto.WarehouseQty = 8;
+                        // dto.MaxCumulativeQty = 8;
+                        // dto.DayOfDemand = 8;
+                        // dto.WeekOfDemand = 8;
+                    }
+                    return dto;
                 })
                 .OrderBy(p => p.PartGroup)
                 .ThenBy(p => p.PartSequence)
