@@ -19,7 +19,6 @@ public class RfiModel
     public string? AmApproved { get; set; }
     public string? Billschedule { get; set; }
     public string? Acctcd { get; set; }
-    public int? Numdays { get; set; }
     public string? RevenueCompany { get; set; }
     public double? Total { get; set; }
     public bool IsManualAdjustment { get; set; }
