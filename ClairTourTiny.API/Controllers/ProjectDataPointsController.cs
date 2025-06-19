@@ -9,6 +9,7 @@ using ClairTourTiny.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using Dapper;
+using ClairTourTiny.Infrastructure.Dto.ProjectMaintenance;
 
 namespace ClairTourTiny.API.Controllers
 {
@@ -1995,6 +1996,47 @@ namespace ClairTourTiny.API.Controllers
             {
                 var vendors = await _projectDataService.SearchVendorsAsync(searchTerm);
                 return Ok(vendors);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Gets bid values for parts based on a filter condition
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///     GET /api/ProjectDataPoints/parts/bid-values?filter=v.PartNo IN ('PART001','PART002')
+        /// 
+        /// Returns bid value information for parts matching the filter including:
+        /// * Part Number
+        /// * Currency
+        /// * Value Type
+        /// * Bid Value
+        /// </remarks>
+        /// <param name="filter">SQL filter condition for part numbers (e.g., "v.PartNo IN ('PART001','PART002')")</param>
+        /// <returns>List of bid values for the specified parts</returns>
+        /// <response code="200">Returns the bid values for the specified parts</response>
+        /// <response code="400">If the filter is invalid or malformed</response>
+        /// <response code="500">If there was an internal server error</response>
+        [HttpGet("parts/bid-values")]
+        [ProducesResponseType(typeof(List<PartBidValueDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Produces("application/json")]
+        public async Task<ActionResult<List<PartBidValueDto>>> GetPartBidValues([FromQuery] string filter)
+        {
+            if (string.IsNullOrWhiteSpace(filter))
+            {
+                return BadRequest("Filter parameter cannot be null or empty");
+            }
+
+            try
+            {
+                var bidValues = await _projectDataService.GetPartBidValues(filter);
+                return Ok(bidValues);
             }
             catch (Exception ex)
             {

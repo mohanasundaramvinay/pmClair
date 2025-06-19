@@ -5,7 +5,7 @@ namespace ClairTourTiny.Infrastructure.Dto.DTOs;
 /// <summary>
 /// Data transfer object for part bid value information
 /// </summary>
-public class PartBidValueDto
+public class PartBidValueDto1
 {
     /// <summary>
     /// The unique identifier of the part bid value

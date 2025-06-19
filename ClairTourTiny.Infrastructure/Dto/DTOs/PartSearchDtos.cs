@@ -36,6 +36,12 @@ namespace ClairTourTiny.Infrastructure.Dto.DTOs
         public decimal MaxCumulativeQty { get; set; }
         public decimal DayOfDemand { get; set; }
         public decimal WeekOfDemand { get; set; }
+
+        public string Currency { get; set; } = string.Empty;
+
+        public string ValueType { get; set; } = string.Empty;
+
+        public decimal BidValue { get; set; }
     }
 
     public class PartCategoryDto

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ClairTourTiny.Infrastructure.Dto.DTOs;
 using ClairTourTiny.Infrastructure.Models;
+using ClairTourTiny.Infrastructure.Dto.ProjectMaintenance;
 
 namespace ClairTourTiny.Core.Interfaces
 {
@@ -354,5 +355,13 @@ namespace ClairTourTiny.Core.Interfaces
         /// <param name="searchTerm">The search term to filter vendors</param>
         /// <returns>List of matching vendors</returns>
         Task<IEnumerable<VendorDto>> SearchVendorsAsync(string searchTerm);
+
+        /// <summary>
+        /// Gets bid values for parts based on a filter condition
+        /// </summary>
+        /// <param name="filter">SQL filter condition for part numbers (e.g., "v.PartNo IN ('PART001','PART002')")</param>
+        /// <returns>List of bid values for the specified parts</returns>
+       // Task<IEnumerable<PartBidValueDto>> GetPartBidValues(string filter);
+        Task<List<PartBidValueDto>> GetPartBidValues(string partNumbers);
     }
 } 

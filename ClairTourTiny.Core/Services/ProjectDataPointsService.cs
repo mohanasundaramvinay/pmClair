@@ -10,6 +10,8 @@ using ClairTourTiny.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ClairTourTiny.Infrastructure;
+using System.Data;
+using ClairTourTiny.Infrastructure.Dto.ProjectMaintenance;
 
 namespace ClairTourTiny.Core.Services
 {
@@ -21,6 +23,7 @@ namespace ClairTourTiny.Core.Services
         private readonly string _connectionString;
         private readonly ILogger<ProjectDataPointsService> _logger;
         private readonly ClairTourTinyContext _context;
+        private static DataTable _exchangeRates;
 
         public ProjectDataPointsService(
             IConfiguration configuration, 
@@ -1157,6 +1160,15 @@ namespace ClairTourTiny.Core.Services
                     bottleneckDict = bottleneckResults.ToDictionary(b => b.PartNumber, b => b);
                 }
 
+                // Get bid values for all parts
+                var bidValueDict = new Dictionary<string, PartBidValueDto>();
+                if (partNumbers.Any())
+                {
+                    var partNumbersFilter = $"v.PartNo IN ({string.Join(",", partNumbers.Select(p => $"'{p}'"))})";
+                    var bidValues = await GetPartBidValues(partNumbersFilter);
+                    bidValueDict = bidValues.ToDictionary(b => b.PartNo, b => b);
+                }
+
                 var finalResults = results.Select(x => {
                     var dto = new PartSearchResultDto
                     {
@@ -1173,6 +1185,15 @@ namespace ClairTourTiny.Core.Services
                         IsInMyWarehouse = x.IsInMyWarehouse,
                         IsMyPart = x.HasPartGroups
                     };
+
+                    // Add bid value fields if available
+                    if (bidValueDict.TryGetValue(dto.PartNumber, out var bidValue))
+                    {
+                        dto.Currency = bidValue.Currency;
+                        dto.ValueType = bidValue.ValueType;
+                        dto.BidValue = (decimal)bidValue.BidValue;
+                    }
+
                     // Add bottleneck fields if available
                     if (bottleneckDict.TryGetValue(dto.PartNumber, out var bottleneck))
                     {
@@ -1183,14 +1204,6 @@ namespace ClairTourTiny.Core.Services
                         dto.MaxCumulativeQty = bottleneck.MaxCumulativeQty;
                         dto.DayOfDemand = bottleneck.DayOfDemand;
                         dto.WeekOfDemand = bottleneck.WeekOfDemand;
-
-                        // dto.Bottleneck = 8;
-                        // dto.Bottleneck1d = 8;
-                        // dto.Bottleneck1w = 8;
-                        // dto.WarehouseQty = 8;
-                        // dto.MaxCumulativeQty = 8;
-                        // dto.DayOfDemand = 8;
-                        // dto.WeekOfDemand = 8;
                     }
                     return dto;
                 })
@@ -1326,8 +1339,27 @@ namespace ClairTourTiny.Core.Services
                     .ThenBy(p => p.PartSequence)
                     .ThenBy(p => p.PartDescription)
                     .ToListAsync();
-                    
-                    
+
+                // Get bid values for all parts
+                var partNumbers = results.Select(r => r.PartNumber).ToList();
+                var bidValueDict = new Dictionary<string, PartBidValueDto>();
+                if (partNumbers.Any())
+                {
+                    var partNumbersFilter = $"v.PartNo IN ({string.Join(",", partNumbers.Select(p => $"'{p}'"))})";
+                    var bidValues = await GetPartBidValues(partNumbersFilter);
+                    bidValueDict = bidValues.ToDictionary(b => b.PartNo, b => b);
+                }
+
+                // Add bid values to results
+                foreach (var result in results)
+                {
+                    if (bidValueDict.TryGetValue(result.PartNumber, out var bidValue))
+                    {
+                        result.Currency = bidValue.Currency;
+                        result.ValueType = bidValue.ValueType;
+                        result.BidValue = (decimal)bidValue.BidValue;
+                    }
+                }
 
                 // Handle null values for keyless entity after the query
                 foreach (var result in results)
@@ -1344,7 +1376,7 @@ namespace ClairTourTiny.Core.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine("exxxxxxxxxxxxxxxxxxxxxxxxxxx: " + ex.ToString());
+                Console.WriteLine("ex: " + ex.ToString());
                 throw new ApplicationException("An error occurred while searching parts. Please try again later.", ex);
             }
         }
@@ -1529,6 +1561,27 @@ namespace ClairTourTiny.Core.Services
                 .ToListAsync();
                 
                 
+
+            // Get bid values for all parts
+            var partNumbers = results.Select(r => r.PartNumber).ToList();
+            var bidValueDict = new Dictionary<string, PartBidValueDto>();
+            if (partNumbers.Any())
+            {
+                var partNumbersFilter = $"v.PartNo IN ({string.Join(",", partNumbers.Select(p => $"'{p}'"))})";
+                var bidValues = await GetPartBidValues(partNumbersFilter);
+                bidValueDict = bidValues.ToDictionary(b => b.PartNo, b => b);
+            }
+
+            // Add bid values to results
+            foreach (var result in results)
+            {
+                if (bidValueDict.TryGetValue(result.PartNumber, out var bidValue))
+                {
+                    result.Currency = bidValue.Currency;
+                    result.ValueType = bidValue.ValueType;
+                    result.BidValue = (decimal)bidValue.BidValue;
+                }
+            }
 
             return results;
         }
@@ -1787,8 +1840,101 @@ namespace ClairTourTiny.Core.Services
         }
     }
 
+  public double GetExchangeRateBookToDollars(string currencyCode, DateTime asOfDate)
+        {
+            if (_exchangeRates == null)
+            {
+                using var tmpConn = new SqlConnection(_connectionString);
+                tmpConn.Open();
+                using var command = new SqlCommand("Select currency, startdate, enddate, RateToDollars from ExchangeRateBook", tmpConn);
+                using var adapter = new SqlDataAdapter(command);
+                _exchangeRates = new DataTable();
+                adapter.Fill(_exchangeRates);
+                tmpConn.Close();
+            }
+
+            var matchingRows = _exchangeRates.Select($"currency = '{currencyCode}' and startdate <= '{asOfDate:yyyy-MM-dd}' and (enddate is null or enddate >= '{asOfDate:yyyy-MM-dd}')");
+
+            if (matchingRows.Length == 1)
+            {
+                return Convert.ToDouble(matchingRows[0]["RateToDollars"]);
+            }
+            else
+            {
+                return 1.0;
+            }
+        }
+
+        public async Task<List<PartBidValueDto>> GetPartBidValues(string partNumbersFilter)
+        {
+            var sql = $"Select v.PartNo, v.Currency, v.ValueType, v.BidValue from dbo.PartBidValues v where {partNumbersFilter}";
+            
+            using var connection = new SqlConnection(_connectionString);
+            await connection.OpenAsync();
+            
+            using var command = new SqlCommand(sql, connection);
+            using var reader = await command.ExecuteReaderAsync();
+            
+            var partBidValues = new List<PartBidValueDto>();
+            while (await reader.ReadAsync())
+            {
+                partBidValues.Add(new PartBidValueDto
+                {
+                    PartNo = reader["PartNo"].ToString() ?? string.Empty,
+                    Currency = reader["Currency"].ToString() ?? string.Empty,
+                    ValueType = reader["ValueType"].ToString() ?? string.Empty,
+                    BidValue = Convert.ToDouble(reader["BidValue"])
+                });
+            }
+            
+            return partBidValues;
+        }
+
+        public async Task<double> GetPartBidPrice(string partNumber, string proposalTypeBidValueType, string projectCurrency, DateTime exchangeRateDate)
+        {
+            // Build the filter with default values if parameters are null or empty
+            var partNumbersFilter = $"v.PartNo = '{partNumber}'";
+            
+            // Add currency filter - use USD if projectCurrency is null or empty
+            var currency = string.IsNullOrEmpty(projectCurrency) ? "USD" : projectCurrency;
+            partNumbersFilter += $" AND v.Currency = '{currency}'";
+            
+            // Add value type filter - use Standard if proposalTypeBidValueType is null or empty
+            var valueType = string.IsNullOrEmpty(proposalTypeBidValueType) ? "Standard" : proposalTypeBidValueType;
+            partNumbersFilter += $" AND v.ValueType = '{valueType}'";
+            
+            var partBidValues = await GetPartBidValues(partNumbersFilter);
+            
+            if (partBidValues.Any())
+            {
+                var bidValueRow = partBidValues.FirstOrDefault();
+                if (bidValueRow != null)
+                {
+                    return Convert.ToDouble(bidValueRow.BidValue);
+                }
+            }
+            
+            // If no exact match found and we're not already looking for USD, try USD as fallback
+            if (currency != "USD")
+            {
+                var usdFilter = $"v.PartNo = '{partNumber}' AND v.Currency = 'USD' AND v.ValueType = '{valueType}'";
+                var usdBidValues = await GetPartBidValues(usdFilter);
+                
+                if (usdBidValues.Any())
+                {
+                    var usdBidValueRow = usdBidValues.FirstOrDefault();
+                    if (usdBidValueRow != null)
+                    {
+                        var exchangeRate = GetExchangeRateBookToDollars(currency, exchangeRateDate);
+                        return Convert.ToDouble(usdBidValueRow.BidValue) / exchangeRate;
+                    }
+                }
+            }
+            
+            return 0.0;
+        }
+    }
+
 }
 
     
-
-} 
