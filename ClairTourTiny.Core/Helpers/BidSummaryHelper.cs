@@ -338,7 +338,7 @@ public class BidSummaryHelper : IBidSummaryHelper
             item.WeeklyOperationalExpense = itemShareOfOperationalExpenses;
             item.WeeklyTotal = crewItemWeekly + itemShareOfOperationalExpenses;
             item.DailyRate = (crewItemWeekly + itemShareOfOperationalExpenses) / 7;
-
+            item.EntityNo= cr.EntityNo;
             var billingItem = _billingItems.FirstOrDefault(bi =>
                 bi.BidEntityNo == entityNo &&
                 bi.CrewEntityNo == cr.EntityNo &&
