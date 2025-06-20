@@ -1,16 +1,18 @@
+using ClairTourTiny.Core.Interfaces;
+using ClairTourTiny.Infrastructure.Dto.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ClairTourTiny.Core.Interfaces;
-using ClairTourTiny.Infrastructure.Dto.DTOs;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace ClairTourTiny.API.Controllers;
 
 /// <summary>
 /// Controller for managing vendor operations
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]

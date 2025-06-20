@@ -1,10 +1,12 @@
 ﻿using ClairTourTiny.Core.Interfaces;
 using ClairTourTiny.Core.Models.ProjectMaintenance;
 using ClairTourTiny.Infrastructure.Models.ProjectMaintenance;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClairTourTiny.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/")]
     [Produces("application/json")]
@@ -31,8 +33,18 @@ namespace ClairTourTiny.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetPurchases(string entityNo)
         {
-            var phases = await _pjtMaintenanceService.GetPurchases(entityNo);
-            return Ok(phases);
+            var purchaseOrders = await _pjtMaintenanceService.GetPurchases(entityNo);
+            return Ok(purchaseOrders);
+        }
+
+        [HttpGet("projects/{entityNo}/purchases/new-po")]
+        [ProducesResponseType(typeof(List<ProjectPurchaseModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetPurchases(string entityNo, [FromQuery] string poDescription)
+        {
+            var newPo = await _pjtMaintenanceService.AddNewPOAsync(entityNo,poDescription);
+            var purchaseOrders = await _pjtMaintenanceService.GetPurchases(entityNo, newPo);
+            return Ok(purchaseOrders);
         }
 
         [HttpGet("projects/{entityNo}/shipments")]

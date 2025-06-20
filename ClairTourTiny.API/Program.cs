@@ -28,7 +28,6 @@ builder.Services.AddScoped(typeof(IProjectMaintenanceHelper), typeof(ProjectMain
 builder.Services.AddScoped(typeof(IProjectDataPointsService), typeof(ProjectDataPointsService));        
 builder.Services.AddScoped(typeof(IVendorService), typeof(VendorService));
 builder.Services.AddScoped(typeof(ILookupService), typeof(LookupService));
-builder.Services.AddScoped(typeof(IPurchaseOrderService), typeof(PurchaseOrderService));
 builder.Services.AddScoped(typeof(IFileStorageService), typeof(FileStorageService));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

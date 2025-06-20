@@ -52,11 +52,39 @@ namespace ClairTourTiny.Core.Services
             return _mapper.Map<List<PhaseModel>>(phasesDtos);
         }
 
-        public async Task<List<ProjectPurchaseModel>> GetPurchases(string entityNo)
+        public async Task<List<ProjectPurchaseModel>> GetPurchases(string entityNo,int? selectedPo = null)
         {
             var param = new SqlParameter("@entityno", entityNo);
-            var phasesDtos = await _dbContext.ExecuteStoredProcedureAsync<PurchaseDto>("Get_Purchase_Orders_By_Project", param);
-            return _mapper.Map<List<ProjectPurchaseModel>>(phasesDtos);
+            var purchaseOrdersDtos = await _dbContext.ExecuteStoredProcedureAsync<PurchaseDto>("Get_Purchase_Orders_By_Project", param);
+            var purchaseOrders = _mapper.Map<List<ProjectPurchaseModel>>(purchaseOrdersDtos);
+            if(selectedPo.HasValue && selectedPo.Value > 0)
+            {
+                var selectedPurchase = purchaseOrders.FirstOrDefault(po => po.PONumber == selectedPo.Value);
+                if (selectedPurchase != null)
+                {
+                    selectedPurchase.IsNewlyAdded = true;
+                }
+            }
+            return purchaseOrders;
+        }
+
+        public async Task<int> AddNewPOAsync(string entityNo, string poDescription)
+        {
+            var sqlParams = new SqlParameter[]
+            {
+                new("@entityno", entityNo),
+                new("@poDescription", poDescription),
+                new("@newPONumber", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output,
+                }
+            };
+            await _dbContext.ExecuteStoredProcedureNonQueryOutputParamAsync("Create_Purchase_Order_Blank", sqlParams);
+            if (sqlParams[2]?.Value != DBNull.Value)
+            {
+                return Convert.ToInt32(sqlParams[2]?.Value ?? 0);
+            }
+            return -1;
         }
 
         public async Task<List<ProjectEquipmentModel>> GetEquipments(string entityNo)

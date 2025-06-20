@@ -1,11 +1,11 @@
 ﻿using ClairTourTiny.Core.Interfaces;
 using ClairTourTiny.Core.Models.Lookup;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-
-//test
 namespace ClairTourTiny.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]

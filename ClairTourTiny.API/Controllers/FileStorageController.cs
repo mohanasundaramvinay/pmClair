@@ -1,10 +1,12 @@
 ﻿using ClairTourTiny.Core.Interfaces;
 using ClairTourTiny.Core.Models.FileStorage;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClairTourTiny.API.Controllers
 {
+    [Authorize]
     [Route("api/entities")]
     [ApiController]
     [Produces("application/json")]

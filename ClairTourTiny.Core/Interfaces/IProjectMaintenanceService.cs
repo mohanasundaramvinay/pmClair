@@ -14,7 +14,7 @@ namespace ClairTourTiny.Core.Interfaces
 
         Task<List<PhaseModel>> GetPhases(string entityNo);
 
-        Task<List<ProjectPurchaseModel>> GetPurchases(string entityNo);
+        Task<List<ProjectPurchaseModel>> GetPurchases(string entityNo, int? selectedPo = null);
 
         Task<List<ProjectShipmentModel>> GetShipments(string entityNo);
 
@@ -61,5 +61,6 @@ namespace ClairTourTiny.Core.Interfaces
         /// <param name="request">Bottleneck calculation request containing equipment data</param>
         /// <returns>Bottleneck calculation results</returns>
         Task<BottleneckCalculationResponse> CalculateBottlenecks(BottleneckCalculationRequest request);
+        Task<int> AddNewPOAsync(string entityNo, string poDescription);
     }
 }

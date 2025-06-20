@@ -2,6 +2,7 @@
 {
     public class ProjectPurchaseModel
     {
+        public bool IsNewlyAdded { get; set; } = false;
         public int IdPurchaseOrder { get; set; }
         public int PONumber { get; set; }
         public string? PODescription { get; set; }

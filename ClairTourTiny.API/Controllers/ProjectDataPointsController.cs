@@ -16,6 +16,7 @@ namespace ClairTourTiny.API.Controllers
     /// <summary>
     /// Controller for managing project data points and related information
     /// </summary>
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
