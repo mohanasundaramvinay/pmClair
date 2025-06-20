@@ -10,9 +10,10 @@ namespace ClairTourTiny.API.Controllers
     [ApiController]
     [Route("api/")]
     [Produces("application/json")]
-    public class ProjectMaintenanceController(IProjectMaintenanceService pjtMaintenanceService) : ControllerBase
+    public class ProjectMaintenanceController(IProjectMaintenanceService pjtMaintenanceService,ILogger<ProjectMaintenanceController> logger) : ControllerBase
     {
         private IProjectMaintenanceService _pjtMaintenanceService = pjtMaintenanceService;
+        private ILogger<ProjectMaintenanceController> _logger = logger;
 
         [HttpGet("projects/next")]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
@@ -33,18 +34,34 @@ namespace ClairTourTiny.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetPurchases(string entityNo)
         {
-            var purchaseOrders = await _pjtMaintenanceService.GetPurchases(entityNo);
-            return Ok(purchaseOrders);
+            try
+            {
+                var purchaseOrders = await _pjtMaintenanceService.GetPurchases(entityNo);
+                return Ok(purchaseOrders);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting purchases for {entityNo}", entityNo);
+                return StatusCode(500, "An error occurred while retrieving purchase order");
+            }
         }
 
         [HttpGet("projects/{entityNo}/purchases/new-po")]
         [ProducesResponseType(typeof(List<ProjectPurchaseModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetPurchases(string entityNo, [FromQuery] string poDescription)
+        public async Task<IActionResult> CreateNewPOAndListPurchases(string entityNo, [FromQuery] string poDescription)
         {
-            var newPo = await _pjtMaintenanceService.AddNewPOAsync(entityNo,poDescription);
-            var purchaseOrders = await _pjtMaintenanceService.GetPurchases(entityNo, newPo);
-            return Ok(purchaseOrders);
+            try
+            {
+                var newPo = await _pjtMaintenanceService.AddNewPOAsync(entityNo, poDescription);
+                var purchaseOrders = await _pjtMaintenanceService.GetPurchases(entityNo, newPo);
+                return Ok(purchaseOrders);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Creating purchase order for {entityNo}", entityNo);
+                return StatusCode(500, "An error occurred while Creating new purchase order");
+            }
         }
 
         [HttpGet("projects/{entityNo}/shipments")]

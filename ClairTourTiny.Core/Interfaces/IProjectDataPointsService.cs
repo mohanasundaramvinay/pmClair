@@ -363,5 +363,6 @@ namespace ClairTourTiny.Core.Interfaces
         /// <returns>List of bid values for the specified parts</returns>
        // Task<IEnumerable<PartBidValueDto>> GetPartBidValues(string filter);
         Task<List<PartBidValueDto>> GetPartBidValues(string partNumbers);
+        double GetExchangeRateBookToDollars(string currencyCode, DateTime asOfDate);
     }
 } 

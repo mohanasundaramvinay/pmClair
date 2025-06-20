@@ -113,6 +113,15 @@ namespace ClairTourTiny.API.Controllers
             return Ok(companyInfo);
         }
 
+        [HttpGet("exchange-rate")]
+        [ProducesResponseType(typeof(double), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetCurrencyExchangeRate([FromQuery]string currencyCode, [FromQuery] DateTime asOfDate)
+        {
+            var exchangeRate = _projectDataService.GetExchangeRateBookToDollars(currencyCode,asOfDate);
+            return Ok(exchangeRate);
+        }
+
         /// <summary>
         /// Retrieves a list of all companies in the system
         /// </summary>

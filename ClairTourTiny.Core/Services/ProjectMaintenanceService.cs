@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
-using System.Data.Common;
-using AutoMapper;
+﻿using AutoMapper;
 using ClairTourTiny.Core.Helpers;
 using ClairTourTiny.Core.Interfaces;
 using ClairTourTiny.Core.Models.ProjectMaintenance;
@@ -13,6 +6,9 @@ using ClairTourTiny.Infrastructure;
 using ClairTourTiny.Infrastructure.Dto.ProjectMaintenance;
 using ClairTourTiny.Infrastructure.Models.ProjectMaintenance;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Data;
 
 namespace ClairTourTiny.Core.Services
 {
@@ -20,14 +16,16 @@ namespace ClairTourTiny.Core.Services
     {
         private readonly ClairTourTinyContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ILogger<ProjectMaintenanceService> _logger;
         private readonly IProjectMaintenanceHelper _pjtHelper;
         private readonly IProjectDataPointsService _projectDataPointsService;
 
-        public ProjectMaintenanceService(ClairTourTinyContext clairTourTinyContext, IMapper mapper, IProjectMaintenanceHelper pjtHelper, IProjectDataPointsService projectDataPointsService)
+        public ProjectMaintenanceService(ClairTourTinyContext clairTourTinyContext, IMapper mapper, ILogger<ProjectMaintenanceService> logger, IProjectMaintenanceHelper pjtHelper, IProjectDataPointsService projectDataPointsService)
         {
             _dbContext = clairTourTinyContext;
             _mapper = mapper;
             _pjtHelper = pjtHelper;
+            _logger = logger;
             _projectDataPointsService = projectDataPointsService;
         }
 
@@ -52,39 +50,57 @@ namespace ClairTourTiny.Core.Services
             return _mapper.Map<List<PhaseModel>>(phasesDtos);
         }
 
-        public async Task<List<ProjectPurchaseModel>> GetPurchases(string entityNo,int? selectedPo = null)
+        public async Task<List<ProjectPurchaseModel>> GetPurchases(string entityNo, int? selectedPo = null)
         {
-            var param = new SqlParameter("@entityno", entityNo);
-            var purchaseOrdersDtos = await _dbContext.ExecuteStoredProcedureAsync<PurchaseDto>("Get_Purchase_Orders_By_Project", param);
-            var purchaseOrders = _mapper.Map<List<ProjectPurchaseModel>>(purchaseOrdersDtos);
-            if(selectedPo.HasValue && selectedPo.Value > 0)
+            try
             {
-                var selectedPurchase = purchaseOrders.FirstOrDefault(po => po.PONumber == selectedPo.Value);
-                if (selectedPurchase != null)
+                var param = new SqlParameter("@entityno", entityNo);
+                var purchaseOrdersDtos = await _dbContext.ExecuteStoredProcedureAsync<PurchaseDto>("Get_Purchase_Orders_By_Project", param);
+                var purchaseOrders = _mapper.Map<List<ProjectPurchaseModel>>(purchaseOrdersDtos);
+                if (selectedPo.HasValue && selectedPo.Value > 0)
                 {
-                    selectedPurchase.IsNewlyAdded = true;
+                    var selectedPurchase = purchaseOrders.FirstOrDefault(po => po.PONumber == selectedPo.Value);
+                    if (selectedPurchase != null)
+                    {
+                        selectedPurchase.IsNewlyAdded = true;
+                        purchaseOrders.Remove(selectedPurchase);
+                        purchaseOrders.Insert(0, selectedPurchase);
+                    }
                 }
+                return purchaseOrders;
             }
-            return purchaseOrders;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw new Exception($"Failed to fetch Purchases for EntityNo: {entityNo}");
+            }
         }
 
         public async Task<int> AddNewPOAsync(string entityNo, string poDescription)
         {
-            var sqlParams = new SqlParameter[]
+            try
             {
-                new("@entityno", entityNo),
-                new("@poDescription", poDescription),
-                new("@newPONumber", SqlDbType.Int)
+                var sqlParams = new SqlParameter[]
                 {
-                    Direction = ParameterDirection.Output,
+                    new("@entityno", entityNo),
+                    new("@poDescription", poDescription),
+                    new("@newPONumber", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output,
+                    }
+                };
+                await _dbContext.ExecuteStoredProcedureNonQueryOutputParamAsync("Create_Purchase_Order_Blank", sqlParams);
+                if (sqlParams[2]?.Value != DBNull.Value)
+                {
+                    return Convert.ToInt32(sqlParams[2]?.Value ?? 0);
                 }
-            };
-            await _dbContext.ExecuteStoredProcedureNonQueryOutputParamAsync("Create_Purchase_Order_Blank", sqlParams);
-            if (sqlParams[2]?.Value != DBNull.Value)
-            {
-                return Convert.ToInt32(sqlParams[2]?.Value ?? 0);
+                return -1;
             }
-            return -1;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                throw new Exception($"Failed to Add new Purchase Order for EntityNo: {entityNo}");
+            }
         }
 
         public async Task<List<ProjectEquipmentModel>> GetEquipments(string entityNo)
@@ -104,7 +120,7 @@ namespace ClairTourTiny.Core.Services
             var equipments = await this.GetEquipments(entityNo);
             subhires.ForEach(subhire =>
             {
-                var part = equipments.Find(e=> e.Entityno == entityNo && e.Partno == subhire.PartNo);
+                var part = equipments.Find(e => e.Entityno == entityNo && e.Partno == subhire.PartNo);
                 subhire.PartDescription = part?.PartDescription ?? "THIS PART NO LONGER ORDERED ON THIS PROJECT.";
                 var equipmentPhase = projects.Find(p => p.EntityNo == subhire.EntityNo);
                 if (equipmentPhase != null)
@@ -127,13 +143,13 @@ namespace ClairTourTiny.Core.Services
             var phases = await this.GetPhases(entityNo);
             var billingItems = await this.GetBillingItems(entityNo);
             var billingPeriods = await this.GetBillingPeriods(entityNo);
-            var billingPeriodItems = await this.GetBillingPeriodItems(entityNo);    
+            var billingPeriodItems = await this.GetBillingPeriodItems(entityNo);
             var bidExpenses = await this.GetBidExpenses(entityNo);
             var crews = await this.GetCrews(entityNo);
             var expenseCodes = await _projectDataPointsService.GetExpenseCodes();
             var jobTypes = await _projectDataPointsService.GetJobTypes();
             var propertyTypes = await _projectDataPointsService.GetPropertyTypes();
-            var bidSummaryHelper = new BidSummaryHelper(phases, billingItems, billingPeriods, billingPeriodItems, bidExpenses, crews, expenseCodes.ToList(), jobTypes.ToList(), propertyTypes.ToList(),_dbContext);
+            var bidSummaryHelper = new BidSummaryHelper(phases, billingItems, billingPeriods, billingPeriodItems, bidExpenses, crews, expenseCodes.ToList(), jobTypes.ToList(), propertyTypes.ToList(), _dbContext);
             return bidSummaryHelper.GetBidSummaryData(entityNo);
         }
 
@@ -202,7 +218,7 @@ namespace ClairTourTiny.Core.Services
             var crewJobTypes = crews.Select(crew => crew.JobType).ToList();
             var assignedCrews = await this.GetAssignedCrews(entityNo);
             var assignedCrewOtData = await this.GetAssignedCrewOtData(entityNo);
-            var jobTypes = _dbContext.JobTypesInMyDivisions.Where(e=> crewJobTypes.Contains(e.Jobtype)).Select(e => new { e.Jobtype, e.Hours }).ToList();
+            var jobTypes = _dbContext.JobTypesInMyDivisions.Where(e => crewJobTypes.Contains(e.Jobtype)).Select(e => new { e.Jobtype, e.Hours }).ToList();
             foreach (var crew in crews)
             {
                 var assignedCrewData = assignedCrews.Where(ac => ac.EntityNo == crew.EntityNo && ac.JobType == crew.JobType && ac.EmpLineNo == crew.EmpLineNo)?.ToList();
@@ -413,9 +429,9 @@ namespace ClairTourTiny.Core.Services
         }
 
         private async Task<BottleneckResult> CalculateBottleneckForItem(
-            EquipmentBottleneckItem equipmentItem, 
-            List<BaseInventoryDto> baseInventory, 
-            List<ExternalDemandDto> externalDemands, 
+            EquipmentBottleneckItem equipmentItem,
+            List<BaseInventoryDto> baseInventory,
+            List<ExternalDemandDto> externalDemands,
             List<EquipmentBottleneckItem> allEquipmentItems)
         {
             var result = new BottleneckResult
@@ -439,7 +455,7 @@ namespace ClairTourTiny.Core.Services
 
                 // Internal demands - parts leaving in project
                 var partsLeaving = allEquipmentItems
-                    .Where(item => item.PartNo == equipmentItem.PartNo && 
+                    .Where(item => item.PartNo == equipmentItem.PartNo &&
                                   item.Warehouse == equipmentItem.Warehouse &&
                                   item.EntityNo != equipmentItem.EntityNo)
                     .Select(item => new DemandEvent
@@ -451,9 +467,9 @@ namespace ClairTourTiny.Core.Services
 
                 // Parts checked out early
                 var partsCheckedOutEarly = allEquipmentItems
-                    .Where(item => item.PartNo == equipmentItem.PartNo && 
+                    .Where(item => item.PartNo == equipmentItem.PartNo &&
                                   item.Warehouse == equipmentItem.Warehouse &&
-                                  item.StartDate >= DateTime.Today && 
+                                  item.StartDate >= DateTime.Today &&
                                   item.CheckedOut > 0)
                     .Select(item => new DemandEvent
                     {
@@ -464,7 +480,7 @@ namespace ClairTourTiny.Core.Services
 
                 // Parts returning
                 var partsReturning = allEquipmentItems
-                    .Where(item => item.PartNo == equipmentItem.PartNo && 
+                    .Where(item => item.PartNo == equipmentItem.PartNo &&
                                   item.EndDate >= DateTime.Today)
                     .Select(item => new DemandEvent
                     {
@@ -590,7 +606,7 @@ namespace ClairTourTiny.Core.Services
                 throw;
             }
             return result;
-           
+
         }
     }
 }
