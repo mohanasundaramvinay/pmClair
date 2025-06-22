@@ -193,7 +193,7 @@ namespace ClairTourTiny.Core.Services
 
                 // Currencies
                 result.Currencies = await connection.QueryAsync<CurrencyDto>(@"
-                    SELECT currency, description, symbol, culture, SymbolOnLeft, 
+                    SELECT currency as CurrencyCode, description, symbol, culture, SymbolOnLeft, 
                            RFIEnforcedGranularity, RFIDefaultGranularity, 
                            DefaultTaxType, CurrencyPositivePattern 
                     FROM dbo.currency");
@@ -611,7 +611,7 @@ namespace ClairTourTiny.Core.Services
             using (var connection = new SqlConnection(_connectionString))
             {
                 var sql = @"
-                    SELECT currency, description, symbol, culture, SymbolOnLeft, 
+                    SELECT currency as currencyCode, description, symbol, culture, SymbolOnLeft, 
                            RFIEnforcedGranularity, RFIDefaultGranularity, 
                            DefaultTaxType, CurrencyPositivePattern 
                     FROM dbo.currency";
