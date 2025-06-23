@@ -77,12 +77,17 @@ namespace ClairTourTiny.Core.Mapping
             CreateMap<ProjectProductionScheduleModel, Pm2ProjectProductionSchedule>()
                 .ForMember(dest => dest.SessionId, opt => opt.MapFrom(src => 1));
 
+            CreateMap<Models.ProjectMaintenance.Save.ProjectProductionSchedule, Pm2ProjectProductionSchedule>()
+                .ForMember(dest => dest.SessionId, opt => opt.MapFrom(src => 1));
+
             // Project Billing Item mapping
             CreateMap<ProjectBillingItemModel, Pm2ProjectBillingItem>()
                 .ForMember(dest => dest.SessionId, opt => opt.MapFrom(src => 1));
 
-            // Project Billing Item mapping
             CreateMap<Models.ProjectMaintenance.Save.ProjectBillingItem, Pm2ProjectBillingItem>()
+                .ForMember(dest => dest.SessionId, opt => opt.MapFrom(src => 1));
+
+            CreateMap<Models.ProjectMaintenance.Save.ProjectClientContact, Pm2ProjectClientContact>()
                 .ForMember(dest => dest.SessionId, opt => opt.MapFrom(src => 1));
 
             // Favorite Project mapping
