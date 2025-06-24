@@ -1,10 +1,11 @@
+using ClairTourTiny.Core.Models.Authentication;
+using ClairTourTiny.Core.Services;
+using ClairTourTiny.Infrastructure;
+using ClairTourTiny.Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using ClairTourTiny.Core.Models.Authentication;
-using ClairTourTiny.Core.Services;
-using ClairTourTiny.Infrastructure;
 
 namespace ClairTourTiny.API.Controllers
 {
@@ -15,15 +16,18 @@ namespace ClairTourTiny.API.Controllers
         private readonly IAuthService _authService;
         private readonly IConnectionStringCache _connectionStringCache;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AuthController> _logger;
+
 
         public AuthController(
             IAuthService authService, 
             IConnectionStringCache connectionStringCache,
-            IConfiguration configuration)
+            IConfiguration configuration, ILogger<AuthController> logger)
         {
             _authService = authService;
             _connectionStringCache = connectionStringCache;
             _configuration = configuration;
+            _logger = logger;
         }
 
         /// <summary>
@@ -52,6 +56,8 @@ namespace ClairTourTiny.API.Controllers
                                     $"Password={request.Password};" +
                                     "TrustServerCertificate=True;";
 
+                _logger.LogInformation($"Database connection ServerName:{_configuration["Database:Server"]} ,Database: {request.Database},Username: {request.Username},Pwd :{request.Password}", request.Database, request.Username, request.Password);
+
                 // Test the connection and get current user
                 using (var connection = new SqlConnection(connectionString))
                 {
@@ -69,6 +75,7 @@ namespace ClairTourTiny.API.Controllers
             }
             catch (SqlException ex)
             {
+                _logger.LogError(ex, "Invalid credentials or database access denied");
                 return Unauthorized(new { Message = "Invalid credentials or database access denied" });
             }
             catch (Exception ex)

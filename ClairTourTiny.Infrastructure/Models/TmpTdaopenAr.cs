@@ -13,7 +13,7 @@ public partial class TmpTdaopenAr
 
     public string? Datum { get; set; }
 
-    public string? Fälligkeit { get; set; }
+    public string? Falligkeit { get; set; }
 
     public string? BetragSoll { get; set; }
 
@@ -29,7 +29,7 @@ public partial class TmpTdaopenAr
 
     public string? Ausgl { get; set; }
 
-    public string? Fällig { get; set; }
+    public string? Fallig { get; set; }
 
     public string? Belegfeld2 { get; set; }
 

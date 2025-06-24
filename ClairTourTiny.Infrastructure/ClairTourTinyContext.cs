@@ -49555,7 +49555,7 @@ public partial class ClairTourTinyContext : DbContext
             entity.Property(e => e.BetragHaben).HasColumnName("Betrag Haben");
             entity.Property(e => e.BetragSoll).HasColumnName("Betrag Soll");
             entity.Property(e => e.Bsnr).HasColumnName("BSNr.");
-            entity.Property(e => e.Fällig).HasColumnName("fällig");
+            entity.Property(e => e.Fallig).HasColumnName("fallig");
             entity.Property(e => e.Kost1).HasColumnName("KOST1");
             entity.Property(e => e.Kost2).HasColumnName("KOST2");
             entity.Property(e => e.RechnungsNr).HasColumnName("Rechnungs-Nr.");
@@ -65828,7 +65828,7 @@ public partial class ClairTourTinyContext : DbContext
             entity.Property(e => e.BetragHaben).HasColumnName("Betrag Haben");
             entity.Property(e => e.BetragSoll).HasColumnName("Betrag Soll");
             entity.Property(e => e.Bsnr).HasColumnName("BSNr.");
-            entity.Property(e => e.Fällig).HasColumnName("fällig");
+            entity.Property(e => e.Fallig).HasColumnName("fallig");
             entity.Property(e => e.Kost1).HasColumnName("KOST1");
             entity.Property(e => e.Kost2).HasColumnName("KOST2");
             entity.Property(e => e.RechnungsNr).HasColumnName("Rechnungs-Nr.");

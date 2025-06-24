@@ -3,6 +3,7 @@ using ClairTourTiny.Core.Models.FileStorage;
 using ClairTourTiny.Core.Models.ProjectMaintenance;
 using ClairTourTiny.Core.Models.ProjectMaintenance.Save;
 using ClairTourTiny.Core.Models.Projects;
+using ClairTourTiny.Core.Models.PurchaseOrder;
 using ClairTourTiny.Infrastructure.Dto.FileStorage;
 using ClairTourTiny.Infrastructure.Dto.ProjectMaintenance;
 using ClairTourTiny.Infrastructure.Dto.Projects;
@@ -164,6 +165,8 @@ namespace ClairTourTiny.Core.Mapping
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<ClientAddressDto, ProjectClientAddressModel>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<ClairTourTiny.Infrastructure.Dto.DTOs.PurchaseOrderDto, PurchaseOrderModel>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
