@@ -35931,7 +35931,7 @@ public partial class ClairTourTinyContext : DbContext
                 .HasNoKey()
                 .ToTable("pm2EquipmentSubhires");
 
-            entity.Property(e => e.Billabledays).HasColumnName("billabledays");
+            entity.Property(e => e.BillableDays).HasColumnName("billabledays");
             entity.Property(e => e.EndDate).HasColumnType("datetime");
             entity.Property(e => e.Entityno)
                 .HasMaxLength(50)

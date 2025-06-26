@@ -24,4 +24,7 @@
     public string? TransferInboundEntityno { get; set; }
     public string? TransferOutboundEntityno { get; set; }
     public bool TransferLinkedPhases { get; set; } = false;
+    public bool IsInsert { get; set; } = false;
+    public bool IsUpdate { get; set; } = false;
+    public bool IsDelete { get; set; } = false; 
 }

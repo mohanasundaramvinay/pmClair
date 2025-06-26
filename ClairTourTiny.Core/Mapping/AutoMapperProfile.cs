@@ -1,4 +1,5 @@
 using AutoMapper;
+using System;
 using ClairTourTiny.Core.Models.FileStorage;
 using ClairTourTiny.Core.Models.ProjectMaintenance;
 using ClairTourTiny.Core.Models.ProjectMaintenance.Save;
@@ -97,7 +98,23 @@ namespace ClairTourTiny.Core.Mapping
 
             // Equipment Subhire mapping
             CreateMap<ProjectEquipmentSubhireModel, Pm2EquipmentSubhire>()
-                .ForMember(dest => dest.SessionId, opt => opt.MapFrom(src => 1));
+                .ForMember(dest => dest.SessionId, opt => opt.MapFrom(src => 1))
+                .ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => DateTime.Now))
+                .ForMember(dest => dest.IsInsert, opt => opt.MapFrom(src => src.IsInsert))
+                .ForMember(dest => dest.IsUpdate, opt => opt.MapFrom(src => src.IsUpdate))
+                .ForMember(dest => dest.IsDelete, opt => opt.MapFrom(src => src.IsDelete))
+                .ForMember(dest => dest.Entityno, opt => opt.MapFrom(src => src.EntityNo))
+                .ForMember(dest => dest.Partno, opt => opt.MapFrom(src => src.PartNo))
+                .ForMember(dest => dest.Vendno, opt => opt.MapFrom(src => src.VendorNo))
+                .ForMember(dest => dest.Siteno, opt => opt.MapFrom(src => src.SiteNo))
+                .ForMember(dest => dest.Ponumber, opt => opt.MapFrom(src => src.PONumber))
+                .ForMember(dest => dest.Rate, opt => opt.MapFrom(src => (double)src.Rate))
+                .ForMember(dest => dest.DeliveryRate, opt => opt.MapFrom(src => (double)src.DeliveryRate))
+                .ForMember(dest => dest.ReturnRate, opt => opt.MapFrom(src => (double)src.ReturnRate))
+                .ForMember(dest => dest.Total, opt => opt.MapFrom(src => (double)src.Total))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.ToDateTime(TimeOnly.MinValue)))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.ToDateTime(TimeOnly.MinValue)))
+                .ForMember(dest => dest.BillableDays, opt => opt.MapFrom(src => src.BillableDays));
 
             CreateMap<EquipmentDto, ProjectEquipmentModel>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));

@@ -59,10 +59,10 @@ public class ProjectMaintenanceHelper : IProjectMaintenanceHelper
 
     private string GenerateInsertSql(ClairTourTinyContext context,Type entityType, Type sourceType, object entity, out object[] parameters)
     {
-        var sourceProperties = sourceType.GetProperties().Select(p => p.Name).ToHashSet();
+        var sourceProperties = sourceType.GetProperties().Select(p => p.Name.ToLower()).ToHashSet();
         var propertiesWithValues = entityType.GetProperties()
             .Where(p => !typeof(IEnumerable<>).IsAssignableFrom(p.PropertyType))
-            .Where(p => sourceProperties.Contains(p.Name))
+            .Where(p => sourceProperties.Contains(p.Name.ToLower()))
             .Select((p, i) => new { Property = p, Value = p.GetValue(entity), Index = i })
             .ToList();
 
