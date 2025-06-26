@@ -14,7 +14,7 @@ namespace ClairTourTiny.API.Controllers
         private IPhaseService _service = phaseService;
 
         [HttpGet("suffixes")]
-        [ProducesResponseType(typeof(List<Project>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetFavoriteProjects() => Ok(await _service.GetSuffixes());
     }
