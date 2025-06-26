@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ClairTourTiny.Infrastructure.Dto.DTOs;
+using ClairTourTiny.Infrastructure.Dto.Vendor;
 
 namespace ClairTourTiny.Core.Interfaces;
 
@@ -50,4 +51,11 @@ public interface IVendorService
     /// </summary>
     /// <returns>List of rate types with their descriptions</returns>
     Task<IEnumerable<RateTypeDto>> GetRateTypesAsync();
+      
+    /// <summary>
+    /// Gets vendor details for a list of vendor-site pairs
+    /// </summary>
+    /// <param name="vendorSites">The list of vendor-site pairs</param>
+    /// <returns>List of vendor details</returns>
+    Task<IEnumerable<VendorDto>> GetVendorAddressesByVendorSiteAsync(IEnumerable<VendorSiteRequest> vendorSites);
 } 

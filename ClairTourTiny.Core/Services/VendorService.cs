@@ -4,6 +4,7 @@ using ClairTourTiny.Infrastructure.Dto.DTOs;
 using ClairTourTiny.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ClairTourTiny.Infrastructure.Dto.Vendor;
 
 namespace ClairTourTiny.Core.Services;
 
@@ -298,5 +299,60 @@ public class VendorService : IVendorService
             "Y" => 365,
             _ => 1
         };
+    }    
+
+    public async Task<IEnumerable<VendorDto>> GetVendorAddressesByVendorSiteAsync(IEnumerable<VendorSiteRequest> vendorSites)
+    {
+        try
+        {
+            var pairs = vendorSites.ToList();
+            if (!pairs.Any()) return new List<VendorDto>();
+
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            var vendorNos = pairs.Select(p => p.VendorNo).Distinct().ToList();
+            var siteNos = pairs.Select(p => p.SiteNo).Distinct().ToList();
+
+            // 1. Get all possible matches from DB
+            var joined = await (
+                from v in _context.Povendors
+                join s in _context.Povendsites on v.Vendno equals s.Vendno
+                where vendorNos.Contains(v.Vendno) && siteNos.Contains(s.SiteNo)
+                select new { v, s }
+            ).ToListAsync();
+
+            // 2. Filter in memory for exact vendorNo-siteNo pairs
+            var searchResults = joined
+                .Where(js => pairs.Any(p => p.VendorNo == js.v.Vendno && p.SiteNo == js.s.SiteNo))
+                .Select(js => new VendorDto
+                {
+                    VendNo = js.v.Vendno,
+                    SiteNo = js.s.SiteNo,
+                    VendorName = js.v.VendorName,
+                    Currency = "USD",
+                    Rate = 0,
+                    RateType = "D",
+                    TwoDayWeek = 0,
+                    ThreeDayWeek = 0,
+                    DeliveryRate = 0,
+                    ReturnRate = 0,
+                    City = js.s.City,
+                    State = js.s.State,
+                    Country = js.s.Country,
+                    Phone = js.s.Phone,
+                    Contact = js.s.Contact,
+                    Email = js.s.Usenet,
+                    Mobile = js.s.Voicemail
+                })
+                .OrderBy(v => v.VendorName)
+                .ToList();
+
+            return searchResults;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving vendor addresses for vendor-site service");
+            throw;
+        }
     }
 } 

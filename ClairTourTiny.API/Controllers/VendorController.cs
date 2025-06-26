@@ -1,5 +1,6 @@
 using ClairTourTiny.Core.Interfaces;
 using ClairTourTiny.Infrastructure.Dto.DTOs;
+using ClairTourTiny.Infrastructure.Dto.Vendor;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,7 @@ public class VendorController : ControllerBase
     {
         _vendorService = vendorService;
         _logger = logger;
-    }
+    }   
 
     /// <summary>
     /// Gets known vendors for a specific part number
@@ -57,7 +58,7 @@ public class VendorController : ControllerBase
             return StatusCode(500, "An error occurred while retrieving known vendors");
         }
     }
-
+    
     /// <summary>
     /// Gets vendor addresses for a specific vendor
     /// </summary>
@@ -88,7 +89,7 @@ public class VendorController : ControllerBase
             return StatusCode(500, "An error occurred while retrieving vendor addresses");
         }
     }
-
+    
     /// <summary>
     /// Adds a new vendor to the known vendors list
     /// </summary>
@@ -219,4 +220,36 @@ public class VendorController : ControllerBase
             return StatusCode(500, "An error occurred while retrieving rate types");
         }
     }
+
+    /// <summary>
+    /// Gets vendor details for a list of vendor number and site number pairs
+    /// </summary>
+    /// <param name="vendorSites">The list of vendor number and site number pairs</param>
+    /// <returns>List of vendor details</returns>
+    /// <response code="200">Returns the list of vendor details</response>
+    /// <response code="400">If the input is invalid</response>
+    /// <response code="500">If there was an internal server error</response>
+    [HttpPost("addresses/byvendorsandsite")]
+    [ProducesResponseType(typeof(IEnumerable<VendorDto>), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(500)]
+    public async Task<ActionResult<IEnumerable<VendorDto>>> GetVendorAddressesByVendorsAndSite([FromBody] List<VendorSiteRequest> vendorSites)
+    {
+        try
+        {
+            if (vendorSites == null || vendorSites.Count == 0)
+            {
+                return BadRequest("Vendor number and site number are required");
+            }
+
+            var vendors = await _vendorService.GetVendorAddressesByVendorSiteAsync(vendorSites);
+            return Ok(vendors);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving vendor addresses for vendor-site ");
+            return StatusCode(500, "An error occurred while retrieving vendor addresses");
+        }
+    }
+
 } 
