@@ -53,5 +53,5 @@ public partial class Pm2EquipmentSubhire
 
     public DateOnly ShopReturnDate { get; set; }
 
-    public double Billabledays { get; set; }
+    public double BillableDays { get; set; }
 }
