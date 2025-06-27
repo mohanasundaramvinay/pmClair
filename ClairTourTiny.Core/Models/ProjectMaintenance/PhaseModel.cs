@@ -109,5 +109,8 @@ namespace ClairTourTiny.Core.Models.ProjectMaintenance
         [JsonPropertyName("IsRackConfigured")]
         public bool? IsRackConfigured { get; set; }
 
+        [JsonPropertyName("SecondaryCrewOpsEmpno")]
+        public string SecondaryCrewOpsEmpno { get; set; } = string.Empty; 
+
     }
 }
