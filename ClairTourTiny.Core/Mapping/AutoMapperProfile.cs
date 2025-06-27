@@ -34,6 +34,7 @@ namespace ClairTourTiny.Core.Mapping
             // Equipment mapping
             CreateMap<Equipment, Pm2Equipment>()
                 .ForMember(dest => dest.SessionId, opt => opt.MapFrom(src => 1));
+               // .ForMember(dest => dest.QuantityToSubhire, opt => opt.MapFrom(src => src.QuantityToSubhire));
 
             // Crew mapping
             CreateMap<Crew, Pm2Crew>()

@@ -64,6 +64,26 @@ namespace ClairTourTiny.Tests
             Assert.Equal(1, destination.SessionId);
         }
         [Fact]
+        public void Equipment_To_Pm2Equipment_QuantityToSubhire_Mapping_IsValid()
+        {
+            // Arrange
+            var source = new Equipment
+            {
+                QuantityToSubhire = 5.5,
+                Entityno = "TEST-001",
+                PartnoNew = "PART123"
+            };
+
+            // Act
+            var destination = _mapper.Map<Pm2Equipment>(source);
+
+            // Assert
+            Assert.Equal(1, destination.SessionId);
+            Assert.Equal(5.5, destination.QuantityToSubhire);
+            Assert.Equal("TEST-001", destination.Entityno);
+            Assert.Equal("PART123", destination.PartnoNew);
+        }
+        [Fact]
         public void Crew_To_Pm2Crew_Mapping_IsValid()
         {
             var source = new Crew();
